@@ -1,6 +1,6 @@
 extern crate rballistics_flat;
 
-use rballistics_flat::{dragtables::*, projectiles::*};
+use rballistics_flat::simulation::*;
 
 use std::env;
 
@@ -28,7 +28,6 @@ fn main() {
     let step: f64 = argv[13].parse().unwrap(); // step output in yd
     let ts_factor: f64 = argv[14].parse().unwrap(); // factor to determin step size
 
-    let table = Table::new(dragtable);
     let timestep: f64 = 1.0 / (ts_factor * initial_velocity);
 
     let mut simulation = Simulation::new(
@@ -37,7 +36,7 @@ fn main() {
         bc,
         initial_velocity,
         launch_angle,
-        table,
+        dragtable,
         timestep,
         wind_velocity,
         wind_angle,
