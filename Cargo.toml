@@ -1,0 +1,10 @@
+[package]
+name = "rballistics-cli"
+version = "0.0.1"
+authors = ["Phraeyll <Phraeyll@users.noreply.github.com>"]
+
+[dependencies]
+rballistics-flat = { path = "../rballistics-flat" }
+
+[[bin]]
+name = "rballistics-cli"
