@@ -4,7 +4,7 @@ version = "0.0.1"
 authors = ["Phraeyll <Phraeyll@users.noreply.github.com>"]
 
 [dependencies]
-rballistics-flat = { path = "../rballistics-flat" }
+rballistics-flat = { path = "../flat" }
 
 [[bin]]
 name = "rballistics-cli"

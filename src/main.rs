@@ -1,6 +1,6 @@
 extern crate rballistics_flat;
 
-use rballistics_flat::{cdtables::*, projectiles::*};
+use rballistics_flat::{dragtables::*, projectiles::*};
 
 use std::env;
 
