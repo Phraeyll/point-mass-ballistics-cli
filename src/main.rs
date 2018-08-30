@@ -18,17 +18,17 @@ fn main() {
     let weight: f64 = argv[3].parse().unwrap(); // grains
     let caliber: f64 = argv[4].parse().unwrap(); // inches
     let bc: f64 = argv[5].parse().unwrap(); // dimensionless
-    let dragtable: TableKind = argv[6].parse().unwrap(); // Desired drag table (G1, G7, etc.)
+    let drag_table: TableKind = argv[6].parse().unwrap(); // Desired drag table (G1, G7, etc.)
     let wind_velocity: f64 = argv[7].parse().unwrap(); // m/h
     let wind_angle: f64 = argv[8].parse().unwrap(); // degrees
-    let temp: f64 = argv[9].parse().unwrap(); // F
+    let temperature: f64 = argv[9].parse().unwrap(); // F
     let pressure: f64 = argv[10].parse().unwrap(); // inHg
     let humidity: f64 = argv[11].parse().unwrap(); // dimensionless, percentage
     let range: f64 = argv[12].parse().unwrap(); // range in yd
     let step: f64 = argv[13].parse().unwrap(); // step output in yd
-    let ts_factor: f64 = argv[14].parse().unwrap(); // factor to determin step size
+    let step_factor: f64 = argv[14].parse().unwrap(); // factor to determin step size
 
-    let timestep: f64 = 1.0 / (ts_factor * initial_velocity);
+    let time_step: f64 = 1.0 / (step_factor * initial_velocity);
 
     let mut simulation = Simulation::new(
         weight,
@@ -36,11 +36,11 @@ fn main() {
         bc,
         initial_velocity,
         launch_angle,
-        dragtable,
-        timestep,
+        drag_table,
+        time_step,
         wind_velocity,
         wind_angle,
-        temp,
+        temperature,
         pressure,
         humidity,
     );
