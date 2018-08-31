@@ -30,7 +30,7 @@ fn main() {
 
     let time_step: f64 = 1.0 / (step_factor * initial_velocity);
 
-    let mut simulation = Simulation::new(
+    let mut simulation = PointMassModel::new(
         weight,
         caliber,
         bc,
