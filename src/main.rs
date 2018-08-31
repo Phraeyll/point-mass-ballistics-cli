@@ -18,7 +18,7 @@ fn main() {
     let weight: f64 = argv[3].parse().unwrap(); // grains
     let caliber: f64 = argv[4].parse().unwrap(); // inches
     let bc: f64 = argv[5].parse().unwrap(); // dimensionless
-    let drag_table: TableKind = argv[6].parse().unwrap(); // Desired drag table (G1, G7, etc.)
+    let drag_table: DragTableKind = argv[6].parse().unwrap(); // Desired drag table (G1, G7, etc.)
     let wind_velocity: f64 = argv[7].parse().unwrap(); // m/h
     let wind_angle: f64 = argv[8].parse().unwrap(); // degrees
     let temperature: f64 = argv[9].parse().unwrap(); // F
@@ -68,7 +68,7 @@ fn main() {
 fn usage(name: String) {
     println!(
         r#"
-        Usage: {} 
+        Usage: {}
         velocity (ft/s)
         launch_angle (deg)
         weight (gr)
