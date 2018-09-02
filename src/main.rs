@@ -60,7 +60,6 @@ fn main() {
             break;
         }
     }
-    println!("{:#?}", simulation);
 }
 
 fn usage(name: String) {
