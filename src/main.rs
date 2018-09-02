@@ -32,7 +32,7 @@ fn main() {
 
     let time_step: f64 = 1.0 / (step_factor * initial_velocity);
 
-    let mut simulation = PointMassModel::new(
+    let simulation = PointMassModel::new(
         weight,
         caliber,
         bc,
@@ -51,22 +51,16 @@ fn main() {
 
     println!("time(s), velocity(ft/s), distance(yd), drop(in), windage(in)");
     let mut current_step: f64 = 0.0;
-    while let Some(distance) = simulation.next() {
+    for (time, velocity, distance, drop, windage) in simulation.iter() {
         if distance > current_step {
-            println!(
-                "{} {} {} {} {}",
-                simulation.time(),
-                simulation.relative_velocity(),
-                simulation.relative_distance(),
-                simulation.relative_drop(),
-                simulation.relative_windage(),
-            );
+            println!("{} {} {} {} {}", time, velocity, distance, drop, windage,);
             current_step += step;
         }
         if distance > range {
             break;
         }
     }
+    println!("{:#?}", simulation);
 }
 
 fn usage(name: String) {
