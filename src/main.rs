@@ -7,7 +7,7 @@ use std::env;
 fn main() {
     let argv: Vec<String> = env::args().collect();
 
-    if argv.len() <= 14 {
+    if argv.len() <= 15 {
         eprintln!("error: wrong number of args");
         usage(argv[0].to_string());
         return;
@@ -15,18 +15,19 @@ fn main() {
 
     let initial_velocity: f64 = argv[1].parse().unwrap(); // ft/s
     let launch_angle: f64 = argv[2].parse().unwrap(); // degrees
-    let weight: f64 = argv[3].parse().unwrap(); // grains
-    let caliber: f64 = argv[4].parse().unwrap(); // inches
-    let bc: f64 = argv[5].parse().unwrap(); // dimensionless
-    let drag_table: DragTableKind = argv[6].parse().unwrap(); // Desired drag table (G1, G7, etc.)
-    let wind_velocity: f64 = argv[7].parse().unwrap(); // m/h
-    let wind_angle: f64 = argv[8].parse().unwrap(); // degrees
-    let temperature: f64 = argv[9].parse().unwrap(); // F
-    let pressure: f64 = argv[10].parse().unwrap(); // inHg
-    let humidity: f64 = argv[11].parse().unwrap(); // dimensionless, percentage
-    let range: f64 = argv[12].parse().unwrap(); // range in yd
-    let step: f64 = argv[13].parse().unwrap(); // step output in yd
-    let step_factor: f64 = argv[14].parse().unwrap(); // factor to determin step size
+    let scope_height: f64 = argv[3].parse().unwrap(); // inches
+    let weight: f64 = argv[4].parse().unwrap(); // grains
+    let caliber: f64 = argv[5].parse().unwrap(); // inches
+    let bc: f64 = argv[6].parse().unwrap(); // dimensionless
+    let drag_table: DragTableKind = argv[7].parse().unwrap(); // Desired drag table (G1, G7, etc.)
+    let wind_velocity: f64 = argv[8].parse().unwrap(); // m/h
+    let wind_angle: f64 = argv[9].parse().unwrap(); // degrees
+    let temperature: f64 = argv[10].parse().unwrap(); // F
+    let pressure: f64 = argv[11].parse().unwrap(); // inHg
+    let humidity: f64 = argv[12].parse().unwrap(); // dimensionless, percentage
+    let range: f64 = argv[13].parse().unwrap(); // range in yd
+    let step: f64 = argv[14].parse().unwrap(); // step output in yd
+    let step_factor: f64 = argv[15].parse().unwrap(); // factor to determin step size
 
     let time_step: f64 = 1.0 / (step_factor * initial_velocity);
 
@@ -36,6 +37,7 @@ fn main() {
         bc,
         initial_velocity,
         launch_angle,
+        scope_height,
         drag_table,
         time_step,
         wind_velocity,
@@ -52,10 +54,10 @@ fn main() {
             println!(
                 "{} {} {} {} {}",
                 simulation.time(),
-                simulation.velocity(),
-                simulation.distance(),
-                simulation.drop(),
-                simulation.windage(),
+                simulation.relative_velocity(),
+                simulation.relative_distance(),
+                simulation.relative_drop(),
+                simulation.relative_windage(),
             );
             current_step += step;
         }
