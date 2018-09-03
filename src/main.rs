@@ -32,14 +32,13 @@ fn main() {
 
     let time_step: f64 = 1.0 / (step_factor * initial_velocity);
 
-    let simulation = PointMassModel::new(
+    let mut simulation = PointMassModel::new(
         weight,
         caliber,
         bc,
         initial_velocity,
-        los_angle,
         scope_height,
-        zero_distance,
+        los_angle,
         drag_table,
         time_step,
         wind_velocity,
@@ -48,6 +47,8 @@ fn main() {
         pressure,
         humidity,
     );
+    simulation.zero(zero_distance, 0.3, -1.0);
+    // println!("{:#?}", simulation)
 
     println!("time(s), velocity(ft/s), distance(yd), drop(in), windage(in)");
     let mut current_step: f64 = 0.0;
