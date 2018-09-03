@@ -48,20 +48,20 @@ fn main() {
         humidity,
     );
     simulation.zero(zero_distance);
-    // println!("{:#?}", simulation)
+    println!("{:#?}", simulation.first_zero());
 
     println!("time(s), velocity(ft/s), distance(yd), drop(in), windage(in)");
     let mut current_step: f64 = 0.0;
     for b in simulation.iter() {
-        if b.distance() > current_step {
-            let (distance, drop, wind) = b.relative_position();
+        let (distance, drop, windage) = b.relative_position();
+        if distance > current_step {
             println!(
                 "{} {} {} {} {}",
                 b.time(),
                 b.velocity(),
                 distance,
                 drop,
-                wind,
+                windage,
             );
             current_step += step;
         }
