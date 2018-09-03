@@ -14,7 +14,7 @@ fn main() {
     }
 
     let initial_velocity: f64 = argv[1].parse().unwrap(); // ft/s
-    let launch_angle: f64 = argv[2].parse().unwrap(); // degrees
+    let los_angle: f64 = argv[2].parse().unwrap(); // degrees
     let scope_height: f64 = argv[3].parse().unwrap(); // inches
     let zero_distance: f64 = argv[4].parse().unwrap(); // yards
     let weight: f64 = argv[5].parse().unwrap(); // grains
@@ -37,7 +37,7 @@ fn main() {
         caliber,
         bc,
         initial_velocity,
-        launch_angle,
+        los_angle,
         scope_height,
         zero_distance,
         drag_table,
@@ -51,12 +51,19 @@ fn main() {
 
     println!("time(s), velocity(ft/s), distance(yd), drop(in), windage(in)");
     let mut current_step: f64 = 0.0;
-    for (time, velocity, distance, drop, windage) in simulation.iter() {
-        if distance > current_step {
-            println!("{} {} {} {} {}", time, velocity, distance, drop, windage,);
+    for b in simulation.iter() {
+        if b.distance() > current_step {
+            println!(
+                "{} {} {} {} {}",
+                b.time(),
+                b.velocity(),
+                b.distance(),
+                b.drop(),
+                b.windage(),
+            );
             current_step += step;
         }
-        if distance > range {
+        if b.distance() > range {
             break;
         }
     }
