@@ -50,18 +50,18 @@ fn main() {
     simulation.zero(zero_distance);
     println!("{:#?}", simulation.first_zero());
 
-    println!("time(s), velocity(ft/s), distance(yd), drop(in), windage(in)");
+    println!("distance(yd), drop(in), windage(in), velocity(ft/s), time(s)");
     let mut current_step: f64 = 0.0;
     for b in simulation.iter() {
         let (distance, drop, windage) = b.relative_position();
         if distance > current_step {
             println!(
                 "{} {} {} {} {}",
-                b.time(),
-                b.velocity(),
                 distance,
                 drop,
                 windage,
+                b.velocity(),
+                b.time(),
             );
             current_step += step;
         }
