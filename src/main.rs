@@ -28,7 +28,7 @@ fn main() {
     let humidity: f64 = argv[13].parse().unwrap(); // dimensionless, percentage
     let range: f64 = argv[14].parse().unwrap(); // range in yd
     let step: f64 = argv[15].parse().unwrap(); // step output in yd
-    let step_factor: f64 = argv[16].parse().unwrap(); // factor to determin step size
+    let step_factor: f64 = argv[16].parse().unwrap(); // factor to determine step size
 
     let time_step: f64 = 1.0 / (step_factor * initial_velocity);
 
@@ -65,7 +65,7 @@ fn main() {
             );
             current_step += step;
         }
-        if b.distance() > range {
+        if distance > range {
             break;
         }
     }
