@@ -53,19 +53,18 @@ fn main() {
     println!("distance(yd), drop(in), windage(in), velocity(ft/s), time(s)");
     let mut current_step: f64 = 0.0;
     for b in simulation.iter() {
-        let (distance, drop, windage) = b.relative_position();
-        if distance > current_step {
+        if b.distance() > current_step {
             println!(
                 "{} {} {} {} {}",
-                distance,
-                drop,
-                windage,
+                b.distance(),
+                b.drop(),
+                b.windage(),
                 b.velocity(),
                 b.time(),
             );
             current_step += step;
         }
-        if distance > range {
+        if b.distance() > range {
             break;
         }
     }
@@ -76,18 +75,20 @@ fn usage(name: String) {
         r#"
         Usage: {}
         velocity (ft/s)
-        launch_angle (deg)
-        weight (gr)
-        caliber (in)
+        launch_angle (degrees)
+        scope_height (inches)
+        zero_range (yards)
+        weight (grains)
+        caliber (inches)
         bc
         dragtable
         wind_velocity (ft/s)
-        wind_angle (deg)
+        wind_angle (degrees)
         temp (F)
         pressure (inHg)
         humidity (0-1)
-        range (yd)
-        step (yd)
+        range (yards)
+        step (yards)
         timestep_factor
         "#,
         name
