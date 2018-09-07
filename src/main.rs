@@ -62,7 +62,7 @@ fn main() {
     for b in simulation.iter() {
         if b.distance() > current_step {
             println!(
-                "{:>12.0} {:>9.1} {:>12.1} {:>15.2} {:>8.3}",
+                "{:>12.0} {:>9.2} {:>12.2} {:>15.2} {:>8.3}",
                 b.distance(),
                 b.drop(),
                 b.windage(),
