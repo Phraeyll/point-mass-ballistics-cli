@@ -32,21 +32,35 @@ fn main() {
 
     let time_step: f64 = 1.0 / (step_factor * initial_velocity);
 
-    let mut simulation = PointMassModel::new(
-        weight,
-        caliber,
-        BallisticCoefficient::G7(bc),
-        initial_velocity,
-        scope_height,
-        los_angle,
-        time_step,
+    let zero_conditions = Conditions::new(
         wind_velocity,
         wind_angle,
         temperature,
         pressure,
         humidity,
+        0.0,
     );
-    simulation.zero(zero_distance);
+
+    let drop_table_conditions = Conditions::new(
+        wind_velocity,
+        wind_angle,
+        temperature,
+        pressure,
+        humidity,
+        los_angle,
+    );
+
+    let mut simulation = PointMassModel::new(
+        weight,
+        caliber,
+        BallisticCoefficient::G7(bc),
+        scope_height,
+        time_step,
+        initial_velocity,
+        &drop_table_conditions,
+    );
+
+    simulation.zero(zero_distance, &zero_conditions, &drop_table_conditions);
     // println!("{:#?}", simulation.first_zero());
 
     println!(
