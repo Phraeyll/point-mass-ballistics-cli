@@ -20,7 +20,7 @@ fn main() {
     let weight: f64 = argv[5].parse().unwrap(); // grains
     let caliber: f64 = argv[6].parse().unwrap(); // inches
     let bc: f64 = argv[7].parse().unwrap(); // dimensionless
-    //let drag_table: DragTableKind = argv[8].parse().unwrap(); // Desired drag table (G1, G7, etc.)
+                                            //let drag_table: DragTableKind = argv[8].parse().unwrap(); // Desired drag table (G1, G7, etc.)
     let wind_velocity: f64 = argv[8].parse().unwrap(); // m/h
     let wind_angle: f64 = argv[9].parse().unwrap(); // degrees
     let temperature: f64 = argv[10].parse().unwrap(); // F
@@ -51,11 +51,7 @@ fn main() {
 
     println!(
         "{:>12} {:>9} {:>12} {:>15} {:>8}",
-        "Distance(yd)",
-        "Drop(in)",
-        "Windage(in)",
-        "Velocity(ft/s)",
-        "Time(s)"
+        "Distance(yd)", "Drop(in)", "Windage(in)", "Velocity(ft/s)", "Time(s)"
     );
     let mut current_step: f64 = 0.0;
     for b in simulation.iter() {
