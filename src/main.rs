@@ -50,16 +50,16 @@ fn main() {
         los_angle,
     );
 
-    let projectile = Projectile::new(weight, caliber);
-
     let model = Model::new(
+        weight,
+        caliber,
         BallisticCoefficient::G7(bc),
         time_step,
         initial_velocity,
         scope_height,
     );
 
-    let mut simulation = Simulator::new(projectile, model, zero_conditions, drop_table_conditions);
+    let mut simulation = Simulator::new(model, zero_conditions, drop_table_conditions);
 
     let results = simulation.gimme_drop_table(zero_distance, step, range);
 
