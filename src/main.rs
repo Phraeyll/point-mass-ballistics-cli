@@ -89,7 +89,6 @@ fn usage(name: String) {
         weight (grains)
         caliber (inches)
         bc
-        dragtable
         wind_velocity (ft/s)
         wind_angle (degrees)
         temp (F)
