@@ -33,8 +33,8 @@ fn main() {
     let time_step: f64 = 1.0 / (step_factor * initial_velocity);
 
     let zero_conditions = Conditions::new(
-        wind_velocity,
-        wind_angle,
+        0.0,
+        0.0,
         temperature,
         pressure,
         humidity,
