@@ -9,7 +9,7 @@ fn main() {
 
     if argv.len() <= 15 {
         eprintln!("error: wrong number of args");
-        usage(argv[0].to_string());
+        usage(&argv[0]);
         return;
     }
 
@@ -50,7 +50,7 @@ fn main() {
         los_angle,
     );
 
-    let model = Model::new(
+    let mut model = Model::new(
         weight,
         caliber,
         BallisticCoefficient::G7(bc),
@@ -59,7 +59,7 @@ fn main() {
         scope_height,
     );
 
-    let mut simulation = Simulator::new(model, zero_conditions, drop_table_conditions);
+    let mut simulation = Simulator::new(&mut model, &zero_conditions, &drop_table_conditions);
 
     let results = simulation.gimme_drop_table(zero_distance, step, range);
 
@@ -78,7 +78,7 @@ fn main() {
     }
 }
 
-fn usage(name: String) {
+fn usage(name: &str) {
     println!(
         r#"
         Usage: {}
