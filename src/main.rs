@@ -45,14 +45,7 @@ fn main() {
         _ => BallisticCoefficient::G1(bc),
     };
 
-    let zero_conditions = Conditions::new(
-        0.0,
-        0.0,
-        temperature,
-        pressure,
-        humidity,
-        0.0,
-    );
+    let zero_conditions = Conditions::new(0.0, 0.0, temperature, pressure, humidity, 0.0);
 
     let drop_table_conditions = Conditions::new(
         wind_velocity,
