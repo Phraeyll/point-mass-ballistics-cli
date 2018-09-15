@@ -7,7 +7,7 @@ use std::env;
 fn main() {
     let argv: Vec<String> = env::args().collect();
 
-    if argv.len() <= 15 {
+    if argv.len() <= 16 {
         eprintln!("error: wrong number of args");
         usage(&argv[0]);
         return;
@@ -20,17 +20,29 @@ fn main() {
     let weight: f64 = argv[5].parse().unwrap(); // grains
     let caliber: f64 = argv[6].parse().unwrap(); // inches
     let bc: f64 = argv[7].parse().unwrap(); // dimensionless
-                                            //let drag_table: DragTableKind = argv[8].parse().unwrap(); // Desired drag table (G1, G7, etc.)
-    let wind_velocity: f64 = argv[8].parse().unwrap(); // m/h
-    let wind_angle: f64 = argv[9].parse().unwrap(); // degrees
-    let temperature: f64 = argv[10].parse().unwrap(); // F
-    let pressure: f64 = argv[11].parse().unwrap(); // inHg
-    let humidity: f64 = argv[12].parse().unwrap(); // dimensionless, percentage
-    let range: f64 = argv[13].parse().unwrap(); // range in yd
-    let step: f64 = argv[14].parse().unwrap(); // step output in yd
-    let step_factor: f64 = argv[15].parse().unwrap(); // factor to determine step size
+    let drag_table: &str = &argv[8]; // Desired drag table (G1, G7, etc.)
+    let wind_velocity: f64 = argv[9].parse().unwrap(); // m/h
+    let wind_angle: f64 = argv[10].parse().unwrap(); // degrees
+    let temperature: f64 = argv[11].parse().unwrap(); // F
+    let pressure: f64 = argv[12].parse().unwrap(); // inHg
+    let humidity: f64 = argv[13].parse().unwrap(); // dimensionless, percentage
+    let range: f64 = argv[14].parse().unwrap(); // range in yd
+    let step: f64 = argv[15].parse().unwrap(); // step output in yd
+    let step_factor: f64 = argv[16].parse().unwrap(); // factor to determine step size
 
     let time_step: f64 = 1.0 / (step_factor * initial_velocity);
+
+    // Ugly - this needs to be handle in library, parsing bc as "G7(0.305)" for example
+    let bc_enum = match drag_table {
+        "G1" => BallisticCoefficient::G1(bc),
+        "G2" => BallisticCoefficient::G2(bc),
+        "G5" => BallisticCoefficient::G5(bc),
+        "G6" => BallisticCoefficient::G6(bc),
+        "G7" => BallisticCoefficient::G7(bc),
+        "G8" => BallisticCoefficient::G8(bc),
+        "GI" => BallisticCoefficient::GI(bc),
+        _ => BallisticCoefficient::G1(bc),
+    };
 
     let zero_conditions = Conditions::new(
         0.0,
@@ -53,7 +65,7 @@ fn main() {
     let model = Model::new(
         weight,
         caliber,
-        BallisticCoefficient::G7(bc),
+        bc_enum,
         time_step,
         initial_velocity,
         scope_height,
