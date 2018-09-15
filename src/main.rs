@@ -50,7 +50,7 @@ fn main() {
         los_angle,
     );
 
-    let mut model = Model::new(
+    let model = Model::new(
         weight,
         caliber,
         BallisticCoefficient::G7(bc),
@@ -59,7 +59,7 @@ fn main() {
         scope_height,
     );
 
-    let mut simulation = Simulator::new(&mut model, &zero_conditions, &drop_table_conditions);
+    let mut simulation = Simulator::new(&model, &zero_conditions, &drop_table_conditions);
 
     let results = simulation.gimme_drop_table(zero_distance, step, range);
 
