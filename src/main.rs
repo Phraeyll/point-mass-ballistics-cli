@@ -41,6 +41,7 @@ fn main() {
         "G7" => BallisticCoefficient::G7(bc),
         "G8" => BallisticCoefficient::G8(bc),
         "GI" => BallisticCoefficient::GI(bc),
+        "GS" => BallisticCoefficient::GS(bc),
         _ => BallisticCoefficient::G1(bc),
     };
 
