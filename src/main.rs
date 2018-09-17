@@ -74,7 +74,13 @@ fn main() {
 
     println!(
         "{:>12} {:>9} {:>12} {:>15} {:>14} {:>8} {:>8}",
-        "Distance(yd)", "Drop(in)", "Windage(in)", "Velocity(ft/s)", "Energy(ftlbs)", "MOA", "Time(s)"
+        "Distance(yd)",
+        "Drop(in)",
+        "Windage(in)",
+        "Velocity(ft/s)",
+        "Energy(ftlbs)",
+        "MOA",
+        "Time(s)"
     );
     for (distance, (drop, windage, velocity, energy, moa, time)) in results.0.iter() {
         println!(
