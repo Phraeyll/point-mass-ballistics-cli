@@ -1,8 +1,10 @@
 extern crate rballistics_flat;
 
 use rballistics_flat::simulation::*;
+use rballistics_flat::Numeric;
 
 use std::env;
+
 
 fn main() {
     let argv: Vec<String> = env::args().collect();
@@ -13,24 +15,24 @@ fn main() {
         return;
     }
 
-    let initial_velocity: f64 = argv[1].parse().unwrap(); // ft/s
-    let los_angle: f64 = argv[2].parse().unwrap(); // degrees
-    let scope_height: f64 = argv[3].parse().unwrap(); // inches
-    let zero_distance: f64 = argv[4].parse().unwrap(); // yards
-    let weight: f64 = argv[5].parse().unwrap(); // grains
-    let caliber: f64 = argv[6].parse().unwrap(); // inches
-    let bc: f64 = argv[7].parse().unwrap(); // dimensionless
+    let initial_velocity: Numeric = argv[1].parse().unwrap(); // ft/s
+    let los_angle: Numeric = argv[2].parse().unwrap(); // degrees
+    let scope_height: Numeric = argv[3].parse().unwrap(); // inches
+    let zero_distance: Numeric = argv[4].parse().unwrap(); // yards
+    let weight: Numeric = argv[5].parse().unwrap(); // grains
+    let caliber: Numeric = argv[6].parse().unwrap(); // inches
+    let bc: Numeric = argv[7].parse().unwrap(); // dimensionless
     let drag_table: &str = &argv[8]; // Desired drag table (G1, G7, etc.)
-    let wind_velocity: f64 = argv[9].parse().unwrap(); // m/h
-    let wind_angle: f64 = argv[10].parse().unwrap(); // degrees
-    let temperature: f64 = argv[11].parse().unwrap(); // F
-    let pressure: f64 = argv[12].parse().unwrap(); // inHg
-    let humidity: f64 = argv[13].parse().unwrap(); // dimensionless, percentage
-    let range: f64 = argv[14].parse().unwrap(); // range in yd
-    let step: f64 = argv[15].parse().unwrap(); // step output in yd
-    let step_factor: f64 = argv[16].parse().unwrap(); // factor to determine step size
+    let wind_velocity: Numeric = argv[9].parse().unwrap(); // m/h
+    let wind_angle: Numeric = argv[10].parse().unwrap(); // degrees
+    let temperature: Numeric = argv[11].parse().unwrap(); // F
+    let pressure: Numeric = argv[12].parse().unwrap(); // inHg
+    let humidity: Numeric = argv[13].parse().unwrap(); // dimensionless, percentage
+    let range: Numeric = argv[14].parse().unwrap(); // range in yd
+    let step: Numeric = argv[15].parse().unwrap(); // step output in yd
+    let step_factor: Numeric = argv[16].parse().unwrap(); // factor to determine step size
 
-    let time_step: f64 = 1.0 / (step_factor * initial_velocity);
+    let time_step: Numeric = 1.0 / (step_factor * initial_velocity);
 
     // Ugly - this needs to be handle in library, parsing bc as "G7(0.305)" for example
     let bc_enum = match drag_table {
