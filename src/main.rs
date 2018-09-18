@@ -5,7 +5,6 @@ use rballistics_flat::Numeric;
 
 use std::env;
 
-
 fn main() {
     let argv: Vec<String> = env::args().collect();
 
