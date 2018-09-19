@@ -8,7 +8,7 @@ use std::env;
 fn main() {
     let argv: Vec<String> = env::args().collect();
 
-    if argv.len() <= 16 {
+    if argv.len() <= 18 {
         eprintln!("error: wrong number of args");
         usage(&argv[0]);
         return;
@@ -30,6 +30,8 @@ fn main() {
     let range: Numeric = argv[14].parse().unwrap(); // range in yd
     let step: Numeric = argv[15].parse().unwrap(); // step output in yd
     let step_factor: Numeric = argv[16].parse().unwrap(); // factor to determine step size
+    let lattitude: Numeric = argv[17].parse().unwrap();
+    let azimuth: Numeric = argv[18].parse().unwrap();
 
     let time_step: Numeric = 1.0 / (step_factor * initial_velocity);
 
@@ -46,7 +48,7 @@ fn main() {
         _ => BallisticCoefficient::G1(bc),
     };
 
-    let zero_conditions = Conditions::new(0.0, 0.0, temperature, pressure, humidity, 0.0);
+    let zero_conditions = Conditions::new(0.0, 0.0, temperature, pressure, humidity, 0.0, lattitude, azimuth);
 
     let drop_table_conditions = Conditions::new(
         wind_velocity,
@@ -55,6 +57,8 @@ fn main() {
         pressure,
         humidity,
         los_angle,
+        lattitude,
+        azimuth,
     );
 
     let model = Model::new(
