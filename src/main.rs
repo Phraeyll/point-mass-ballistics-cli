@@ -14,24 +14,24 @@ fn main() {
         return;
     }
 
-    let initial_velocity: Numeric = argv[1].parse().unwrap(); // ft/s
-    let los_angle: Numeric = argv[2].parse().unwrap(); // degrees
-    let scope_height: Numeric = argv[3].parse().unwrap(); // inches
-    let zero_distance: Numeric = argv[4].parse().unwrap(); // yards
-    let weight: Numeric = argv[5].parse().unwrap(); // grains
-    let caliber: Numeric = argv[6].parse().unwrap(); // inches
-    let bc: Numeric = argv[7].parse().unwrap(); // dimensionless
+    let initial_velocity: Numeric = argv[1].parse::<Numeric>().unwrap(); // ft/s
+    let los_angle: Numeric = argv[2].parse::<Numeric>().unwrap(); // degrees
+    let scope_height: Numeric = argv[3].parse::<Numeric>().unwrap(); // inches
+    let zero_distance: Numeric = argv[4].parse::<Numeric>().unwrap(); // yards
+    let weight: Numeric = argv[5].parse::<Numeric>().unwrap(); // grains
+    let caliber: Numeric = argv[6].parse::<Numeric>().unwrap(); // inches
+    let bc: Numeric = argv[7].parse::<Numeric>().unwrap(); // dimensionless
     let drag_table: &str = &argv[8]; // Desired drag table (G1, G7, etc.)
-    let wind_velocity: Numeric = argv[9].parse().unwrap(); // m/h
-    let wind_angle: Numeric = argv[10].parse().unwrap(); // degrees
-    let temperature: Numeric = argv[11].parse().unwrap(); // F
-    let pressure: Numeric = argv[12].parse().unwrap(); // inHg
-    let humidity: Numeric = argv[13].parse().unwrap(); // dimensionless, percentage
-    let range: Numeric = argv[14].parse().unwrap(); // range in yd
-    let step: Numeric = argv[15].parse().unwrap(); // step output in yd
-    let step_factor: Numeric = argv[16].parse().unwrap(); // factor to determine step size
-    let lattitude: Numeric = argv[17].parse().unwrap();
-    let azimuth: Numeric = argv[18].parse().unwrap();
+    let wind_velocity: Numeric = argv[9].parse::<Numeric>().unwrap(); // m/h
+    let wind_angle: Numeric = argv[10].parse::<Numeric>().unwrap(); // degrees
+    let temperature: Numeric = argv[11].parse::<Numeric>().unwrap(); // F
+    let pressure: Numeric = argv[12].parse::<Numeric>().unwrap(); // inHg
+    let humidity: Numeric = argv[13].parse::<Numeric>().unwrap(); // dimensionless, percentage
+    let range: Numeric = argv[14].parse::<Numeric>().unwrap(); // range in yd
+    let step: Numeric = argv[15].parse::<Numeric>().unwrap(); // step output in yd
+    let step_factor: Numeric = argv[16].parse::<Numeric>().unwrap(); // factor to determine step size
+    let lattitude: Numeric = argv[17].parse::<Numeric>().unwrap();
+    let azimuth: Numeric = argv[18].parse::<Numeric>().unwrap();
 
     let time_step: Numeric = 1.0 / (step_factor * initial_velocity);
 
