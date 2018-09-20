@@ -70,7 +70,7 @@ fn main() {
         scope_height,
     );
 
-    let mut simulation = Simulator::new(&model, &zero_conditions, &drop_table_conditions);
+    let simulation = Simulator::new(&model, &zero_conditions, &drop_table_conditions);
 
     let results = simulation.drop_table(zero_distance, step, range);
 
