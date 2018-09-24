@@ -70,7 +70,7 @@ fn main() {
         None,
     );
 
-    let params = UnConditional::new(
+    let params = Unconditional::new(
         weight,
         caliber,
         bc_enum,
