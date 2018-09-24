@@ -1,4 +1,5 @@
 use rballistics_flat::{model::point_mass::params::*, simulation::*, Numeric};
+use approx::relative_eq;
 
 use std::env;
 
@@ -87,20 +88,52 @@ fn main() {
     // println!("{:#?}", simulation.first_zero());
 
     println!(
-        "{:>12} {:>9} {:>12} {:>15} {:>14} {:>8} {:>8}",
+        "{:>12} {:>14} {:>12} {:>15} {:>14} {:>8} {:>8}",
         "Distance(yd)",
-        "Drop(in)",
+        "Elevation(in)",
         "Windage(in)",
         "Velocity(ft/s)",
         "Energy(ftlbs)",
         "MOA",
         "Time(s)"
     );
-    for (distance, (drop, windage, velocity, energy, moa, time)) in results.0.iter() {
+    for (distance, (elevation, windage, velocity, energy, moa, time)) in results.0.iter() {
         println!(
-            "{:>12.0} {:>9.2} {:>12.2} {:>15.2} {:>14.2} {:>8.2} {:>8.3}",
-            distance, drop, windage, velocity, energy, moa, time,
+            "{:>12.0} {:>12.2} {} {:>10.2} {} {:>15.2} {:>14.2} {:>8.2} {:>8.3}",
+            distance,
+            elevation.abs(),
+            adjust(&Elevation(elevation)),
+            windage.abs(),
+            adjust(&Windage(windage)),
+            velocity,
+            energy,
+            moa,
+            time,
         );
+    }
+}
+
+pub use self::Adjustment::*;
+pub enum Adjustment<'n> {
+    Elevation(&'n Numeric),
+    Windage(&'n Numeric),
+}
+
+fn adjust(measurement: &Adjustment) -> &'static str {
+    match measurement {
+        Elevation(m) => if relative_eq!(**m, 0.0, epsilon = 0.005) {
+            " "} else if m.is_sign_positive() {
+            "D"
+        } else {
+            "U"
+        },
+        Windage(m) => if relative_eq!(**m, 0.0, epsilon = 0.005) {
+            " "
+        } else if m.is_sign_positive() {
+            "L"
+        } else {
+            "R"
+        },
     }
 }
 
