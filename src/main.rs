@@ -1,4 +1,4 @@
-use rballistics_flat::simulation::*;
+use rballistics_flat::{simulation::*, model::point_mass::{params::*, BallisticCoefficient}};
 use rballistics_flat::Numeric;
 
 use std::env;
@@ -46,9 +46,9 @@ fn main() {
         _ => BallisticCoefficient::G1(bc),
     };
 
-    let zero_conditions = Conditions::new(0.0, 0.0, temperature, pressure, humidity, 0.0, lattitude, azimuth);
+    let zero_conditions = Conditional::new(0.0, 0.0, temperature, pressure, humidity, 0.0, lattitude, azimuth);
 
-    let drop_table_conditions = Conditions::new(
+    let drop_table_conditions = Conditional::new(
         wind_velocity,
         wind_angle,
         temperature,
@@ -59,7 +59,7 @@ fn main() {
         azimuth,
     );
 
-    let model = Model::new(
+    let params = UnConditional::new(
         weight,
         caliber,
         bc_enum,
@@ -68,7 +68,7 @@ fn main() {
         scope_height,
     );
 
-    let simulation = Simulator::new(&model, &zero_conditions, &drop_table_conditions);
+    let simulation = Simulator::new(&params, &zero_conditions, &drop_table_conditions);
 
     let results = simulation.drop_table(zero_distance, step, range);
 
