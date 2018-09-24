@@ -1,4 +1,4 @@
-use rballistics_flat::{model::point_mass::params::*, simulation::*, Numeric};
+use rballistics_flat::{model::point_mass::params::*, simulator::*, Numeric};
 use approx::relative_eq;
 
 use std::env;
@@ -75,12 +75,11 @@ fn main() {
         weight,
         caliber,
         bc_enum,
-        time_step,
         initial_velocity,
         scope_height,
     );
 
-    let simulation = Simulator::new(&params, &zero_conditions, &drop_table_conditions);
+    let simulation = Simulator::new(&params, &zero_conditions, &drop_table_conditions, time_step);
 
     let results = simulation.drop_table(zero_distance, step, range);
 
