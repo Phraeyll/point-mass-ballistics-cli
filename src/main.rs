@@ -47,39 +47,20 @@ fn main() {
         _ => BallisticCoefficient::G1(bc),
     };
 
-    let zero_conditions = Conditional::new(
-        0.0,
-        0.0,
-        temperature,
-        pressure,
-        humidity,
-        0.0,
-        lattitude,
-        azimuth,
-        None,
+    let projectile = Projectile::new(weight, caliber, bc_enum, initial_velocity);
+    let scope = Scope::new(scope_height);
+    let zero_conditions = SimulatorConditions::new(
+        Wind::new(0.0, 0.0),
+        Atmosphere::new(temperature, pressure, humidity),
+        Conditions::new(0.0, lattitude, azimuth, None),
+    );
+    let solve_conditions = SimulatorConditions::new(
+        Wind::new(wind_velocity, wind_angle),
+        Atmosphere::new(temperature, pressure, humidity),
+        Conditions::new(los_angle, lattitude, azimuth, None),
     );
 
-    let drop_table_conditions = Conditional::new(
-        wind_velocity,
-        wind_angle,
-        temperature,
-        pressure,
-        humidity,
-        los_angle,
-        lattitude,
-        azimuth,
-        None,
-    );
-
-    let params = Unconditional::new(
-        weight,
-        caliber,
-        bc_enum,
-        initial_velocity,
-        scope_height,
-    );
-
-    let simulation = Simulator::new(&params, &zero_conditions, &drop_table_conditions, time_step);
+    let simulation = Simulator::new(&projectile, &scope, zero_conditions, solve_conditions, time_step);
 
     let results = simulation.drop_table(zero_distance, step, range);
 
