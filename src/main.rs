@@ -1,5 +1,5 @@
-use rballistics_flat::{model::point_mass::params::*, simulator::*, Numeric};
 use approx::relative_eq;
+use rballistics_flat::{model::point_mass::params::*, simulator::*, Numeric};
 
 use std::env;
 
@@ -59,8 +59,13 @@ fn main() {
         Atmosphere::new(temperature, pressure, humidity),
         Conditions::new(los_angle, lattitude, azimuth, None),
     );
-
-    let simulation = Simulator::new(&projectile, &scope, zero_conditions, solve_conditions, time_step);
+    let simulation = Simulator::new(
+        &projectile,
+        &scope,
+        &zero_conditions,
+        &solve_conditions,
+        time_step,
+    );
 
     let results = simulation.drop_table(zero_distance, step, range);
 
@@ -101,19 +106,24 @@ pub enum Adjustment<'n> {
 
 fn adjust(measurement: &Adjustment) -> &'static str {
     match measurement {
-        Elevation(m) => if relative_eq!(**m, 0.0, epsilon = 0.005) {
-            " "} else if m.is_sign_positive() {
-            "D"
-        } else {
-            "U"
-        },
-        Windage(m) => if relative_eq!(**m, 0.0, epsilon = 0.005) {
-            " "
-        } else if m.is_sign_positive() {
-            "L"
-        } else {
-            "R"
-        },
+        Elevation(m) => {
+            if relative_eq!(**m, 0.0, epsilon = 0.005) {
+                " "
+            } else if m.is_sign_positive() {
+                "D"
+            } else {
+                "U"
+            }
+        }
+        Windage(m) => {
+            if relative_eq!(**m, 0.0, epsilon = 0.005) {
+                " "
+            } else if m.is_sign_positive() {
+                "L"
+            } else {
+                "R"
+            }
+        }
     }
 }
 
