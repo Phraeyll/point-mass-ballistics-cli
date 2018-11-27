@@ -72,7 +72,7 @@ dependencies = [
 
 [[package]]
 name = "nalgebra"
-version = "0.16.0"
+version = "0.16.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "alga 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -142,7 +142,7 @@ name = "rballistics-flat"
 version = "0.0.1"
 dependencies = [
  "approx 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "nalgebra 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "nalgebra 0.16.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "new-ordered-float 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
@@ -194,7 +194,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 "checksum libc 0.2.43 (registry+https://github.com/rust-lang/crates.io-index)" = "76e3a3ef172f1a0b9a9ff0dd1491ae5e6c948b94479a3021819ba7d860c8645d"
 "checksum libm 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)" = "03c0bb6d5ce1b5cc6fd0578ec1cbc18c9d88b5b591a5c7c1d6c6175e266a0819"
 "checksum matrixmultiply 0.1.14 (registry+https://github.com/rust-lang/crates.io-index)" = "cac1a66eab356036af85ea093101a14223dc6e3f4c02a59b7d572e5b93270bf7"
-"checksum nalgebra 0.16.0 (registry+https://github.com/rust-lang/crates.io-index)" = "4534bc88a178e411e634e1e44e7f2ad6e9bf062ea539f40e579bd49ef2fad056"
+"checksum nalgebra 0.16.11 (registry+https://github.com/rust-lang/crates.io-index)" = "c2fa8a0816156fa502b288c19bc3b8a56afe291265189e42259fb9155161bfb6"
 "checksum new-ordered-float 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)" = "8ccbebba6fb53a6d2bdcfaf79cb339bc136dee3bfff54dc337a334bafe36476a"
 "checksum num-complex 0.2.0 (registry+https://github.com/rust-lang/crates.io-index)" = "68de83578789e0fbda3fa923035be83cf8bfd3b30ccfdecd5aa89bf8601f408e"
 "checksum num-traits 0.2.5 (registry+https://github.com/rust-lang/crates.io-index)" = "630de1ef5cc79d0cdd78b7e33b81f083cbfe90de0f4b2b2f07f905867c70e9fe"

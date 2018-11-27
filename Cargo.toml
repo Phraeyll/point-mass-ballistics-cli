@@ -6,7 +6,7 @@ edition = "2018"
 
 [dependencies]
 rballistics-flat = { path = "../flat" }
-approx = "0.3"
+approx = "^0.3"
 
 [[bin]]
 name = "rballistics-cli"
