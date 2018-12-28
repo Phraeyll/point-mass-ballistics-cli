@@ -87,9 +87,9 @@ fn main() {
             "{:>12.0} {:>12.2} {} {:>10.2} {} {:>15.2} {:>14.2} {:>8.2} {:>8.3}",
             distance,
             elevation.abs(),
-            adjust(&Elevation(elevation)),
+            Elevation(elevation).adjustment(),
             windage.abs(),
-            adjust(&Windage(windage)),
+            Windage(windage).adjustment(),
             velocity,
             energy,
             moa,
@@ -104,27 +104,29 @@ pub enum Adjustment<'n> {
     Windage(&'n Numeric),
 }
 
-fn adjust(measurement: &Adjustment) -> String {
-    String::from(match measurement {
-        Elevation(m) => {
-            if relative_eq!(**m, 0.0, epsilon = 0.005) {
-                " "
-            } else if m.is_sign_positive() {
-                "D"
-            } else {
-                "U"
+impl Adjustment<'_> {
+    fn adjustment(&self) -> String {
+        String::from(match self {
+            Elevation(m) => {
+                if relative_eq!(**m, 0.0, epsilon = 0.005) {
+                    " "
+                } else if m.is_sign_positive() {
+                    "D"
+                } else {
+                    "U"
+                }
             }
-        }
-        Windage(m) => {
-            if relative_eq!(**m, 0.0, epsilon = 0.005) {
-                " "
-            } else if m.is_sign_positive() {
-                "L"
-            } else {
-                "R"
+            Windage(m) => {
+                if relative_eq!(**m, 0.0, epsilon = 0.005) {
+                    " "
+                } else if m.is_sign_positive() {
+                    "L"
+                } else {
+                    "R"
+                }
             }
-        }
-    })
+        })
+    }
 }
 
 fn usage(name: &str) {
