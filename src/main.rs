@@ -104,8 +104,8 @@ pub enum Adjustment<'n> {
     Windage(&'n Numeric),
 }
 
-fn adjust(measurement: &Adjustment) -> &'static str {
-    match measurement {
+fn adjust(measurement: &Adjustment) -> String {
+    String::from(match measurement {
         Elevation(m) => {
             if relative_eq!(**m, 0.0, epsilon = 0.005) {
                 " "
@@ -124,7 +124,7 @@ fn adjust(measurement: &Adjustment) -> &'static str {
                 "R"
             }
         }
-    }
+    })
 }
 
 fn usage(name: &str) {
