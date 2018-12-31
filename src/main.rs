@@ -1,5 +1,5 @@
 use approx::relative_eq;
-use rballistics_flat::{model::point_mass::params::*, simulator::*, Numeric};
+use rballistics_flat::{model::point_mass::params, simulator::*, Numeric};
 
 use std::env;
 
@@ -47,17 +47,17 @@ fn main() {
         _ => BallisticCoefficient::G1(bc),
     };
 
-    let projectile = Projectile::new(weight, caliber, bc_enum, initial_velocity);
-    let scope = Scope::new(scope_height);
-    let zero_conditions = SimulatorConditions::new(
-        Wind::new(0.0, 0.0),
-        Atmosphere::new(temperature, pressure, humidity),
-        Conditions::new(0.0, lattitude, azimuth, None),
+    let projectile = params::Projectile::new(weight, caliber, bc_enum, initial_velocity);
+    let scope = params::Scope::new(scope_height);
+    let zero_conditions = params::Conditions::new(
+        params::Wind::new(0.0, 0.0),
+        params::Atmosphere::new(temperature, pressure, humidity),
+        params::Other::new(0.0, lattitude, azimuth, None),
     );
-    let solve_conditions = SimulatorConditions::new(
-        Wind::new(wind_velocity, wind_angle),
-        Atmosphere::new(temperature, pressure, humidity),
-        Conditions::new(los_angle, lattitude, azimuth, None),
+    let solve_conditions = params::Conditions::new(
+        params::Wind::new(wind_velocity, wind_angle),
+        params::Atmosphere::new(temperature, pressure, humidity),
+        params::Other::new(los_angle, lattitude, azimuth, None),
     );
     let simulation = Simulator::new(
         &projectile,
@@ -73,18 +73,20 @@ fn main() {
     // println!("{:#?}", simulation.first_zero());
 
     println!(
-        "{:>12} {:>14} {:>12} {:>15} {:>14} {:>8} {:>8}",
+        "{:>12} {:>14} {:>12} {:>15} {:>13} {:>8} {:>8}",
         "Distance(yd)",
         "Elevation(in)",
         "Windage(in)",
         "Velocity(ft/s)",
-        "Energy(ftlbs)",
+        "Energy(ftlb)",
         "MOA",
-        "Time(s)"
+        "Time(s)",
     );
-    for (distance, (elevation, windage, velocity, energy, moa, time)) in results.0.iter() {
+    for (distance, (elevation, windage, velocity, energy, moa, time)) in
+        results.0.iter()
+    {
         println!(
-            "{:>12.0} {:>12.2} {} {:>10.2} {} {:>15.2} {:>14.2} {:>8.2} {:>8.3}",
+            "{:>12.0} {:>12.2} {} {:>10.2} {} {:>15.2} {:>13.2} {:>8.2} {:>8.3}",
             distance,
             elevation.abs(),
             Elevation(elevation).adjustment(),
