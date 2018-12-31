@@ -27,9 +27,10 @@ fn main() {
     let range: Numeric = argv[14].parse().unwrap(); // range in yd
     let step: Numeric = argv[15].parse().unwrap(); // step output in yd
     let step_factor: Numeric = argv[16].parse().unwrap(); // factor to determine step size
-    let lattitude: Numeric = argv[17].parse().unwrap();
-    let azimuth: Numeric = argv[18].parse().unwrap();
-    // let gravity: Numeric = argv[19].parse().unwrap();
+    let lattitude: Numeric = argv[17].parse().unwrap(); // Current lattitude in degrees
+    let azimuth: Numeric = argv[18].parse().unwrap(); // Bearing relative to north (0 degrees north, 90 east, etc.)
+    let offset: Numeric = argv[19].parse().unwrap(); // Angle offset in MOA for testing
+    // let gravity: Numeric = argv[20].parse().unwrap();
 
     let time_step: Numeric = 1.0 / (step_factor * initial_velocity);
 
@@ -66,7 +67,7 @@ fn main() {
         time_step,
     );
 
-    let results = simulation.drop_table(zero_distance, step, range);
+    let results = simulation.drop_table(zero_distance, step, range, offset);
 
     //simulation.zero(zero_distance, &zero_conditions, &drop_table_conditions);
     // println!("{:#?}", simulation.first_zero());
