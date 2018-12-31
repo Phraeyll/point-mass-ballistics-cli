@@ -1,4 +1,3 @@
-use approx::relative_eq;
 use rballistics_flat::{model::point_mass::params, simulator::*, Numeric};
 
 use std::env;
@@ -108,7 +107,7 @@ impl Adjustment<'_> {
     fn adjustment(&self) -> String {
         String::from(match self {
             Elevation(m) => {
-                if relative_eq!(**m, 0.0, epsilon = 0.005) {
+                if **m >= -0.001 && **m <= 0.001 {
                     " "
                 } else if m.is_sign_positive() {
                     "D"
@@ -117,7 +116,7 @@ impl Adjustment<'_> {
                 }
             }
             Windage(m) => {
-                if relative_eq!(**m, 0.0, epsilon = 0.005) {
+                if **m >= -0.001 && **m <= 0.001 {
                     " "
                 } else if m.is_sign_positive() {
                     "L"
