@@ -140,7 +140,6 @@ dependencies = [
 name = "rballistics-flat"
 version = "0.0.1"
 dependencies = [
- "approx 0.3.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "nalgebra 0.16.11 (registry+https://github.com/rust-lang/crates.io-index)",
  "ordered-float 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
