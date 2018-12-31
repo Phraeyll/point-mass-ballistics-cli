@@ -82,9 +82,7 @@ fn main() {
         "MOA",
         "Time(s)",
     );
-    for (distance, (elevation, windage, velocity, energy, moa, time)) in
-        results.0.iter()
-    {
+    for (distance, (elevation, windage, velocity, energy, moa, time)) in results.0.iter() {
         println!(
             "{:>12.0} {:>12.2} {} {:>10.2} {} {:>15.2} {:>13.2} {:>8.2} {:>8.3}",
             distance,
