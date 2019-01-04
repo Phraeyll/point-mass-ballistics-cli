@@ -134,12 +134,13 @@ fn usage(name: &str) {
         r#"
         Usage: {}
         velocity (ft/s)
-        launch_angle (degrees)
+        line_of_sight (degrees)
         scope_height (inches)
         zero_range (yards)
         weight (grains)
         caliber (inches)
         bc
+        bc type
         wind_velocity (ft/s)
         wind_angle (degrees)
         temp (F)
@@ -148,6 +149,9 @@ fn usage(name: &str) {
         range (yards)
         step (yards)
         timestep_factor
+        lattitude
+        azimuth
+        offset (moa)
         "#,
         name
     );
