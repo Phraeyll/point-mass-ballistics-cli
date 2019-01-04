@@ -106,9 +106,10 @@ pub enum Adjustment<'n> {
 
 impl Adjustment<'_> {
     fn adjustment(&self) -> String {
+        const MAX: Numeric = 0.001;
         String::from(match self {
-            Elevation(m) => {
-                if **m >= -0.001 && **m <= 0.001 {
+            Elevation(&m) => {
+                if m > -MAX && m < MAX {
                     " "
                 } else if m.is_sign_positive() {
                     "D"
@@ -116,8 +117,8 @@ impl Adjustment<'_> {
                     "U"
                 }
             }
-            Windage(m) => {
-                if **m >= -0.001 && **m <= 0.001 {
+            Windage(&m) => {
+                if m > -MAX && m < MAX {
                     " "
                 } else if m.is_sign_positive() {
                     "L"
