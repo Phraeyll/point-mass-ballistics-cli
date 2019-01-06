@@ -24,8 +24,8 @@ fn main() {
     let temperature: Numeric = argv[11].parse().unwrap(); // F
     let pressure: Numeric = argv[12].parse().unwrap(); // inHg
     let humidity: Numeric = argv[13].parse().unwrap(); // dimensionless, percentage
-    let range: Numeric = argv[14].parse().unwrap(); // range in yd
-    let step: Numeric = argv[15].parse().unwrap(); // step output in yd
+    let range: u32 = argv[14].parse().unwrap(); // range in yd
+    let step: u32 = argv[15].parse().unwrap(); // step output in yd
     let step_factor: Numeric = argv[16].parse().unwrap(); // factor to determine step size
     let lattitude: Numeric = argv[17].parse().unwrap(); // Current lattitude in degrees
     let azimuth: Numeric = argv[18].parse().unwrap(); // Bearing relative to north (0 degrees north, 90 east, etc.)
