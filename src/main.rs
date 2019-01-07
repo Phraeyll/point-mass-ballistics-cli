@@ -5,7 +5,7 @@ use std::env;
 fn main() {
     let argv: Vec<String> = env::args().collect();
 
-    if argv.len() <= 18 {
+    if argv.len() <= 19 {
         eprintln!("error: wrong number of args");
         usage(&argv[0]);
         return;
