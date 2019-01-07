@@ -30,7 +30,7 @@ fn main() {
     let lattitude: Numeric = argv[17].parse().unwrap(); // Current lattitude in degrees
     let azimuth: Numeric = argv[18].parse().unwrap(); // Bearing relative to north (0 degrees north, 90 east, etc.)
     let offset: Numeric = argv[19].parse().unwrap(); // Angle offset in MOA for testing
-    // let gravity: Numeric = argv[20].parse().unwrap();
+                                                     // let gravity: Numeric = argv[20].parse().unwrap();
 
     let time_step: Numeric = 1.0 / (step_factor * initial_velocity);
 
@@ -105,9 +105,10 @@ pub enum Adjustment<'n> {
 }
 
 impl Adjustment<'_> {
-    fn adjustment(&self) -> String {
+    // I have no idea if this should return static str or String
+    fn adjustment(&self) -> &'static str {
         const MAX: Numeric = 0.001;
-        String::from(match self {
+        match self {
             Elevation(&m) => {
                 if m > -MAX && m < MAX {
                     " "
@@ -126,7 +127,7 @@ impl Adjustment<'_> {
                     "R"
                 }
             }
-        })
+        }
     }
 }
 
