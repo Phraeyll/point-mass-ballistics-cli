@@ -105,26 +105,25 @@ pub enum Adjustment<'n> {
 }
 
 impl Adjustment<'_> {
-    // I have no idea if this should return static str or String
-    fn adjustment(&self) -> &'static str {
+    fn adjustment(&self) -> char {
         const MAX: Numeric = 0.001;
         match self {
             Elevation(&m) => {
                 if m > -MAX && m < MAX {
-                    " "
+                    ' '
                 } else if m.is_sign_positive() {
-                    "D"
+                    'D'
                 } else {
-                    "U"
+                    'U'
                 }
             }
             Windage(&m) => {
                 if m > -MAX && m < MAX {
-                    " "
+                    ' '
                 } else if m.is_sign_positive() {
-                    "L"
+                    'L'
                 } else {
-                    "R"
+                    'R'
                 }
             }
         }
