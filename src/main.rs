@@ -1,4 +1,4 @@
-use rballistics_flat::{model::point_mass::params, simulator::*, Numeric};
+use rballistics_flat::{model::point_mass::*, simulator::*, Numeric};
 
 use std::env;
 
@@ -47,17 +47,17 @@ fn main() {
         _ => BallisticCoefficient::G1(bc),
     };
 
-    let projectile = params::Projectile::new(weight, caliber, bc_enum, initial_velocity);
-    let scope = params::Scope::new(scope_height);
-    let zero_conditions = params::Conditions::new(
-        params::Wind::new(0.0, 0.0),
-        params::Atmosphere::new(temperature, pressure, humidity),
-        params::Other::new(0.0, lattitude, azimuth, None),
+    let projectile = Projectile::new(weight, caliber, bc_enum, initial_velocity);
+    let scope = Scope::new(scope_height);
+    let zero_conditions = Conditions::new(
+        Wind::new(0.0, 0.0),
+        Atmosphere::new(temperature, pressure, humidity),
+        Other::new(0.0, lattitude, azimuth, None),
     );
-    let solve_conditions = params::Conditions::new(
-        params::Wind::new(wind_velocity, wind_angle),
-        params::Atmosphere::new(temperature, pressure, humidity),
-        params::Other::new(los_angle, lattitude, azimuth, None),
+    let solve_conditions = Conditions::new(
+        Wind::new(wind_velocity, wind_angle),
+        Atmosphere::new(temperature, pressure, humidity),
+        Other::new(los_angle, lattitude, azimuth, None),
     );
     let simulation = Simulator::new(
         &projectile,
