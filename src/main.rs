@@ -1,4 +1,7 @@
-use rballistics_flat::{model::point_mass::*, simulator::*, Numeric};
+use rballistics_flat::{
+    model::point_mass::{simulator::*, *},
+    Numeric,
+};
 
 use std::env;
 
