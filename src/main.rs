@@ -62,15 +62,16 @@ fn main() {
         Atmosphere::new(temperature, pressure, humidity),
         Other::new(los_angle, lattitude, azimuth, None),
     );
-    let simulation = Simulator::new(
+    let simulation = SimulationBuilder::new(
         &projectile,
         &scope,
         &zero_conditions,
         &solve_conditions,
+        zero_distance,
         time_step,
     );
 
-    let results = simulation.drop_table(zero_distance, step, range, offset);
+    let results = simulation.drop_table(step, range, offset);
 
     //simulation.zero(zero_distance, &zero_conditions, &drop_table_conditions);
     // println!("{:#?}", simulation.first_zero());
