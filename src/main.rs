@@ -8,7 +8,7 @@ use std::env;
 fn main() {
     let argv: Vec<String> = env::args().collect();
 
-    if argv.len() <= 19 {
+    if argv.len() <= 20 {
         eprintln!("error: wrong number of args");
         usage(&argv[0]);
         return;
@@ -32,8 +32,8 @@ fn main() {
     let step_factor: Numeric = argv[16].parse().unwrap(); // factor to determine step size
     let lattitude: Numeric = argv[17].parse().unwrap(); // Current lattitude in degrees
     let azimuth: Numeric = argv[18].parse().unwrap(); // Bearing relative to north (0 degrees north, 90 east, etc.)
-    let offset: Numeric = argv[19].parse().unwrap(); // Angle offset in MOA for testing
-                                                     // let gravity: Numeric = argv[20].parse().unwrap();
+    let tolerance: Numeric = argv[19].parse().unwrap(); // Angle offset in MOA for testing
+    let offset: Numeric = argv[20].parse().unwrap(); // Angle offset in MOA for testing
 
     let time_step: Numeric = 1.0 / (step_factor * initial_velocity);
 
@@ -70,7 +70,7 @@ fn main() {
         zero_distance,
         time_step,
     );
-    let simulation = builder.solution_simulation(offset);
+    let simulation = builder.solution_simulation(tolerance, offset);
 
     let table = simulation.drop_table(step, range);
 
@@ -165,6 +165,7 @@ fn usage(name: &str) {
         timestep_factor
         lattitude
         azimuth
+        tolerance (inches)
         offset (moa)
         "#,
         name
