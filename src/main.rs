@@ -52,15 +52,24 @@ fn main() {
 
     let projectile = Projectile::new(weight, caliber, bc_enum, initial_velocity);
     let scope = Scope::new(scope_height);
+
+    let atmosphere_both = Atmosphere::new(temperature, pressure, humidity);
+
+    let wind = Wind::new(wind_velocity, wind_angle);
+    let zero_wind = Wind::new(0.0, 0.0);
+
+    let other = Other::new(los_angle, lattitude, azimuth, None);
+    let zero_other = Other::new(0.0, lattitude, azimuth, None);
+
     let zero_conditions = Conditions::new(
-        Wind::new(0.0, 0.0),
-        Atmosphere::new(temperature, pressure, humidity),
-        Other::new(0.0, lattitude, azimuth, None),
+        &zero_wind,
+        &atmosphere_both,
+        &zero_other,
     );
     let solve_conditions = Conditions::new(
-        Wind::new(wind_velocity, wind_angle),
-        Atmosphere::new(temperature, pressure, humidity),
-        Other::new(los_angle, lattitude, azimuth, None),
+        &wind,
+        &atmosphere_both,
+        &other,
     );
     let builder = SimulationBuilder::new(
         &projectile,
