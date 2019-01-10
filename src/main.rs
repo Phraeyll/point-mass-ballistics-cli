@@ -1,5 +1,5 @@
 use rballistics_flat::{
-    model::point_mass::{simulator::*, *},
+    model::point_mass::{simulation::*, *},
     Numeric,
 };
 
