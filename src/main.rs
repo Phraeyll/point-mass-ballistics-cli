@@ -62,16 +62,8 @@ fn main() {
     let other = Other::new(los_angle, lattitude, azimuth, None);
     let zero_other = Other::new(0.0, lattitude, azimuth, None);
 
-    let zero_conditions = Conditions::new(
-        &zero_wind,
-        &atmosphere_both,
-        &zero_other,
-    );
-    let solve_conditions = Conditions::new(
-        &wind,
-        &atmosphere_both,
-        &other,
-    );
+    let zero_conditions = Conditions::new(&zero_wind, &atmosphere_both, &zero_other);
+    let solve_conditions = Conditions::new(&wind, &atmosphere_both, &other);
     let builder = SimulationBuilder::new(
         &projectile,
         &scope,
