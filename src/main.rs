@@ -1,5 +1,5 @@
 use rballistics_flat::{
-    model::point_mass::{simulation::*, *},
+    model::point_mass::{builder::*, iter::Output, *},
     Numeric,
 };
 
@@ -62,7 +62,7 @@ fn main() {
         Atmosphere::new(temperature, pressure, humidity),
         Other::new(los_angle, lattitude, azimuth, None),
     );
-    let simulation = SimulationBuilder::new(
+    let builder = SimulationBuilder::new(
         &projectile,
         &scope,
         &zero_conditions,
@@ -70,8 +70,9 @@ fn main() {
         zero_distance,
         time_step,
     );
+    let simulation = builder.solution_simulation(offset);
 
-    let results = simulation.drop_table(step, range, offset);
+    let table = simulation.drop_table(step, range);
 
     //simulation.zero(zero_distance, &zero_conditions, &drop_table_conditions);
     // println!("{:#?}", simulation.first_zero());
@@ -86,14 +87,22 @@ fn main() {
         "MOA",
         "Time(s)",
     );
-    for (distance, (elevation, windage, velocity, energy, moa, time)) in results.iter() {
+    for (distance, p) in table.iter() {
+        let (elevation, windage, velocity, energy, moa, time) = (
+            p.elevation(),
+            p.windage(),
+            p.velocity(),
+            p.energy(),
+            p.moa(),
+            p.time(),
+        );
         println!(
             "{:>12.0} {:>12.2} {} {:>10.2} {} {:>15.2} {:>13.2} {:>8.2} {:>8.3}",
             distance,
             elevation.abs(),
-            Elevation(elevation).adjustment(),
+            Elevation(&elevation).adjustment(),
             windage.abs(),
-            Windage(windage).adjustment(),
+            Windage(&windage).adjustment(),
             velocity,
             energy,
             moa,
