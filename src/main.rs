@@ -100,9 +100,9 @@ fn main() {
             "{:>12.0} {:>12.2} {} {:>10.2} {} {:>15.2} {:>13.2} {:>8.2} {:>8.3}",
             distance,
             elevation.abs(),
-            Elevation(&elevation).adjustment(),
+            Elevation(&elevation).adjustment(tolerance),
             windage.abs(),
-            Windage(&windage).adjustment(),
+            Windage(&windage).adjustment(tolerance),
             velocity,
             energy,
             moa,
@@ -118,11 +118,10 @@ pub enum Adjustment<'n> {
 }
 
 impl Adjustment<'_> {
-    fn adjustment(&self) -> char {
-        const MAX: Numeric = 0.001;
+    fn adjustment(&self, tolerance: Numeric) -> char {
         match self {
             Elevation(&m) => {
-                if m > -MAX && m < MAX {
+                if m > -tolerance && m < tolerance {
                     ' '
                 } else if m.is_sign_positive() {
                     'D'
@@ -131,7 +130,7 @@ impl Adjustment<'_> {
                 }
             }
             Windage(&m) => {
-                if m > -MAX && m < MAX {
+                if m > -tolerance && m < tolerance {
                     ' '
                 } else if m.is_sign_positive() {
                     'L'
