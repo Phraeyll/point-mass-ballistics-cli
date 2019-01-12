@@ -54,22 +54,22 @@ fn main() {
         _ => BallisticCoefficient::G1(bc),
     };
 
-    let projectile = Projectile::new(weight, caliber, bc_enum, initial_velocity);
-    let scope = Scope::new(scope_height);
+    let projectile_both = Projectile::new(weight, caliber, bc_enum, initial_velocity);
+    let scope_both = Scope::new(scope_height);
 
     let atmosphere_both = Atmosphere::new(temperature, pressure, humidity);
 
-    let wind = Wind::new(wind_velocity, wind_angle);
-    let zero_wind = Wind::new(0.0, 0.0);
+    let wind_solve = Wind::new(wind_velocity, wind_angle);
+    let wind_zero = Wind::new(0.0, 0.0);
 
-    let other = Other::new(los_angle, lattitude, azimuth, None);
-    let zero_other = Other::new(0.0, lattitude, azimuth, None);
+    let other_solve = Other::new(los_angle, lattitude, azimuth, None);
+    let other_zero = Other::new(0.0, lattitude, azimuth, None);
 
-    let zero_conditions = Conditions::new(&zero_wind, &atmosphere_both, &zero_other);
-    let solve_conditions = Conditions::new(&wind, &atmosphere_both, &other);
+    let zero_conditions = Conditions::new(&wind_zero, &atmosphere_both, &other_zero);
+    let solve_conditions = Conditions::new(&wind_solve, &atmosphere_both, &other_solve);
     let builder = SimulationBuilder::new(
-        &projectile,
-        &scope,
+        &projectile_both,
+        &scope_both,
         &zero_conditions,
         &solve_conditions,
         time_step,
