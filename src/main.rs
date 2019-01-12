@@ -8,7 +8,7 @@ use std::env;
 fn main() {
     let argv: Vec<String> = env::args().collect();
 
-    if argv.len() <= 21 {
+    if argv.len() <= 23 {
         eprintln!("error: wrong number of args");
         usage(&argv[0]);
         return;
@@ -17,24 +17,26 @@ fn main() {
     let initial_velocity: Numeric = argv[1].parse().unwrap(); // ft/s
     let los_angle: Numeric = argv[2].parse().unwrap(); // degrees
     let scope_height: Numeric = argv[3].parse().unwrap(); // inches
-    let zero_distance: Numeric = argv[4].parse().unwrap(); // yards
-    let weight: Numeric = argv[5].parse().unwrap(); // grains
-    let caliber: Numeric = argv[6].parse().unwrap(); // inches
-    let bc: Numeric = argv[7].parse().unwrap(); // dimensionless
-    let drag_table: &str = &argv[8]; // Desired drag table (G1, G7, etc.)
-    let wind_velocity: Numeric = argv[9].parse().unwrap(); // m/h
-    let wind_angle: Numeric = argv[10].parse().unwrap(); // degrees
-    let temperature: Numeric = argv[11].parse().unwrap(); // F
-    let pressure: Numeric = argv[12].parse().unwrap(); // inHg
-    let humidity: Numeric = argv[13].parse().unwrap(); // dimensionless, percentage
-    let range: u32 = argv[14].parse().unwrap(); // range in yd
+    let weight: Numeric = argv[4].parse().unwrap(); // grains
+    let caliber: Numeric = argv[5].parse().unwrap(); // inches
+    let bc: Numeric = argv[6].parse().unwrap(); // dimensionless
+    let drag_table: &str = &argv[7]; // Desired drag table (G1, G7, etc.)
+    let wind_velocity: Numeric = argv[8].parse().unwrap(); // m/h
+    let wind_angle: Numeric = argv[9].parse().unwrap(); // degrees
+    let temperature: Numeric = argv[10].parse().unwrap(); // F
+    let pressure: Numeric = argv[11].parse().unwrap(); // inHg
+    let humidity: Numeric = argv[12].parse().unwrap(); // dimensionless, percentage
+    let range_start: u32 = argv[13].parse().unwrap(); // range start in yd
+    let range_end: u32 = argv[14].parse().unwrap(); // range end in yd
     let step: u32 = argv[15].parse().unwrap(); // step output in yd
     let step_factor: Numeric = argv[16].parse().unwrap(); // factor to determine step size
     let lattitude: Numeric = argv[17].parse().unwrap(); // Current lattitude in degrees
     let azimuth: Numeric = argv[18].parse().unwrap(); // Bearing relative to north (0 degrees north, 90 east, etc.)
-    let tolerance: Numeric = argv[19].parse().unwrap(); // Tolerance in inches for zeroing and LDUR adjustments
-    let zero: Numeric = argv[20].parse().unwrap(); // Number to 'zero' for
-    let offset: Numeric = argv[21].parse().unwrap(); // Angle offset in MOA for testing
+    let zero_distance: Numeric = argv[19].parse().unwrap(); // yards
+    let zero_offset: Numeric = argv[20].parse().unwrap(); // Number in inches to 'zero' for
+    let zero_tolerance: Numeric = argv[21].parse().unwrap(); // Tolerance in inches for zeroing
+    let angle_offset: Numeric = argv[22].parse().unwrap(); // Angle offset in MOA for drop output
+    let output_tolerance: Numeric = argv[23].parse().unwrap(); // Tolerance for LRDU / PBR calculations
 
     let time_step: Numeric = 1.0 / (step_factor * initial_velocity);
 
@@ -69,48 +71,62 @@ fn main() {
         &scope,
         &zero_conditions,
         &solve_conditions,
-        zero_distance,
         time_step,
     );
-    let simulation = builder.solution_simulation(tolerance, zero, offset);
+    let simulation = builder.solve_for(zero_distance, zero_offset, zero_tolerance, angle_offset);
 
-    let table = simulation.drop_table(step, range);
+    let table = simulation.drop_table(step, range_start, range_end);
 
     //simulation.zero(zero_distance, &zero_conditions, &drop_table_conditions);
     // println!("{:#?}", simulation.first_zero());
 
+    // println!("+--------------+---------+---------------+-------------+-----------+------------+----------------+--------------+---------+");
     println!(
-        "{:>12} {:>14} {:>12} {:>15} {:>13} {:>8} {:>8}",
+        "{:>12} {:>7} {:>13} {:>11} {:>9} {:>9} {:>14} {:>12} {:>7}",
+        // "| {:>12} | {:>7} | {:>13} | {:>11} | {:>9} | {:>9} | {:>14} | {:>12} | {:>7} |",
         "Distance(yd)",
+        "MOA",
         "Elevation(in)",
         "Windage(in)",
+        "Vertical",
+        "Horizontal",
         "Velocity(ft/s)",
         "Energy(ftlb)",
-        "MOA",
         "Time(s)",
     );
     for (distance, p) in table.iter() {
-        let (elevation, windage, velocity, energy, moa, time) = (
+        let (elevation, windage, velocity, energy, moa, vertical_moa, horizontal_moa, time) = (
             p.elevation(),
             p.windage(),
             p.velocity(),
             p.energy(),
             p.moa(),
+            p.vertical_moa(),
+            p.horizontal_moa(),
             p.time(),
         );
+        let vertical = Elevation(&elevation).adjustment(output_tolerance);
+        let horizontal = Windage(&windage).adjustment(output_tolerance);
+        // println!("|--------------+---------+---------------+-------------+-----------+------------+----------------+--------------+---------|");
         println!(
-            "{:>12.0} {:>12.2} {} {:>10.2} {} {:>15.2} {:>13.2} {:>8.2} {:>8.3}",
+            // "| {:>12.0} | {:>7.2} | {:>11.2} {} | {:>9.2} {} | {:>7.2} {} | {:>8.3} {} | {:>14.2} | {:>12.2} | {:>7.3} |",
+            "{:>12.0} {:>7.2} {:>11.2} {} {:>9.2} {} {:>7.2} {} {:>8.3} {} {:>14.2} {:>12.2} {:>7.3}",
             distance,
+            moa,
             elevation.abs(),
-            Elevation(&elevation).adjustment(tolerance),
+            vertical,
             windage.abs(),
-            Windage(&windage).adjustment(tolerance),
+            horizontal,
+            vertical_moa,
+            vertical,
+            horizontal_moa,
+            horizontal,
             velocity,
             energy,
-            moa,
             time,
         );
     }
+    // println!("+--------------+---------+---------------+-------------+-----------+------------+----------------+--------------+---------+");
 }
 
 pub use self::Adjustment::*;
@@ -120,11 +136,12 @@ pub enum Adjustment<'n> {
 }
 
 impl Adjustment<'_> {
-    fn adjustment(&self, tolerance: Numeric) -> char {
+    fn adjustment(&self, output_tolerance: Numeric) -> char {
+        let tolerance = output_tolerance;
         match self {
             Elevation(&m) => {
                 if m > -tolerance && m < tolerance {
-                    ' '
+                    '*'
                 } else if m.is_sign_positive() {
                     'D'
                 } else {
@@ -133,7 +150,7 @@ impl Adjustment<'_> {
             }
             Windage(&m) => {
                 if m > -tolerance && m < tolerance {
-                    ' '
+                    '*'
                 } else if m.is_sign_positive() {
                     'L'
                 } else {
@@ -151,7 +168,6 @@ fn usage(name: &str) {
         velocity (ft/s)
         line_of_sight (degrees)
         scope_height (inches)
-        zero_range (yards)
         weight (grains)
         caliber (inches)
         bc
@@ -161,14 +177,17 @@ fn usage(name: &str) {
         temp (F)
         pressure (inHg)
         humidity (0-1)
-        range (yards)
+        range_start (yards)
+        range_end (yards)
         step (yards)
         timestep_factor
         lattitude
         azimuth
-        tolerance (inches)
-        zero
-        offset (moa)
+        zero_distance (yards)
+        zero_offset (inches)
+        zero_tolerance (inches)
+        angle_offset (moa)
+        output_tolerance (inches)
         "#,
         name
     );
