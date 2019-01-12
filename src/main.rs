@@ -75,7 +75,7 @@ fn main() {
     );
     let simulation = builder.solve_for(zero_distance, zero_offset, zero_tolerance, angle_offset);
 
-    let table = simulation.drop_table(step, range_start, range_end);
+    let table = simulation.table(step, range_start, range_end);
 
     //simulation.zero(zero_distance, &zero_conditions, &drop_table_conditions);
     // println!("{:#?}", simulation.first_zero());
