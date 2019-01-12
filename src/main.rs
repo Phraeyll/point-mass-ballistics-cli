@@ -75,6 +75,7 @@ fn main() {
         time_step,
     );
     let simulation = builder.solve_for(zero_distance, zero_offset, zero_tolerance, pitch_offset, yaw_offset);
+    // let simulation = builder.flat();
 
     let table = simulation.table(step, range_start, range_end);
 
