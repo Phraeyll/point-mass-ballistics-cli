@@ -8,7 +8,7 @@ use std::env;
 fn main() {
     let argv: Vec<String> = env::args().collect();
 
-    if argv.len() <= 23 {
+    if argv.len() <= 24 {
         eprintln!("error: wrong number of args");
         usage(&argv[0]);
         return;
@@ -35,8 +35,9 @@ fn main() {
     let zero_distance: Numeric = argv[19].parse().unwrap(); // yards
     let zero_offset: Numeric = argv[20].parse().unwrap(); // Number in inches to 'zero' for
     let zero_tolerance: Numeric = argv[21].parse().unwrap(); // Tolerance in inches for zeroing
-    let angle_offset: Numeric = argv[22].parse().unwrap(); // Angle offset in MOA for drop output
-    let output_tolerance: Numeric = argv[23].parse().unwrap(); // Tolerance for LRDU / PBR calculations
+    let pitch_offset: Numeric = argv[22].parse().unwrap(); // Pitch offset in MOA for drop output
+    let yaw_offset: Numeric = argv[23].parse().unwrap(); // Yaw offset in MOA for drop output
+    let output_tolerance: Numeric = argv[24].parse().unwrap(); // Tolerance for LRDU / PBR calculations
 
     let time_step: Numeric = 1.0 / (step_factor * initial_velocity);
 
@@ -73,7 +74,7 @@ fn main() {
         &solve_conditions,
         time_step,
     );
-    let simulation = builder.solve_for(zero_distance, zero_offset, zero_tolerance, angle_offset);
+    let simulation = builder.solve_for(zero_distance, zero_offset, zero_tolerance, pitch_offset, yaw_offset);
 
     let table = simulation.table(step, range_start, range_end);
 
@@ -186,7 +187,8 @@ fn usage(name: &str) {
         zero_distance (yards)
         zero_offset (inches)
         zero_tolerance (inches)
-        angle_offset (moa)
+        pitch_offset (moa)
+        yaw_offset (moa)
         output_tolerance (inches)
         "#,
         name
