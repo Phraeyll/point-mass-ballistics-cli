@@ -1,135 +1,20 @@
-use clap::{App, Arg, ArgMatches};
+use clap::{App, Arg};
 use rballistics_flat::{
     model::point_mass::{builder::*, iter::Output, *},
     Numeric,
 };
 
-// use std::env;
-
 fn main() {
-    let app = getopts();
+    let app = cli().get_matches();
     let pretty = app.is_present("pretty");
-    let initial_velocity: Numeric = app
-        .value_of("velocity")
-        .expect("no velocity")
-        .parse()
-        .expect("velocity invalid");
-    let weight: Numeric = app
-        .value_of("grains")
-        .expect("missing grains")
-        .parse()
-        .expect("grains invalid");
-    let caliber: Numeric = app
-        .value_of("caliber")
-        .expect("missing caliber")
-        .parse()
-        .expect("");
-    let bc: Numeric = app
-        .value_of("bc")
-        .expect("missing bc")
-        .parse()
-        .expect("bc invalid");
-    let drag_table: &str = app.value_of("bc-type").expect("missing bc-type");
-    let wind_velocity: Numeric = app
-        .value_of("wind-speed")
-        .expect("missing wind-speed")
-        .parse()
-        .expect("wind-speed invalid");
-    let wind_angle: Numeric = app
-        .value_of("wind-angle")
-        .expect("missing wind-angle")
-        .parse()
-        .expect("wind-angle invalid");
-    let temperature: Numeric = app
-        .value_of("temperature")
-        .expect("missing temperature")
-        .parse()
-        .expect("temperature invalid");
-    let pressure: Numeric = app
-        .value_of("pressure")
-        .expect("missing pressure")
-        .parse()
-        .expect("pressure invalid");
-    let humidity: Numeric = app
-        .value_of("humidity")
-        .expect("missing humidity")
-        .parse()
-        .expect("humidity invalid");
-    let lattitude: Numeric = app
-        .value_of("lattitude")
-        .expect("missing lattitude")
-        .parse()
-        .expect("lattitude invalid");
-    let azimuth: Numeric = app
-        .value_of("bearing")
-        .expect("missing bearing")
-        .parse()
-        .expect("bearing invalid");
-    let los_angle: Numeric = app
-        .value_of("shot-angle")
-        .expect("missing shot-angle")
-        .parse()
-        .expect("shot-angle invalid");
-    let scope_height: Numeric = app
-        .value_of("scope-height")
-        .expect("missing scope-height")
-        .parse()
-        .expect("");
-    let zero_distance: Numeric = app
-        .value_of("zero-distance")
-        .expect("missing zero-distance")
-        .parse()
-        .expect("zero-distance invalid");
-    let zero_offset: Numeric = app
-        .value_of("zero-offset")
-        .expect("missing zero-offset")
-        .parse()
-        .expect("zero-offset invalid");
-    let zero_tolerance: Numeric = app
-        .value_of("zero-tolerance")
-        .expect("missing zero-tolerance")
-        .parse()
-        .expect("zero-tolerance invalid");
-    let range_start: u32 = app
-        .value_of("table-start")
-        .expect("missing table-start")
-        .parse()
-        .expect("table-start invalid");
-    let range_end: u32 = app
-        .value_of("table-end")
-        .expect("missing table-end")
-        .parse()
-        .expect("table-end invalid");
-    let step: u32 = app
-        .value_of("table-step")
-        .expect("no table-step")
-        .parse()
-        .expect("table-step invalid");
-    let output_tolerance: Numeric = app
-        .value_of("table-tolerance")
-        .expect("")
-        .parse()
-        .expect("table-tolerance invalid");
-    let step_factor: Numeric = app
-        .value_of("factor")
-        .expect("missing factor")
-        .parse()
-        .expect("factor invalid");
-    let pitch_offset: Numeric = app
-        .value_of("pitch-offset")
-        .expect("missing pitch-offset")
-        .parse()
-        .expect("pitch-offset invalid");
-    let yaw_offset: Numeric = app
-        .value_of("yaw-offset")
-        .expect("missing yaw-offset")
-        .parse()
-        .expect("yaw-offset invalid");
-
-    let time_step: Numeric = 1.0 / (step_factor * initial_velocity);
+    let initial_velocity = app.value_of("velocity").unwrap().parse().unwrap();
+    let factor: Numeric = app.value_of("factor").unwrap().parse().unwrap();
+    let time_step: Numeric =
+        1.0 /  (factor * initial_velocity);
 
     // Ugly - this needs to be handle in library, parsing bc as "G7(0.305)" for example
-    let bc_enum = match drag_table {
+    let bc = app.value_of("bc").unwrap().parse().unwrap();
+    let bc_enum = match app.value_of("bc-type").unwrap() {
         "G1" => BallisticCoefficient::G1(bc),
         "G2" => BallisticCoefficient::G2(bc),
         "G5" => BallisticCoefficient::G5(bc),
@@ -141,15 +26,35 @@ fn main() {
         _ => BallisticCoefficient::G1(bc),
     };
 
-    let projectile_both = Projectile::new(weight, caliber, bc_enum, initial_velocity);
-    let scope_both = Scope::new(scope_height);
+    let projectile_both = Projectile::new(
+        app.value_of("grains").unwrap().parse().unwrap(),
+        app.value_of("caliber").unwrap().parse().unwrap(),
+        bc_enum,
+        initial_velocity,
+    );
 
-    let atmosphere_both = Atmosphere::new(temperature, pressure, humidity);
+    let scope_both = Scope::new(app.value_of("scope-height").unwrap().parse().unwrap());
 
-    let wind_solve = Wind::new(wind_velocity, wind_angle);
+    let atmosphere_both = Atmosphere::new(
+        app.value_of("temperature").unwrap().parse().unwrap(),
+        app.value_of("pressure").unwrap().parse().unwrap(),
+        app.value_of("humidity").unwrap().parse().unwrap(),
+    );
+
+    let wind_solve = Wind::new(
+        app.value_of("wind-speed").unwrap().parse().unwrap(),
+        app.value_of("wind-angle").unwrap().parse().unwrap(),
+    );
     let wind_zero = Wind::new(0.0, 0.0);
 
-    let other_solve = Other::new(los_angle, lattitude, azimuth, None);
+    let lattitude = app.value_of("lattitude").unwrap().parse().unwrap();
+    let azimuth = app.value_of("bearing").unwrap().parse().unwrap();
+    let other_solve = Other::new(
+        app.value_of("shot-angle").unwrap().parse().unwrap(),
+        lattitude,
+        azimuth,
+        None,
+    );
     let other_zero = Other::new(0.0, lattitude, azimuth, None);
 
     let zero_conditions = Conditions::new(&wind_zero, &atmosphere_both, &other_zero);
@@ -162,15 +67,19 @@ fn main() {
         time_step,
     );
     let simulation = builder.solve_for(
-        zero_distance,
-        zero_offset,
-        zero_tolerance,
-        pitch_offset,
-        yaw_offset,
+        app.value_of("zero-distance").unwrap().parse().unwrap(),
+        app.value_of("zero-offset").unwrap().parse().unwrap(),
+        app.value_of("zero-tolerance").unwrap().parse().unwrap(),
+        app.value_of("pitch-offset").unwrap().parse().unwrap(),
+        app.value_of("yaw-offset").unwrap().parse().unwrap(),
     );
     // let simulation = builder.flat();
 
-    let table = simulation.table(step, range_start, range_end);
+    let table = simulation.table(
+        app.value_of("table-step").unwrap().parse().unwrap(),
+        app.value_of("table-start").unwrap().parse().unwrap(),
+        app.value_of("table-end").unwrap().parse().unwrap(),
+    );
 
     if pretty {
         println!("+--------------+----------+---------------+-------------+------------+------------+----------------+--------------+----------+");
@@ -211,6 +120,7 @@ fn main() {
             p.horizontal_moa(),
             p.time(),
         );
+        let output_tolerance = app.value_of("table-tolerance").unwrap().parse().unwrap();
         let vertical = Elevation(&elevation).adjustment(output_tolerance);
         let horizontal = Windage(&windage).adjustment(output_tolerance);
         if pretty {
@@ -286,7 +196,7 @@ impl Adjustment<'_> {
         }
     }
 }
-fn getopts<'a>() -> ArgMatches<'a> {
+fn cli<'a, 'b>() -> App<'a, 'b> {
     App::new("Ballistics Solver")
         .version("0.0.1")
         .author("Phraeyll <Phraeyll@users.no-reply.github.com>")
@@ -471,5 +381,4 @@ fn getopts<'a>() -> ArgMatches<'a> {
                 .takes_value(true)
                 .help("Simulation Factor (Higher Numbers for slower, more accurate simulations)"),
         )
-        .get_matches()
 }
