@@ -197,15 +197,20 @@ impl Adjustment<'_> {
     }
 }
 fn cli<'a, 'b>() -> App<'a, 'b> {
-    App::new("Ballistics Solver")
+    App::new("Ballistic Solver")
         .version("0.0.1")
         .author("Phraeyll <Phraeyll@users.no-reply.github.com>")
         .about(
             r#"
             Produces range table from vector based simulation of Newtons Equations
-            using point mass model of ballistics.
-            Currently, this accounts for drag, gravity, and Coriolis/Eotovos forces.
+            using standard, unmodified, point mass model of ballistics.
+            Currently, this accounts for drag, gravity, and Coriolis/Eotvos forces.
             This does not currently factor in gyroscopic drift, nor aerodynamic jump.
+            Drag tables obtained from JBM Ballistics, and methodologies are mostly from
+            Robert L. McCoy's "Modern Exterior Ballistics" ISBN 978-0-7643-3825-0
+
+            The eventual goal of this program is to support modified point mass trajectories
+            as well, for factoring in gyroscopic drift and aerodynamic jump (4-DOF models)
             "#,
         )
         .arg(
