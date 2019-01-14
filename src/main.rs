@@ -257,6 +257,7 @@ fn cli<'a, 'b>() -> App<'a, 'b> {
         )
         .arg(
             Arg::with_name("wind-angle")
+                .allow_hyphen_values(true)
                 .long("wind-angle")
                 .required(true)
                 .takes_value(true)
@@ -264,6 +265,7 @@ fn cli<'a, 'b>() -> App<'a, 'b> {
         )
         .arg(
             Arg::with_name("temperature")
+                .allow_hyphen_values(true)
                 .long("temperature")
                 .required(true)
                 .takes_value(true)
@@ -271,6 +273,7 @@ fn cli<'a, 'b>() -> App<'a, 'b> {
         )
         .arg(
             Arg::with_name("pressure")
+                .allow_hyphen_values(true)
                 .long("pressure")
                 .required(true)
                 .takes_value(true)
@@ -285,6 +288,7 @@ fn cli<'a, 'b>() -> App<'a, 'b> {
         )
         .arg(
             Arg::with_name("lattitude")
+                .allow_hyphen_values(true)
                 .long("lattitude")
                 .required(true)
                 .takes_value(true)
@@ -292,6 +296,7 @@ fn cli<'a, 'b>() -> App<'a, 'b> {
         )
         .arg(
             Arg::with_name("bearing")
+                .allow_hyphen_values(true)
                 .long("bearing")
                 .required(true)
                 .takes_value(true)
@@ -299,6 +304,7 @@ fn cli<'a, 'b>() -> App<'a, 'b> {
         )
         .arg(
             Arg::with_name("shot-angle")
+                .allow_hyphen_values(true)
                 .long("shot-angle")
                 .required(true)
                 .takes_value(true)
@@ -306,6 +312,7 @@ fn cli<'a, 'b>() -> App<'a, 'b> {
         )
         .arg(
             Arg::with_name("scope-height")
+                .allow_hyphen_values(true)
                 .long("scope-height")
                 .required(true)
                 .takes_value(true)
@@ -320,6 +327,7 @@ fn cli<'a, 'b>() -> App<'a, 'b> {
         )
         .arg(
             Arg::with_name("zero-offset")
+                .allow_hyphen_values(true)
                 .long("zero-offset")
                 .required(true)
                 .takes_value(true)
@@ -334,6 +342,7 @@ fn cli<'a, 'b>() -> App<'a, 'b> {
         )
         .arg(
             Arg::with_name("pitch-offset")
+                .allow_hyphen_values(true)
                 .long("pitch-offset")
                 .required(true)
                 .takes_value(true)
@@ -341,6 +350,7 @@ fn cli<'a, 'b>() -> App<'a, 'b> {
         )
         .arg(
             Arg::with_name("yaw-offset")
+                .allow_hyphen_values(true)
                 .long("yaw-offset")
                 .required(true)
                 .takes_value(true)
