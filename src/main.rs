@@ -35,30 +35,41 @@ fn main() {
 
     let scope_both = Scope::new(app.value_of("scope-height").unwrap().parse().unwrap());
 
-    let atmosphere_both = Atmosphere::new(
+    let atmosphere = Atmosphere::new(
         app.value_of("temperature").unwrap().parse().unwrap(),
         app.value_of("pressure").unwrap().parse().unwrap(),
         app.value_of("humidity").unwrap().parse().unwrap(),
     );
+    let zero_atmosphere = Atmosphere::new(
+        app.value_of("zero-temperature").unwrap().parse().unwrap(),
+        app.value_of("zero-pressure").unwrap().parse().unwrap(),
+        app.value_of("zero-humidity").unwrap().parse().unwrap(),
+    );
 
-    let wind_solve = Wind::new(
+    let wind = Wind::new(
         app.value_of("wind-speed").unwrap().parse().unwrap(),
         app.value_of("wind-angle").unwrap().parse().unwrap(),
     );
-    let wind_zero = Wind::new(0.0, 0.0);
+    let zero_wind = Wind::new(
+        app.value_of("zero-wind-speed").unwrap().parse().unwrap(),
+        app.value_of("zero-wind-angle").unwrap().parse().unwrap(),
+    );
 
-    let lattitude = app.value_of("lattitude").unwrap().parse().unwrap();
-    let azimuth = app.value_of("bearing").unwrap().parse().unwrap();
-    let other_solve = Other::new(
+    let other = Other::new(
         app.value_of("shot-angle").unwrap().parse().unwrap(),
-        lattitude,
-        azimuth,
+        app.value_of("lattitude").unwrap().parse().unwrap(),
+        app.value_of("bearing").unwrap().parse().unwrap(),
         None,
     );
-    let other_zero = Other::new(0.0, lattitude, azimuth, None);
+    let zero_other = Other::new(
+        app.value_of("zero-shot-angle").unwrap().parse().unwrap(),
+        app.value_of("zero-lattitude").unwrap().parse().unwrap(),
+        app.value_of("zero-bearing").unwrap().parse().unwrap(),
+        None,
+    );
 
-    let zero_conditions = Conditions::new(&wind_zero, &atmosphere_both, &other_zero);
-    let solve_conditions = Conditions::new(&wind_solve, &atmosphere_both, &other_solve);
+    let zero_conditions = Conditions::new(&zero_wind, &zero_atmosphere, &zero_other);
+    let solve_conditions = Conditions::new(&wind, &atmosphere, &other);
     let builder = SimulationBuilder::new(
         &projectile_both,
         &scope_both,
@@ -254,6 +265,14 @@ fn cli<'a, 'b>() -> App<'a, 'b> {
                 .help("BC Type [G1 G2 G5 G6 G7 G8 GI GS]"),
         )
         .arg(
+            Arg::with_name("scope-height")
+                .allow_hyphen_values(true)
+                .long("scope-height")
+                .required(true)
+                .takes_value(true)
+                .help("Scope Height above Boreline (Inches)"),
+        )
+        .arg(
             Arg::with_name("wind-speed")
                 .long("wind-speed")
                 .required(true)
@@ -264,6 +283,21 @@ fn cli<'a, 'b>() -> App<'a, 'b> {
             Arg::with_name("wind-angle")
                 .allow_hyphen_values(true)
                 .long("wind-angle")
+                .required(true)
+                .takes_value(true)
+                .help("Wind Angle (Decimal Degrees)"),
+        )
+        .arg(
+            Arg::with_name("zero-wind-speed")
+                .long("zero-wind-speed")
+                .required(true)
+                .takes_value(true)
+                .help("Wind Speed (miles/hour)"),
+        )
+        .arg(
+            Arg::with_name("zero-wind-angle")
+                .allow_hyphen_values(true)
+                .long("zero-wind-angle")
                 .required(true)
                 .takes_value(true)
                 .help("Wind Angle (Decimal Degrees)"),
@@ -287,6 +321,29 @@ fn cli<'a, 'b>() -> App<'a, 'b> {
         .arg(
             Arg::with_name("humidity")
                 .long("humidity")
+                .required(true)
+                .takes_value(true)
+                .help("Humidity (Value between 0 & 1) [0 => 0%; 1 => 100%]"),
+        )
+        .arg(
+            Arg::with_name("zero-temperature")
+                .allow_hyphen_values(true)
+                .long("zero-temperature")
+                .required(true)
+                .takes_value(true)
+                .help("Temperature (Fahrenheit)"),
+        )
+        .arg(
+            Arg::with_name("zero-pressure")
+                .allow_hyphen_values(true)
+                .long("zero-pressure")
+                .required(true)
+                .takes_value(true)
+                .help("Pressure (InHg)"),
+        )
+        .arg(
+            Arg::with_name("zero-humidity")
+                .long("zero-humidity")
                 .required(true)
                 .takes_value(true)
                 .help("Humidity (Value between 0 & 1) [0 => 0%; 1 => 100%]"),
@@ -316,12 +373,28 @@ fn cli<'a, 'b>() -> App<'a, 'b> {
                 .help("Line of Sight Angle (Decimal Degrees)"),
         )
         .arg(
-            Arg::with_name("scope-height")
+            Arg::with_name("zero-lattitude")
                 .allow_hyphen_values(true)
-                .long("scope-height")
+                .long("zero-lattitude")
                 .required(true)
                 .takes_value(true)
-                .help("Scope Height above Boreline (Inches)"),
+                .help("Lattitude (Decimal Degrees)"),
+        )
+        .arg(
+            Arg::with_name("zero-bearing")
+                .allow_hyphen_values(true)
+                .long("zero-bearing")
+                .required(true)
+                .takes_value(true)
+                .help("Azimuthal Bearing (Decimal Degrees)"),
+        )
+        .arg(
+            Arg::with_name("zero-shot-angle")
+                .allow_hyphen_values(true)
+                .long("zero-shot-angle")
+                .required(true)
+                .takes_value(true)
+                .help("Line of Sight Angle (Decimal Degrees)"),
         )
         .arg(
             Arg::with_name("zero-distance")
