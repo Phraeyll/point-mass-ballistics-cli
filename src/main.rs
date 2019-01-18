@@ -9,27 +9,28 @@ fn main() {
     let pretty = app.is_present("pretty");
     let initial_velocity = app.value_of("velocity").unwrap().parse().unwrap();
     let factor: Numeric = app.value_of("factor").unwrap().parse().unwrap();
-    let time_step: Numeric =
-        1.0 /  (factor * initial_velocity);
+    let time_step: Numeric = 1.0 / (factor * initial_velocity);
 
-    // Ugly - this needs to be handle in library, parsing bc as "G7(0.305)" for example
     let bc = app.value_of("bc").unwrap().parse().unwrap();
-    let bc_enum = match app.value_of("bc-type").unwrap() {
-        "G1" => BallisticCoefficient::G1(bc),
-        "G2" => BallisticCoefficient::G2(bc),
-        "G5" => BallisticCoefficient::G5(bc),
-        "G6" => BallisticCoefficient::G6(bc),
-        "G7" => BallisticCoefficient::G7(bc),
-        "G8" => BallisticCoefficient::G8(bc),
-        "GI" => BallisticCoefficient::GI(bc),
-        "GS" => BallisticCoefficient::GS(bc),
-        _ => BallisticCoefficient::G1(bc),
-    };
+    let bc_struct = BallisticCoefficient::new(
+        bc,
+        match app.value_of("bc-type").unwrap() {
+            "G1" => G1,
+            "G2" => G2,
+            "G5" => G5,
+            "G6" => G6,
+            "G7" => G7,
+            "G8" => G8,
+            "GI" => GI,
+            "GS" => GS,
+            _ => G1,
+        },
+    );
 
     let projectile_both = Projectile::new(
         app.value_of("grains").unwrap().parse().unwrap(),
         app.value_of("caliber").unwrap().parse().unwrap(),
-        bc_enum,
+        bc_struct,
         initial_velocity,
     );
 
