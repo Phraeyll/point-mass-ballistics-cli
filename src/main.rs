@@ -11,9 +11,8 @@ fn main() {
     let factor: Numeric = app.value_of("factor").unwrap().parse().unwrap();
     let time_step: Numeric = 1.0 / (factor * initial_velocity);
 
-    let bc = app.value_of("bc").unwrap().parse().unwrap();
-    let bc_struct = BallisticCoefficient::new(
-        bc,
+    let bc = BallisticCoefficient::new(
+        app.value_of("bc").unwrap().parse().unwrap(),
         match app.value_of("bc-type").unwrap() {
             "G1" => G1,
             "G2" => G2,
@@ -30,7 +29,7 @@ fn main() {
     let projectile_both = Projectile::new(
         app.value_of("grains").unwrap().parse().unwrap(),
         app.value_of("caliber").unwrap().parse().unwrap(),
-        bc_struct,
+        bc,
         initial_velocity,
     );
 
