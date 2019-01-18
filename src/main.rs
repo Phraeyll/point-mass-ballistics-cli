@@ -1,8 +1,5 @@
 use clap::{App, Arg};
-use rballistics_flat::{
-    model::point_mass::{builder::*, iter::Output, *},
-    Numeric,
-};
+use rballistics_flat::model::point_mass::*;
 
 fn main() {
     let app = cli().get_matches();
