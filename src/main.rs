@@ -9,14 +9,20 @@ fn main() {
 
     let builder = build::from_args(&args);
 
-    // let simulation = builder.flat(0.0, 0.0);
-    let simulation = builder.solve_for(
-        args.value_of("zero-distance").unwrap().parse().unwrap(),
-        args.value_of("zero-offset").unwrap().parse().unwrap(),
-        args.value_of("zero-tolerance").unwrap().parse().unwrap(),
-        args.value_of("pitch-offset").unwrap().parse().unwrap(),
-        args.value_of("yaw-offset").unwrap().parse().unwrap(),
-    );
+    let simulation = if args.is_present("flat") {
+        builder.flat(
+            args.value_of("pitch-offset").unwrap().parse().unwrap(),
+            args.value_of("yaw-offset").unwrap().parse().unwrap(),
+        )
+    } else {
+        builder.solve_for(
+            args.value_of("zero-distance").unwrap().parse().unwrap(),
+            args.value_of("zero-offset").unwrap().parse().unwrap(),
+            args.value_of("zero-tolerance").unwrap().parse().unwrap(),
+            args.value_of("pitch-offset").unwrap().parse().unwrap(),
+            args.value_of("yaw-offset").unwrap().parse().unwrap(),
+        )
+    };
 
     let table = simulation.table(
         args.value_of("table-step").unwrap().parse().unwrap(),

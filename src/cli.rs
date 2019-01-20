@@ -17,6 +17,7 @@ pub fn parse<'a, 'b>() -> App<'a, 'b> {
             as well, for factoring in gyroscopic drift and aerodynamic jump (4-DOF models)
             "#,
         )
+        .arg(Arg::with_name("flat").long("flat").help("Flat Model"))
         .arg(
             Arg::with_name("pretty")
                 .long("pretty")
