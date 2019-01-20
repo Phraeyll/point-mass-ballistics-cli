@@ -2,8 +2,8 @@ use clap::ArgMatches;
 
 use rballistics_flat::model::point_mass::*;
 
-pub fn from_args(args: &ArgMatches) -> SimulationBuilder {
-    SimulationBuilder::new()
+pub fn from_args(args: &ArgMatches) -> Solver {
+    Solver::new()
         .time_step(
             args.value_of("time-step").unwrap().parse().unwrap())
         .projectile(

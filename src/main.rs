@@ -10,7 +10,7 @@ fn main() {
     let builder = build::from_args(&args);
 
     let simulation = if args.is_present("flat") {
-        builder.flat(
+        builder.using_zero_conditions(
             args.value_of("pitch-offset").unwrap().parse().unwrap(),
             args.value_of("yaw-offset").unwrap().parse().unwrap(),
         )
