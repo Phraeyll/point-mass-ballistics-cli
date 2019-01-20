@@ -20,20 +20,18 @@ pub fn print<'a>(
         "Time(s)",
     );
     for (_, p) in table.into_iter() {
-        let vertical_adjustment = Elevation(&p.elevation()).adjustment(output_tolerance);
-        let horizontal_adjustment = Windage(&p.windage()).adjustment(output_tolerance);
         println!(
             "{:>12.0} {:>8.2} {:>11.2} {} {:>9.2} {} {:>8.2} {} {:>8.2} {} {:>14.2} {:>12.2} {:>8.3}",
             p.distance(),
             p.moa(),
             p.elevation().abs(),
-            vertical_adjustment,
+            Elevation(&p.elevation()).adjustment(output_tolerance),
             p.windage().abs(),
-            horizontal_adjustment,
-            p.vertical_moa(),
-            vertical_adjustment,
-            p.horizontal_moa(),
-            horizontal_adjustment,
+            Windage(&p.windage()).adjustment(output_tolerance),
+            p.vertical_moa(output_tolerance),
+            Elevation(&p.vertical_moa(output_tolerance)).adjustment(output_tolerance),
+            p.horizontal_moa(output_tolerance),
+            Windage(&p.horizontal_moa(output_tolerance)).adjustment(output_tolerance),
             p.velocity(),
             p.energy(),
             p.time(),
