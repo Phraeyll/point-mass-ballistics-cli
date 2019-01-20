@@ -24,6 +24,7 @@ pub fn print<'a>(
             "{:>12.0} {:>8.2} {:>11.2} {} {:>9.2} {} {:>8.2} {} {:>8.2} {} {:>14.2} {:>12.2} {:>8.3}",
             p.distance(),
             p.moa(),
+            // dbg!(p.moa()),
             p.elevation().abs(),
             Elevation(&p.elevation()).adjustment(output_tolerance),
             p.windage().abs(),
