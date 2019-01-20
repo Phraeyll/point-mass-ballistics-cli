@@ -24,7 +24,6 @@ fn main() {
         args.value_of("table-end").unwrap().parse().unwrap(),
     );
 
-
     let output_tolerance = args.value_of("table-tolerance").unwrap().parse().unwrap();
     if args.is_present("pretty") {
         pretty::print(table, output_tolerance);
