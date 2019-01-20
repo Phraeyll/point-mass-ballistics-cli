@@ -260,6 +260,8 @@ pub fn parse<'a, 'b>() -> App<'a, 'b> {
                 .long("time-step")
                 .required(true)
                 .takes_value(true)
-                .help("Simulation Time Step (smaller numbers for slower, more accurate simulation)"),
+                .help(
+                    "Simulation Time Step (smaller numbers for slower, more accurate simulation)",
+                ),
         )
 }
