@@ -20,35 +20,25 @@ pub fn print<'a>(
         "Energy(ftlb)",
         "Time(s)",
     );
-    for (distance, p) in table.into_iter() {
-        let (elevation, windage, velocity, energy, moa, vertical_moa, horizontal_moa, time) = (
-            p.elevation(),
-            p.windage(),
-            p.velocity(),
-            p.energy(),
-            p.moa(),
-            p.vertical_moa(),
-            p.horizontal_moa(),
-            p.time(),
-        );
-        let vertical = Elevation(&elevation).adjustment(output_tolerance);
-        let horizontal = Windage(&windage).adjustment(output_tolerance);
+    for (_, p) in table.into_iter() {
+        let vertical_adjustment = Elevation(&p.elevation()).adjustment(output_tolerance);
+        let horizontal_adjustment = Windage(&p.windage()).adjustment(output_tolerance);
         println!("+--------------+----------+---------------+-------------+------------+------------+----------------+--------------+----------+");
         println!(
             "| {:>12.0} | {:>8.2} | {:>11.2} {} | {:>9.2} {} | {:>8.2} {} | {:>8.2} {} | {:>14.2} | {:>12.2} | {:>8.3} |",
-            distance,
-            moa,
-            elevation.abs(),
-            vertical,
-            windage.abs(),
-            horizontal,
-            vertical_moa,
-            vertical,
-            horizontal_moa,
-            horizontal,
-            velocity,
-            energy,
-            time,
+            p.distance(),
+            p.moa(),
+            p.elevation().abs(),
+            vertical_adjustment,
+            p.windage().abs(),
+            horizontal_adjustment,
+            p.vertical_moa(),
+            vertical_adjustment,
+            p.horizontal_moa(),
+            horizontal_adjustment,
+            p.velocity(),
+            p.energy(),
+            p.time(),
         );
     }
     println!("+--------------+----------+---------------+-------------+------------+------------+----------------+--------------+----------+");
