@@ -138,14 +138,13 @@ impl Adjustment<'_> {
     }
 }
 fn build_from_args(app: &ArgMatches) -> SimulationBuilder {
-    let initial_velocity = app.value_of("velocity").unwrap().parse().unwrap();
-    let factor: Numeric = app.value_of("factor").unwrap().parse().unwrap();
-    let time_step: Numeric = 1.0 / (factor * initial_velocity);
     SimulationBuilder::new()
-        .time_step(time_step)
+        .time_step(
+            app.value_of("time-step").unwrap().parse().unwrap())
         .projectile(
             Projectile::new()
-                .with_velocity(initial_velocity)
+                .with_velocity(
+                    app.value_of("velocity").unwrap().parse().unwrap())
                 .with_grains(
                     app.value_of("grains").unwrap().parse().unwrap())
                 .with_caliber(
@@ -467,10 +466,10 @@ fn cli<'a, 'b>() -> App<'a, 'b> {
                 .help("Table Adjustments Tolerance (Inches)"),
         )
         .arg(
-            Arg::with_name("factor")
-                .long("factor")
+            Arg::with_name("time-step")
+                .long("time-step")
                 .required(true)
                 .takes_value(true)
-                .help("Simulation Factor (Higher Numbers for slower, more accurate simulations)"),
+                .help("Simulation Time Step (smaller numbers for slower, more accurate simulation)"),
         )
 }
