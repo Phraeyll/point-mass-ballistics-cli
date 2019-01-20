@@ -173,6 +173,7 @@ name = "rballistics-cli"
 version = "0.0.1"
 dependencies = [
  "clap 2.32.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ordered-float 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "rballistics-flat 0.0.1",
 ]
 
