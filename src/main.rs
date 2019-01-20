@@ -6,7 +6,6 @@ mod printer;
 
 fn main() {
     let args = cli::parse().get_matches();
-    let pretty = args.is_present("pretty");
 
     let builder = build::from_args(&args);
 
@@ -25,9 +24,9 @@ fn main() {
         args.value_of("table-end").unwrap().parse().unwrap(),
     );
 
-    let output_tolerance = args.value_of("table-tolerance").unwrap().parse().unwrap();
 
-    if pretty {
+    let output_tolerance = args.value_of("table-tolerance").unwrap().parse().unwrap();
+    if args.is_present("pretty") {
         pretty::print(table, output_tolerance);
     } else {
         plain::print(table, output_tolerance);
