@@ -17,7 +17,14 @@ fn main() {
     } else {
         builder.solve_for(
             args.value_of("zero-distance").unwrap().parse().unwrap(),
-            args.value_of("zero-offset").unwrap().parse().unwrap(),
+            args.value_of("zero-elevation-offset")
+                .unwrap()
+                .parse()
+                .unwrap(),
+            args.value_of("zero-windage-offset")
+                .unwrap()
+                .parse()
+                .unwrap(),
             args.value_of("zero-tolerance").unwrap().parse().unwrap(),
             args.value_of("pitch-offset").unwrap().parse().unwrap(),
             args.value_of("yaw-offset").unwrap().parse().unwrap(),

@@ -198,12 +198,20 @@ pub fn parse<'a, 'b>() -> App<'a, 'b> {
                 .help("Zeroed Distance (Yards)"),
         )
         .arg(
-            Arg::with_name("zero-offset")
+            Arg::with_name("zero-elevation-offset")
                 .allow_hyphen_values(true)
-                .long("zero-offset")
+                .long("zero-elevation-offset")
                 .required(true)
                 .takes_value(true)
-                .help("Zero Offset (Inches)"),
+                .help("Vertical Zero Offset (Inches)"),
+        )
+        .arg(
+            Arg::with_name("zero-windage-offset")
+                .allow_hyphen_values(true)
+                .long("zero-windage-offset")
+                .required(true)
+                .takes_value(true)
+                .help("Horizontal Zero Offset (Inches)"),
         )
         .arg(
             Arg::with_name("zero-tolerance")
