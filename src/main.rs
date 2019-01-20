@@ -1,3 +1,4 @@
+use rballistics_flat::model::point_mass::builder::SimulationBuilder;
 use printer::{plain, pretty};
 
 mod build;
