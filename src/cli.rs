@@ -231,18 +231,18 @@ pub fn parse<'a, 'b>() -> App<'a, 'b> {
                 .help("Zero Tolerance (Inches)"),
         )
         .arg(
-            Arg::with_name("pitch-offset")
+            Arg::with_name("pitch")
                 .allow_hyphen_values(true)
-                .long("pitch-offset")
+                .long("pitch")
                 .takes_value(true)
-                .help("Pitch Offset (MOA - Minutes of Angle)"),
+                .help("Manual Pitch Adjustment (MOA - Minutes of Angle)"),
         )
         .arg(
-            Arg::with_name("yaw-offset")
+            Arg::with_name("yaw")
                 .allow_hyphen_values(true)
-                .long("yaw-offset")
+                .long("yaw")
                 .takes_value(true)
-                .help("Yaw Offset (MOA - Minutes of Angle)"),
+                .help("Manual Yaw Adjustment (MOA - Minutes of Angle)"),
         )
         .arg(
             Arg::with_name("table-start")

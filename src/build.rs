@@ -4,14 +4,14 @@ use rballistics_flat::model::point_mass::*;
 
 pub fn from_args(args: &ArgMatches) -> Solver {
     Solver::new()
-        .coriolis(
-            !args.is_present("disable-coriolis")
-        )
-        .gravity(
-            !args.is_present("disable-gravity")
-        )
-        .drag(
-            !args.is_present("disable-drag")
+        .flags(
+            Flags::new()
+                .enable_coriolis(
+                    !args.is_present("disable-coriolis"))
+                .enable_gravity(
+                    !args.is_present("disable-gravity"))
+                .enable_drag(
+                    !args.is_present("disable-drag"))
         )
         .time_step(
             args.value_of("time-step").unwrap_or("0.00005").parse().unwrap())
