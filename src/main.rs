@@ -16,10 +16,7 @@ fn main() {
 
     let simulation = if args.is_present("flat") {
         builder.using_zero_conditions(
-            args.value_of("pitch")
-                .unwrap_or("0")
-                .parse()
-                .unwrap(),
+            args.value_of("pitch").unwrap_or("0").parse().unwrap(),
             args.value_of("yaw").unwrap_or("0").parse().unwrap(),
         )
     } else {
@@ -34,10 +31,7 @@ fn main() {
                 .unwrap_or("0.001")
                 .parse()
                 .unwrap(),
-            args.value_of("pitch")
-                .unwrap_or("0")
-                .parse()
-                .unwrap(),
+            args.value_of("pitch").unwrap_or("0").parse().unwrap(),
             args.value_of("yaw").unwrap_or("0").parse().unwrap(),
         )
     };
