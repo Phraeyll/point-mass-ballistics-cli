@@ -1,6 +1,6 @@
 use ordered_float::OrderedFloat;
 
-use super::Adjustment::*;
+use super::helper::Adjustment::*;
 use rballistics_flat::model::point_mass::*;
 
 pub fn print<'a>(

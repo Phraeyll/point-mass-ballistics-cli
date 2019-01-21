@@ -3,7 +3,11 @@ use rballistics_flat::model::point_mass::builder::SimulationBuilder;
 
 mod build;
 mod cli;
-mod printer;
+mod printer {
+    mod helper;
+    pub mod plain;
+    pub mod pretty;
+}
 
 fn main() {
     let args = cli::parse().get_matches();
