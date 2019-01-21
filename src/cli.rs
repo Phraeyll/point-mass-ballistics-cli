@@ -19,6 +19,21 @@ pub fn parse<'a, 'b>() -> App<'a, 'b> {
         )
         .arg(Arg::with_name("flat").long("flat").help("Flat Model"))
         .arg(
+            Arg::with_name("disable-drag")
+                .long("disable-drag")
+                .help("Disable drag"),
+        )
+        .arg(
+            Arg::with_name("disable-coriolis")
+                .long("disable-coriolis")
+                .help("Disable coriolis"),
+        )
+        .arg(
+            Arg::with_name("disable-gravity")
+                .long("disable-gravity")
+                .help("Disable gravity"),
+        )
+        .arg(
             Arg::with_name("pretty")
                 .long("pretty")
                 .help("Pretty Output"),
@@ -153,6 +168,20 @@ pub fn parse<'a, 'b>() -> App<'a, 'b> {
                 .long("shot-angle")
                 .takes_value(true)
                 .help("Line of Sight Angle (Decimal Degrees)"),
+        )
+        .arg(
+            Arg::with_name("gravity")
+                .allow_hyphen_values(true)
+                .long("gravity")
+                .takes_value(true)
+                .help("Gravity (ft/s^2)"),
+        )
+        .arg(
+            Arg::with_name("zero-gravity")
+                .allow_hyphen_values(true)
+                .long("zero-gravity")
+                .takes_value(true)
+                .help("Gravity (ft/s^2)"),
         )
         .arg(
             Arg::with_name("zero-lattitude")

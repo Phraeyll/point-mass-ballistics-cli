@@ -4,6 +4,15 @@ use rballistics_flat::model::point_mass::*;
 
 pub fn from_args(args: &ArgMatches) -> Solver {
     Solver::new()
+        .coriolis(
+            !args.is_present("disable-coriolis")
+        )
+        .gravity(
+            !args.is_present("disable-gravity")
+        )
+        .drag(
+            !args.is_present("disable-drag")
+        )
         .time_step(
             args.value_of("time-step").unwrap_or("0.00005").parse().unwrap())
                 .expect("time-step")
@@ -69,6 +78,8 @@ pub fn from_args(args: &ArgMatches) -> Solver {
                 .with_bearing(
                     args.value_of("bearing").unwrap_or("0").parse().unwrap())
                     .expect("bearing")
+                .with_gravity(
+                    args.value_of("gravity").unwrap_or("-32.174").parse().unwrap())
         )
         .zero_conditions(
             Conditions::new()
@@ -96,5 +107,7 @@ pub fn from_args(args: &ArgMatches) -> Solver {
                 .with_bearing(
                     args.value_of("zero-bearing").unwrap_or("0").parse().unwrap())
                     .expect("zero-bearing")
+                .with_gravity(
+                    args.value_of("zero-gravity").unwrap_or("-32.174").parse().unwrap())
         )
 }
