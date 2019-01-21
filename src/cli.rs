@@ -64,7 +64,15 @@ pub fn parse<'a, 'b>() -> App<'a, 'b> {
                 .long("scope-height")
                 .required(true)
                 .takes_value(true)
-                .help("Scope Height above Boreline (Inches)"),
+                .help("Scope Height above/below Boreline (Inches)"),
+        )
+        .arg(
+            Arg::with_name("scope-offset")
+                .allow_hyphen_values(true)
+                .long("scope-offset")
+                .required(true)
+                .takes_value(true)
+                .help("Scope Offset left/right of Boreline (Inches)"),
         )
         .arg(
             Arg::with_name("wind-speed")

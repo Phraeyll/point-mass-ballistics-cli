@@ -40,6 +40,8 @@ pub fn from_args(args: &ArgMatches) -> Solver {
             Scope::new()
                 .with_height(
                     args.value_of("scope-height").unwrap().parse().unwrap())
+                .with_offset(
+                    args.value_of("scope-offset").unwrap().parse().unwrap())
         )
         .solve_conditions(
             Conditions::new()
