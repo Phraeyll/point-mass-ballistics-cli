@@ -1,6 +1,6 @@
 pub use self::Adjustment::*;
 
-use rballistics_flat::model::point_mass::Numeric;
+use point_mass_ballistics::model::Numeric;
 
 pub enum Adjustment<'n> {
     Elevation(&'n Numeric),

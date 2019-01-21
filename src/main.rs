@@ -1,5 +1,5 @@
+use point_mass_ballistics::model::*;
 use printer::{plain, pretty};
-use rballistics_flat::model::point_mass::builder::SimulationBuilder;
 
 mod build;
 mod cli;
@@ -15,12 +15,12 @@ fn main() {
     let builder = build::from_args(&args);
 
     let simulation = if args.is_present("flat") {
-        builder.using_zero_conditions(
+        MySimulation(builder.using_zero_conditions(
             args.value_of("pitch").unwrap_or("0").parse().unwrap(),
             args.value_of("yaw").unwrap_or("0").parse().unwrap(),
-        )
+        ))
     } else {
-        builder.solve_for(
+        MySimulation(builder.solve_for(
             args.value_of("zero-distance")
                 .unwrap_or("200")
                 .parse()
@@ -33,7 +33,7 @@ fn main() {
                 .unwrap(),
             args.value_of("pitch").unwrap_or("0").parse().unwrap(),
             args.value_of("yaw").unwrap_or("0").parse().unwrap(),
-        )
+        ))
     };
 
     let table = simulation.table(
@@ -57,5 +57,24 @@ fn main() {
         pretty::print(table, output_tolerance);
     } else {
         plain::print(table, output_tolerance);
+    }
+}
+
+struct MySimulation<'a>(Simulation<'a>);
+impl MySimulation<'_> {
+    fn table(
+        &self,
+        step: Natural,
+        range_start: Natural,
+        range_end: Natural,
+    ) -> Vec<Packet<'_>> {
+        let mut iter = self.0.into_iter().fuse();
+        (range_start..=range_end)
+            .step_by(step as usize)
+            .filter_map(|current_step| {
+                iter.by_ref()
+                    .find(|p| p.distance() >= Numeric::from(current_step))
+            })
+            .collect::<Vec<_>>()
     }
 }

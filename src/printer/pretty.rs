@@ -1,10 +1,8 @@
-use ordered_float::OrderedFloat;
-
 use super::helper::Adjustment::*;
-use rballistics_flat::model::point_mass::*;
+use point_mass_ballistics::model::*;
 
 pub fn print<'a>(
-    table: impl IntoIterator<Item = (OrderedFloat<Numeric>, Packet<'a>)>,
+    table: impl IntoIterator<Item = Packet<'a>>,
     output_tolerance: Numeric,
 ) {
     let divider = "+--------------+----------+---------------+-------------+------------+------------+----------------+--------------+----------+";
@@ -21,7 +19,7 @@ pub fn print<'a>(
         "Energy(ftlb)",
         "Time(s)",
     );
-    for (_, p) in table.into_iter() {
+    for p in table.into_iter() {
         println!("{}", divider);
         println!(
             "| {:>12.0} | {:>8.2} | {:>11.2} {} | {:>9.2} {} | {:>8.2} {} | {:>8.2} {} | {:>14.2} | {:>12.2} | {:>8.3} |",

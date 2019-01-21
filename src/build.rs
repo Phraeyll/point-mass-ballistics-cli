@@ -1,6 +1,6 @@
 use clap::ArgMatches;
 
-use rballistics_flat::model::point_mass::*;
+use point_mass_ballistics::model::*;
 
 pub fn from_args(args: &ArgMatches) -> Solver {
     Solver::new()

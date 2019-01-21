@@ -55,6 +55,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "cli"
+version = "0.0.1"
+dependencies = [
+ "clap 2.32.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "point-mass-ballistics 0.0.1",
+]
+
+[[package]]
 name = "cloudabi"
 version = "0.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -139,6 +147,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "point-mass-ballistics"
+version = "0.0.1"
+dependencies = [
+ "nalgebra 0.16.13 (registry+https://github.com/rust-lang/crates.io-index)",
+ "ordered-float 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
 name = "rand"
 version = "0.5.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -167,23 +183,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 name = "rawpointer"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-
-[[package]]
-name = "rballistics-cli"
-version = "0.0.1"
-dependencies = [
- "clap 2.32.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "ordered-float 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "rballistics-flat 0.0.1",
-]
-
-[[package]]
-name = "rballistics-flat"
-version = "0.0.1"
-dependencies = [
- "nalgebra 0.16.13 (registry+https://github.com/rust-lang/crates.io-index)",
- "ordered-float 1.0.1 (registry+https://github.com/rust-lang/crates.io-index)",
-]
 
 [[package]]
 name = "redox_syscall"

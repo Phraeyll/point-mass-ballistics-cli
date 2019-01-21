@@ -1,13 +1,12 @@
 [package]
-name = "rballistics-cli"
+name = "cli"
 version = "0.0.1"
 authors = ["Phraeyll <Phraeyll@users.noreply.github.com>"]
 edition = "2018"
 
 [dependencies]
 clap = "^2.32"
-rballistics-flat = { path = "../flat" }
-ordered-float = "^1.0"
+point-mass-ballistics = { path = "../flat" }
 
 [[bin]]
-name = "rballistics-cli"
+name = "cli"
