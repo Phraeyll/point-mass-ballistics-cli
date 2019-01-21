@@ -35,6 +35,7 @@ pub fn from_args(args: &ArgMatches) -> Solver {
             Scope::new()
                 .with_height(
                     args.value_of("scope-height").unwrap().parse().unwrap())
+                    .expect("")
         )
         .solve_conditions(
             Conditions::new()
