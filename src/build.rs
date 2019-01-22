@@ -3,18 +3,12 @@ use clap::ArgMatches;
 use point_mass_ballistics::model::builder::*;
 
 pub fn from_args(args: &ArgMatches) -> SimulationBuilder {
-    let builder = SimulationBuilder::default()
-        .angles(
-            Angles::new()
-                .set_pitch(args.value_of("pitch").unwrap_or("0").parse().unwrap())
-                .set_yaw(args.value_of("yaw").unwrap_or("0").parse().unwrap()),
-        )
-        .flags(
-            Flags::new()
-                .enable_coriolis(!args.is_present("disable-coriolis"))
-                .enable_gravity(!args.is_present("disable-gravity"))
-                .enable_drag(!args.is_present("disable-drag")),
-        )
+    SimulationBuilder::default()
+        .set_pitch(args.value_of("pitch").unwrap_or("0").parse().unwrap())
+        .set_yaw(args.value_of("yaw").unwrap_or("0").parse().unwrap())
+        .use_coriolis(!args.is_present("disable-coriolis"))
+        .use_gravity(!args.is_present("disable-gravity"))
+        .use_drag(!args.is_present("disable-drag"))
         .time_step(
             args.value_of("time-step")
                 .unwrap_or("0.00005")
@@ -22,64 +16,54 @@ pub fn from_args(args: &ArgMatches) -> SimulationBuilder {
                 .unwrap(),
         )
         .expect("time-step")
-        .projectile(
-            Projectile::new()
-                .set_velocity(args.value_of("velocity").unwrap_or("2710").parse().unwrap())
-                .expect("velocity")
-                .set_grains(args.value_of("grains").unwrap_or("140").parse().unwrap())
-                .expect("grains")
-                .set_caliber(args.value_of("caliber").unwrap_or("0.264").parse().unwrap())
-                .expect("caliber"),
+        .set_velocity(args.value_of("velocity").unwrap_or("2710").parse().unwrap())
+        .expect("velocity")
+        .set_grains(args.value_of("grains").unwrap_or("140").parse().unwrap())
+        .expect("grains")
+        .set_caliber(args.value_of("caliber").unwrap_or("0.264").parse().unwrap())
+        .expect("caliber")
+        .set_height(
+            args.value_of("scope-height")
+                .unwrap_or("1.5")
+                .parse()
+                .unwrap(),
         )
-        .scope(
-            Scope::new()
-                .set_height(
-                    args.value_of("scope-height")
-                        .unwrap_or("1.5")
-                        .parse()
-                        .unwrap(),
-                )
-                .set_offset(
-                    args.value_of("scope-offset")
-                        .unwrap_or("0.0")
-                        .parse()
-                        .unwrap(),
-                ),
+        .set_offset(
+            args.value_of("scope-offset")
+                .unwrap_or("0.0")
+                .parse()
+                .unwrap(),
         )
-        .conditions(
-            Conditions::new()
-                .set_temperature(
-                    args.value_of("temperature")
-                        .unwrap_or("68")
-                        .parse()
-                        .unwrap(),
-                )
-                .expect("temperature")
-                .set_pressure(
-                    args.value_of("pressure")
-                        .unwrap_or("29.92")
-                        .parse()
-                        .unwrap(),
-                )
-                .expect("pressure")
-                .set_humidity(args.value_of("humidity").unwrap_or("0").parse().unwrap())
-                .expect("humidity")
-                .set_wind_speed(args.value_of("wind-speed").unwrap_or("0").parse().unwrap())
-                .expect("wind-speed")
-                .set_wind_angle(args.value_of("wind-angle").unwrap_or("0").parse().unwrap())
-                .expect("wind-angle")
-                .set_shot_angle(args.value_of("shot-angle").unwrap_or("0").parse().unwrap())
-                .expect("shot-angle")
-                .set_lattitude(args.value_of("lattitude").unwrap_or("0").parse().unwrap())
-                .expect("lattitude")
-                .set_bearing(args.value_of("bearing").unwrap_or("0").parse().unwrap())
-                .expect("bearing")
-                .set_gravity(
-                    args.value_of("gravity")
-                        .unwrap_or("-32.174")
-                        .parse()
-                        .unwrap(),
-                ),
-        );
-    builder
+        .set_temperature(
+            args.value_of("temperature")
+                .unwrap_or("68")
+                .parse()
+                .unwrap(),
+        )
+        .expect("temperature")
+        .set_pressure(
+            args.value_of("pressure")
+                .unwrap_or("29.92")
+                .parse()
+                .unwrap(),
+        )
+        .expect("pressure")
+        .set_humidity(args.value_of("humidity").unwrap_or("0").parse().unwrap())
+        .expect("humidity")
+        .set_wind_speed(args.value_of("wind-speed").unwrap_or("0").parse().unwrap())
+        .expect("wind-speed")
+        .set_wind_angle(args.value_of("wind-angle").unwrap_or("0").parse().unwrap())
+        .expect("wind-angle")
+        .set_shot_angle(args.value_of("shot-angle").unwrap_or("0").parse().unwrap())
+        .expect("shot-angle")
+        .set_lattitude(args.value_of("lattitude").unwrap_or("0").parse().unwrap())
+        .expect("lattitude")
+        .set_bearing(args.value_of("bearing").unwrap_or("0").parse().unwrap())
+        .expect("bearing")
+        .set_gravity(
+            args.value_of("gravity")
+                .unwrap_or("-32.174")
+                .parse()
+                .unwrap(),
+        )
 }
