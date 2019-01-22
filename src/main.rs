@@ -14,28 +14,15 @@ fn main() {
 
     let builder = build::from_args(&args);
 
-    let simulation = if args.is_present("flat") {
-        MySimulation(builder.using_zero_conditions(
-            args.value_of("pitch").unwrap_or("0").parse().unwrap(),
-            args.value_of("yaw").unwrap_or("0").parse().unwrap(),
-        ))
-    } else {
-        MySimulation(builder.solve_for(
-            args.value_of("zero-distance")
-                .unwrap_or("200")
-                .parse()
-                .unwrap(),
-            args.value_of("zero-height").unwrap_or("0").parse().unwrap(),
-            args.value_of("zero-offset").unwrap_or("0").parse().unwrap(),
-            args.value_of("zero-tolerance")
-                .unwrap_or("0.001")
-                .parse()
-                .unwrap(),
-            args.value_of("pitch").unwrap_or("0").parse().unwrap(),
-            args.value_of("yaw").unwrap_or("0").parse().unwrap(),
-        ))
-    };
-
+    let simulation =
+        MySimulation(builder.create_with(
+            Angles::new()
+                .with_pitch(
+                    args.value_of("pitch").unwrap_or("0").parse().unwrap())
+                .with_yaw(
+                    args.value_of("yaw").unwrap_or("0").parse().unwrap(),
+                )
+        ));
     let table = simulation.table(
         args.value_of("table-step")
             .unwrap_or("100")

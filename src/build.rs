@@ -2,8 +2,8 @@ use clap::ArgMatches;
 
 use point_mass_ballistics::model::*;
 
-pub fn from_args(args: &ArgMatches) -> Solver {
-    Solver::new()
+pub fn from_args(args: &ArgMatches) -> Builder {
+    Builder::new()
         .flags(
             Flags::new()
                 .enable_coriolis(
@@ -52,7 +52,7 @@ pub fn from_args(args: &ArgMatches) -> Solver {
                 .with_offset(
                     args.value_of("scope-offset").unwrap_or("0.0").parse().unwrap())
         )
-        .solve_conditions(
+        .conditions(
             Conditions::new()
                 .with_temperature(
                     args.value_of("temperature").unwrap_or("68").parse().unwrap())
@@ -80,34 +80,5 @@ pub fn from_args(args: &ArgMatches) -> Solver {
                     .expect("bearing")
                 .with_gravity(
                     args.value_of("gravity").unwrap_or("-32.174").parse().unwrap())
-        )
-        .zero_conditions(
-            Conditions::new()
-                .with_temperature(
-                    args.value_of("zero-temperature").unwrap_or("68").parse().unwrap())
-                    .expect("zero-temperature")
-                .with_pressure(
-                    args.value_of("zero-pressure").unwrap_or("29.92").parse().unwrap())
-                    .expect("zero-pressure")
-                .with_humidity(
-                    args.value_of("zero-humidity").unwrap_or("0").parse().unwrap())
-                    .expect("zero-humidity")
-                .with_wind_speed(
-                    args.value_of("zero-wind-speed").unwrap_or("0").parse().unwrap())
-                    .expect("zero-wind-speed")
-                .with_wind_angle(
-                    args.value_of("zero-wind-angle").unwrap_or("0").parse().unwrap())
-                    .expect("zero-wind-angle")
-                .with_shot_angle(
-                    args.value_of("zero-shot-angle").unwrap_or("0").parse().unwrap())
-                    .expect("zero-shot-angle")
-                .with_lattitude(
-                    args.value_of("zero-lattitude").unwrap_or("0").parse().unwrap())
-                    .expect("zero-lattitude")
-                .with_bearing(
-                    args.value_of("zero-bearing").unwrap_or("0").parse().unwrap())
-                    .expect("zero-bearing")
-                .with_gravity(
-                    args.value_of("zero-gravity").unwrap_or("-32.174").parse().unwrap())
         )
 }
