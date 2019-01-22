@@ -17,9 +17,9 @@ fn main() {
     let simulation =
         MySimulation(builder.create_with(
             Angles::new()
-                .with_pitch(
+                .set_pitch(
                     args.value_of("pitch").unwrap_or("0").parse().unwrap())
-                .with_yaw(
+                .set_yaw(
                     args.value_of("yaw").unwrap_or("0").parse().unwrap(),
                 )
         ));
@@ -47,8 +47,8 @@ fn main() {
     }
 }
 
-struct MySimulation<'a>(Simulation<'a>);
-impl MySimulation<'_> {
+struct MySimulation(Simulation);
+impl MySimulation {
     fn table(
         &self,
         step: Natural,
