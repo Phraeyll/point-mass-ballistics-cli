@@ -1,10 +1,7 @@
 use super::helper::Adjustment::*;
 use point_mass_ballistics::model::*;
 
-pub fn print<'s>(
-    table: impl IntoIterator<Item = Packet<'s>>,
-    output_tolerance: Numeric,
-) {
+pub fn print<'s>(table: impl IntoIterator<Item = Packet<'s>>, output_tolerance: Numeric) {
     let divider = "+--------------+----------+---------------+-------------+------------+------------+----------------+--------------+----------+";
     println!("{}", divider);
     println!(

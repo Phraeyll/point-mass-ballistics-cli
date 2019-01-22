@@ -1,3 +1,4 @@
+use build::*;
 use point_mass_ballistics::model::*;
 use printer::{plain, pretty};
 
@@ -12,9 +13,8 @@ mod printer {
 fn main() {
     let args = cli::parse().get_matches();
 
-    let builder = build::from_args(&args);
-
-    let simulation = builder.init_with(
+    let flat_builder = base(&args).with_zero_conditions(&args);
+    let flat = flat_builder.init_with(
         Bc::with(
             args.value_of("bc").unwrap_or("0.305").parse().unwrap(),
             match args.value_of("bc-type").unwrap_or("g7") {
@@ -33,7 +33,26 @@ fn main() {
         )
         .expect("bc + bc-type"),
     );
-    let table = simulation.table(
+    let solved_before_conditions = flat
+        .zero(
+            args.value_of("zero-distance")
+                .unwrap_or("200")
+                .parse()
+                .unwrap(),
+            args.value_of("zero-height").unwrap_or("0").parse().unwrap(),
+            args.value_of("zero-offset").unwrap_or("0").parse().unwrap(),
+            args.value_of("zero-tolerance")
+                .unwrap_or("0.001")
+                .parse()
+                .unwrap(),
+        )
+        .expect("zero_err");
+    let solved_builder = SimulationBuilder::from(solved_before_conditions)
+        .with_conditions(&args)
+        .increment_by(&args);
+    let solved = Simulation::from(solved_builder);
+
+    let table = solved.table(
         args.value_of("table-step")
             .unwrap_or("100")
             .parse()
@@ -61,20 +80,12 @@ trait Tabular
 where
     Self: IntoIterator,
 {
-    fn table(
-        self,
-        step: Natural,
-        range_start: Natural,
-        range_end: Natural,
-    ) -> Vec<<Self as IntoIterator>::Item>;
+    type Collection: IntoIterator<Item = <Self as IntoIterator>::Item>;
+    fn table(self, step: Natural, range_start: Natural, range_end: Natural) -> Self::Collection;
 }
 impl<'s> Tabular for &'s Simulation {
-    fn table(
-        self,
-        step: Natural,
-        range_start: Natural,
-        range_end: Natural,
-    ) -> Vec<<Self as IntoIterator>::Item> {
+    type Collection = Vec<<Self as IntoIterator>::Item>;
+    fn table(self, step: Natural, range_start: Natural, range_end: Natural) -> Self::Collection {
         let mut iter = self.into_iter().fuse();
         (range_start..=range_end)
             .step_by(step as usize)
@@ -82,21 +93,6 @@ impl<'s> Tabular for &'s Simulation {
                 iter.by_ref()
                     .find(|p| p.distance() >= Numeric::from(current_step))
             })
-            .collect::<Vec<_>>()
+            .collect::<Self::Collection>()
     }
 }
-
-// struct MySimulation(Simulation);
-// impl MySimulation {
-//     fn table(&self, step: Natural, range_start: Natural, range_end: Natural) -> Vec<Packet<'_>> {
-//         let mut iter = self.0.into_iter().fuse();
-//         (range_start..=range_end)
-//             .step_by(step as usize)
-//             .filter_map(|current_step| {
-//                 iter.by_ref()
-//                     .find(|p| p.distance() >= Numeric::from(current_step))
-//             })
-//             .collect::<Vec<_>>()
-//     }
-// }
-//
