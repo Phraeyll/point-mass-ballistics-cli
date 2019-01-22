@@ -6,7 +6,7 @@ edition = "2018"
 
 [dependencies]
 clap = "^2.32"
-point-mass-ballistics = { path = "../flat" }
+point-mass-ballistics = { path = "../point-mass-ballistics" }
 
 [[bin]]
 name = "cli"
