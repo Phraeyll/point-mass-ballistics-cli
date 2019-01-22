@@ -14,15 +14,27 @@ fn main() {
 
     let builder = build::from_args(&args);
 
-    let simulation =
-        MySimulation(builder.create_with(
-            Angles::new()
-                .set_pitch(
-                    args.value_of("pitch").unwrap_or("0").parse().unwrap())
-                .set_yaw(
-                    args.value_of("yaw").unwrap_or("0").parse().unwrap(),
-                )
-        ));
+    let simulation = MySimulation(
+        builder.init_with(
+            Bc::with(
+                args.value_of("bc").unwrap_or("0.305").parse().unwrap(),
+                match args.value_of("bc-type").unwrap_or("g7") {
+                    "G1" | "g1" => G1,
+                    "G2" | "g2" => G2,
+                    "G5" | "g5" => G5,
+                    "G6" | "g6" => G6,
+                    "G7" | "g7" => G7,
+                    "G8" | "g8" => G8,
+                    "GI" | "gi" => GI,
+                    "GS" | "gs" => GS,
+                    _ => panic!(
+                        "bc-type invalid - please use a valid variant <G1 G2 G5 G6 G7 G8 GI GS>"
+                    ),
+                },
+            )
+            .expect("bc + bc-type"),
+        ),
+    );
     let table = simulation.table(
         args.value_of("table-step")
             .unwrap_or("100")
@@ -49,12 +61,7 @@ fn main() {
 
 struct MySimulation(Simulation);
 impl MySimulation {
-    fn table(
-        &self,
-        step: Natural,
-        range_start: Natural,
-        range_end: Natural,
-    ) -> Vec<Packet<'_>> {
+    fn table(&self, step: Natural, range_start: Natural, range_end: Natural) -> Vec<Packet<'_>> {
         let mut iter = self.0.into_iter().fuse();
         (range_start..=range_end)
             .step_by(step as usize)
