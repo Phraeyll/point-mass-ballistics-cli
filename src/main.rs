@@ -1,6 +1,5 @@
 use build::*;
 use point_mass_ballistics::model::*;
-use std::error::Error as StdError;
 use printer::{plain, pretty};
 
 mod build;
