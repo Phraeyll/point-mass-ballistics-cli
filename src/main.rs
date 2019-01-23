@@ -13,7 +13,19 @@ mod printer {
 fn main() {
     let args = cli::parse().get_matches();
 
-    let solved = zeroed_simulation(&args);
+    let flat_model = flat_model_builder(&args);
+    let zeroed_simulation = match flat_model {
+        Ok(result) => zero_simulation(&args, result),
+        Err(err) => panic!(err),
+    };
+    let solved_builder = match zeroed_simulation {
+        Ok(result) => solution_builder(&args, result),
+        Err(err) => panic!(err),
+    };
+    let solved = match solved_builder {
+        Ok(result) => Simulation::from(result),
+        Err(err) => panic!(err),
+    };
 
     let table = solved.table(
         args.value_of("table-step")
@@ -38,7 +50,6 @@ fn main() {
         plain::print(table, output_tolerance);
     }
 }
-
 
 trait Tabular
 where

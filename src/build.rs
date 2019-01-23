@@ -3,8 +3,8 @@ use clap::ArgMatches;
 use point_mass_ballistics::error::Result;
 use point_mass_ballistics::model::builder::*;
 
-pub fn zeroed_simulation(args: &ArgMatches) -> Result<Simulation> {
-    let flat_simulation = Ok(SimulationBuilder::default()
+pub fn flat_model_builder(args: &ArgMatches) -> Result<SimulationBuilder> {
+    Ok(SimulationBuilder::default()
         .time_step(
             args.value_of("time-step")
                 .unwrap_or("0.00005")
@@ -79,7 +79,11 @@ pub fn zeroed_simulation(args: &ArgMatches) -> Result<Simulation> {
                 .unwrap_or("-32.174")
                 .parse()
                 .unwrap(),
-        )?.init_with(
+        )?)
+}
+pub fn zero_simulation(args: &ArgMatches, builder: SimulationBuilder) -> Result<Simulation> {
+    Ok(builder
+        .init_with(
             args.value_of("bc").unwrap_or("0.305").parse().unwrap(),
             match args.value_of("bc-type").unwrap_or("g7") {
                 "G1" | "g1" => G1,
@@ -90,8 +94,10 @@ pub fn zeroed_simulation(args: &ArgMatches) -> Result<Simulation> {
                 "G8" | "g8" => G8,
                 "GI" | "gi" => GI,
                 "GS" | "gs" => GS,
+                _ => panic!("Invalid BC Type"),
             },
-        )?.zero(
+        )?
+        .zero(
             args.value_of("zero-distance")
                 .unwrap_or("200")
                 .parse()
@@ -102,41 +108,37 @@ pub fn zeroed_simulation(args: &ArgMatches) -> Result<Simulation> {
                 .unwrap_or("0.001")
                 .parse()
                 .unwrap(),
-        )?);
-    let zeroed_builder = match flat_simulation {
-        Ok(result) => Ok(SimulationBuilder::from(result)
-            .use_coriolis(!args.is_present("disable-coriolis"))?
-            .use_gravity(!args.is_present("disable-gravity"))?
-            .use_drag(!args.is_present("disable-drag"))?
-            .set_temperature(
-                args.value_of("temperature")
-                    .unwrap_or("68")
-                    .parse()
-                    .unwrap(),
-            )?
-            .set_pressure(
-                args.value_of("pressure")
-                    .unwrap_or("29.92")
-                    .parse()
-                    .unwrap(),
-            )?
-            .set_humidity(args.value_of("humidity").unwrap_or("0").parse().unwrap())?
-            .set_wind_speed(args.value_of("wind-speed").unwrap_or("0").parse().unwrap())?
-            .set_wind_angle(args.value_of("wind-angle").unwrap_or("0").parse().unwrap())?
-            .set_shot_angle(args.value_of("shot-angle").unwrap_or("0").parse().unwrap())?
-            .set_lattitude(args.value_of("lattitude").unwrap_or("0").parse().unwrap())?
-            .set_bearing(args.value_of("bearing").unwrap_or("0").parse().unwrap())?
-            .set_gravity(
-                args.value_of("gravity")
-                    .unwrap_or("-32.174")
-                    .parse()
-                    .unwrap(),
-            )?
-            .increment_pitch(args.value_of("pitch").unwrap_or("0").parse().unwrap())?
-            .increment_yaw(args.value_of("yaw").unwrap_or("0").parse().unwrap())?,
-        )
-    };
-    match zeroed_builder {
-        Ok(result) => Ok(Simulation::from(result)),
-    }
+        )?)
+}
+pub fn solution_builder(args: &ArgMatches, simulation: Simulation) -> Result<SimulationBuilder> {
+    Ok(SimulationBuilder::from(simulation)
+        .use_coriolis(!args.is_present("disable-coriolis"))?
+        .use_gravity(!args.is_present("disable-gravity"))?
+        .use_drag(!args.is_present("disable-drag"))?
+        .set_temperature(
+            args.value_of("temperature")
+                .unwrap_or("68")
+                .parse()
+                .unwrap(),
+        )?
+        .set_pressure(
+            args.value_of("pressure")
+                .unwrap_or("29.92")
+                .parse()
+                .unwrap(),
+        )?
+        .set_humidity(args.value_of("humidity").unwrap_or("0").parse().unwrap())?
+        .set_wind_speed(args.value_of("wind-speed").unwrap_or("0").parse().unwrap())?
+        .set_wind_angle(args.value_of("wind-angle").unwrap_or("0").parse().unwrap())?
+        .set_shot_angle(args.value_of("shot-angle").unwrap_or("0").parse().unwrap())?
+        .set_lattitude(args.value_of("lattitude").unwrap_or("0").parse().unwrap())?
+        .set_bearing(args.value_of("bearing").unwrap_or("0").parse().unwrap())?
+        .set_gravity(
+            args.value_of("gravity")
+                .unwrap_or("-32.174")
+                .parse()
+                .unwrap(),
+        )?
+        .increment_pitch(args.value_of("pitch").unwrap_or("0").parse().unwrap())?
+        .increment_yaw(args.value_of("yaw").unwrap_or("0").parse().unwrap())?)
 }
