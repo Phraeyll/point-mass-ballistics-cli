@@ -13,44 +13,7 @@ mod printer {
 fn main() {
     let args = cli::parse().get_matches();
 
-    let flat_builder = base(&args).with_zero_conditions(&args);
-    let flat = flat_builder.init_with(
-        Bc::with(
-            args.value_of("bc").unwrap_or("0.305").parse().unwrap(),
-            match args.value_of("bc-type").unwrap_or("g7") {
-                "G1" | "g1" => G1,
-                "G2" | "g2" => G2,
-                "G5" | "g5" => G5,
-                "G6" | "g6" => G6,
-                "G7" | "g7" => G7,
-                "G8" | "g8" => G8,
-                "GI" | "gi" => GI,
-                "GS" | "gs" => GS,
-                _ => {
-                    panic!("bc-type invalid - please use a valid variant <G1 G2 G5 G6 G7 G8 GI GS>")
-                }
-            },
-        )
-        .expect("bc + bc-type"),
-    );
-    let solved_before_conditions = flat
-        .zero(
-            args.value_of("zero-distance")
-                .unwrap_or("200")
-                .parse()
-                .unwrap(),
-            args.value_of("zero-height").unwrap_or("0").parse().unwrap(),
-            args.value_of("zero-offset").unwrap_or("0").parse().unwrap(),
-            args.value_of("zero-tolerance")
-                .unwrap_or("0.001")
-                .parse()
-                .unwrap(),
-        )
-        .expect("zero_err");
-    let solved_builder = SimulationBuilder::from(solved_before_conditions)
-        .with_conditions(&args)
-        .increment_by(&args);
-    let solved = Simulation::from(solved_builder);
+    let solved = zeroed_simulation(&args);
 
     let table = solved.table(
         args.value_of("table-step")
@@ -75,6 +38,7 @@ fn main() {
         plain::print(table, output_tolerance);
     }
 }
+
 
 trait Tabular
 where
