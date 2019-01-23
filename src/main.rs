@@ -14,20 +14,35 @@ fn main() {
     let args = cli::parse().get_matches();
 
     let flat_model_builder = flat_model_builder(&args);
-    let zeroed_simulation = match flat_model_builder {
-        Ok(result) => zero_simulation(&args, result),
-        Err(err) => panic!(err),
-    };
-    let solved_builder = match zeroed_simulation {
-        Ok(result) => solution_builder(&args, result),
-        Err(err) => panic!(err),
-    };
-    let solved = match solved_builder {
-        Ok(result) => Simulation::from(result),
+
+    let flat_simulation = match flat_model_builder {
+        Ok(result) => flat_simulation(&args, result),
         Err(err) => panic!(err),
     };
 
-    let table = solved.table(
+    let chosen = if args.is_present("flat") {
+        match flat_simulation {
+            Ok(result) => SimulationBuilder::from(result),
+            Err(err) => panic!(err)
+        }
+    } else {
+        let zeroed_simulation = match flat_simulation {
+            Ok(result) => zero_simulation(&args, result),
+            Err(err) => panic!(err),
+        };
+        let solved_builder = match zeroed_simulation {
+            Ok(result) => solution_builder(&args, result),
+            Err(err) => panic!(err),
+        };
+
+        match solved_builder {
+            Ok(result) => result,
+            Err(err) => panic!(err),
+        }
+    };
+    let unwrapped = adjust_with(&args, chosen).expect("");
+
+    let table = unwrapped.table(
         args.value_of("table-step")
             .unwrap_or("100")
             .parse()

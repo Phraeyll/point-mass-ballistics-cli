@@ -33,7 +33,7 @@ pub fn flat_model_builder(args: &ArgMatches) -> Result<SimulationBuilder> {
             args.value_of("scope-cant")
                 .unwrap_or("0.0")
                 .parse()
-                .unwrap()
+                .unwrap(),
         )?
         .set_temperature(
             args.value_of("zero-temperature")
@@ -90,34 +90,35 @@ pub fn flat_model_builder(args: &ArgMatches) -> Result<SimulationBuilder> {
                 .unwrap(),
         )?)
 }
-pub fn zero_simulation(args: &ArgMatches, builder: SimulationBuilder) -> Result<Simulation> {
-    Ok(builder
-        .init_with(
-            args.value_of("bc").unwrap_or("0.305").parse().unwrap(),
-            match args.value_of("bc-type").unwrap_or("g7") {
-                "G1" | "g1" => G1,
-                "G2" | "g2" => G2,
-                "G5" | "g5" => G5,
-                "G6" | "g6" => G6,
-                "G7" | "g7" => G7,
-                "G8" | "g8" => G8,
-                "GI" | "gi" => GI,
-                "GS" | "gs" => GS,
-                _ => panic!("Invalid BC Type"),
-            },
-        )?
-        .zero(
-            args.value_of("zero-distance")
-                .unwrap_or("200")
-                .parse()
-                .unwrap(),
-            args.value_of("zero-height").unwrap_or("0").parse().unwrap(),
-            args.value_of("zero-offset").unwrap_or("0").parse().unwrap(),
-            args.value_of("zero-tolerance")
-                .unwrap_or("0.001")
-                .parse()
-                .unwrap(),
-        )?)
+pub fn flat_simulation(args: &ArgMatches, builder: SimulationBuilder) -> Result<Simulation> {
+    Ok(builder.init_with(
+        args.value_of("bc").unwrap_or("0.305").parse().unwrap(),
+        match args.value_of("bc-type").unwrap_or("g7") {
+            "G1" | "g1" => G1,
+            "G2" | "g2" => G2,
+            "G5" | "g5" => G5,
+            "G6" | "g6" => G6,
+            "G7" | "g7" => G7,
+            "G8" | "g8" => G8,
+            "GI" | "gi" => GI,
+            "GS" | "gs" => GS,
+            _ => panic!("Invalid BC Type"),
+        },
+    )?)
+}
+pub fn zero_simulation(args: &ArgMatches, simulation: Simulation) -> Result<Simulation> {
+    Ok(simulation.zero(
+        args.value_of("zero-distance")
+            .unwrap_or("200")
+            .parse()
+            .unwrap(),
+        args.value_of("zero-height").unwrap_or("0").parse().unwrap(),
+        args.value_of("zero-offset").unwrap_or("0").parse().unwrap(),
+        args.value_of("zero-tolerance")
+            .unwrap_or("0.001")
+            .parse()
+            .unwrap(),
+    )?)
 }
 pub fn solution_builder(args: &ArgMatches, simulation: Simulation) -> Result<SimulationBuilder> {
     Ok(SimulationBuilder::from(simulation)
@@ -144,7 +145,12 @@ pub fn solution_builder(args: &ArgMatches, simulation: Simulation) -> Result<Sim
                 .unwrap_or("-32.174")
                 .parse()
                 .unwrap(),
-        )?
-        .increment_pitch(args.value_of("pitch").unwrap_or("0").parse().unwrap())?
-        .increment_yaw(args.value_of("yaw").unwrap_or("0").parse().unwrap())?)
+        )?)
+}
+pub fn adjust_with(args: &ArgMatches, builder: SimulationBuilder) -> Result<Simulation> {
+    Ok(Simulation::from(
+        builder
+            .increment_pitch(args.value_of("pitch").unwrap_or("0").parse().unwrap())?
+            .increment_yaw(args.value_of("yaw").unwrap_or("0").parse().unwrap())?,
+    ))
 }
