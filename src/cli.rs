@@ -83,11 +83,25 @@ pub fn parse<'a, 'b>() -> App<'a, 'b> {
                 .help("Scope Offset left/right of Boreline (Inches)"),
         )
         .arg(
+            Arg::with_name("scope-pitch")
+                .allow_hyphen_values(true)
+                .long("scope-pitch")
+                .takes_value(true)
+                .help("Manual Scope Pitch Adjustment (MOA - Minutes of Angle)"),
+        )
+        .arg(
+            Arg::with_name("scope-yaw")
+                .allow_hyphen_values(true)
+                .long("scope-yaw")
+                .takes_value(true)
+                .help("Manual Scope Yaw Adjustment (MOA - Minutes of Angle)"),
+        )
+        .arg(
             Arg::with_name("scope-cant")
                 .allow_hyphen_values(true)
                 .long("scope-cant")
                 .takes_value(true)
-                .help("Scope Cant/Roll Clockwise from Shooter"),
+                .help("Manual Scope Cant/Roll Adjustment (Degrees)"),
         )
         .arg(
             Arg::with_name("wind-speed")
@@ -236,20 +250,6 @@ pub fn parse<'a, 'b>() -> App<'a, 'b> {
                 .long("zero-tolerance")
                 .takes_value(true)
                 .help("Zero Tolerance (Inches)"),
-        )
-        .arg(
-            Arg::with_name("pitch")
-                .allow_hyphen_values(true)
-                .long("pitch")
-                .takes_value(true)
-                .help("Manual Pitch Adjustment (MOA - Minutes of Angle)"),
-        )
-        .arg(
-            Arg::with_name("yaw")
-                .allow_hyphen_values(true)
-                .long("yaw")
-                .takes_value(true)
-                .help("Manual Yaw Adjustment (MOA - Minutes of Angle)"),
         )
         .arg(
             Arg::with_name("table-start")

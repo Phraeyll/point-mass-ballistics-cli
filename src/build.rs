@@ -147,10 +147,3 @@ pub fn solution_builder(args: &ArgMatches, simulation: Simulation) -> Result<Sim
                 .unwrap(),
         )?)
 }
-pub fn adjust_with(args: &ArgMatches, builder: SimulationBuilder) -> Result<Simulation> {
-    Ok(Simulation::from(
-        builder
-            .increment_pitch(args.value_of("pitch").unwrap_or("0").parse().unwrap())?
-            .increment_yaw(args.value_of("yaw").unwrap_or("0").parse().unwrap())?,
-    ))
-}

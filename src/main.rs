@@ -20,10 +20,10 @@ fn main() {
         Err(err) => panic!(err),
     };
 
-    let chosen = if args.is_present("flat") {
+    let mut chosen = Simulation::from(if args.is_present("flat") {
         match flat_simulation {
             Ok(result) => SimulationBuilder::from(result),
-            Err(err) => panic!(err)
+            Err(err) => panic!(err),
         }
     } else {
         let zeroed_simulation = match flat_simulation {
@@ -39,10 +39,11 @@ fn main() {
             Ok(result) => result,
             Err(err) => panic!(err),
         }
-    };
-    let unwrapped = adjust_with(&args, chosen).expect("");
+    });
+    chosen.increment_scope_pitch(args.value_of("scope-pitch").unwrap_or("0").parse().unwrap());
+    chosen.increment_scope_yaw(args.value_of("scope-yaw").unwrap_or("0").parse().unwrap());
 
-    let table = unwrapped.table(
+    let table = chosen.table(
         args.value_of("table-step")
             .unwrap_or("100")
             .parse()
