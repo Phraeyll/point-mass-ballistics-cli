@@ -1,5 +1,6 @@
 use build::*;
 use point_mass_ballistics::model::*;
+use std::error::Error as StdError;
 use printer::{plain, pretty};
 
 mod build;
@@ -13,8 +14,8 @@ mod printer {
 fn main() {
     let args = cli::parse().get_matches();
 
-    let flat_model = flat_model_builder(&args);
-    let zeroed_simulation = match flat_model {
+    let flat_model_builder = flat_model_builder(&args);
+    let zeroed_simulation = match flat_model_builder {
         Ok(result) => zero_simulation(&args, result),
         Err(err) => panic!(err),
     };
