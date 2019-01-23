@@ -29,6 +29,12 @@ pub fn flat_model_builder(args: &ArgMatches) -> Result<SimulationBuilder> {
                 .parse()
                 .unwrap(),
         )?
+        .set_roll(
+            args.value_of("scope-cant")
+                .unwrap_or("0.0")
+                .parse()
+                .unwrap()
+        )?
         .set_temperature(
             args.value_of("zero-temperature")
                 .unwrap_or("68")

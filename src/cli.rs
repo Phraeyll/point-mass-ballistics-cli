@@ -83,6 +83,13 @@ pub fn parse<'a, 'b>() -> App<'a, 'b> {
                 .help("Scope Offset left/right of Boreline (Inches)"),
         )
         .arg(
+            Arg::with_name("scope-cant")
+                .allow_hyphen_values(true)
+                .long("scope-cant")
+                .takes_value(true)
+                .help("Scope Cant/Roll Clockwise from Shooter"),
+        )
+        .arg(
             Arg::with_name("wind-speed")
                 .long("wind-speed")
                 .takes_value(true)
