@@ -11,6 +11,9 @@ pub fn flat_model_builder(args: &ArgMatches) -> Result<SimulationBuilder> {
                 .parse()
                 .unwrap(),
         )?
+        .use_coriolis(!args.is_present("disable-coriolis"))?
+        .use_gravity(!args.is_present("disable-gravity"))?
+        .use_drag(!args.is_present("disable-drag"))?
         .set_velocity(args.value_of("velocity").unwrap_or("2710").parse().unwrap())?
         .set_grains(args.value_of("grains").unwrap_or("140").parse().unwrap())?
         .set_caliber(args.value_of("caliber").unwrap_or("0.264").parse().unwrap())?
@@ -112,9 +115,6 @@ pub fn zero_simulation(args: &ArgMatches, builder: SimulationBuilder) -> Result<
 }
 pub fn solution_builder(args: &ArgMatches, simulation: Simulation) -> Result<SimulationBuilder> {
     Ok(SimulationBuilder::from(simulation)
-        .use_coriolis(!args.is_present("disable-coriolis"))?
-        .use_gravity(!args.is_present("disable-gravity"))?
-        .use_drag(!args.is_present("disable-drag"))?
         .set_temperature(
             args.value_of("temperature")
                 .unwrap_or("68")
