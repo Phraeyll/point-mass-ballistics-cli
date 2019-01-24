@@ -1,7 +1,7 @@
 use clap::ArgMatches;
 
 use point_mass_ballistics::error::Result;
-use point_mass_ballistics::model::builder::*;
+use point_mass_ballistics::model::core::*;
 
 pub fn flat_model_builder(args: &ArgMatches) -> Result<SimulationBuilder> {
     Ok(SimulationBuilder::default()
