@@ -1,4 +1,5 @@
 use build::*;
+use point_mass_ballistics::error::Error;
 use point_mass_ballistics::model::*;
 use printer::{plain, pretty};
 
@@ -10,16 +11,14 @@ mod printer {
     pub mod pretty;
 }
 
-fn main() {
+fn main() -> Result<(), Error> {
     let args = cli::parse().get_matches();
 
     let flat_model_builder = flat_model_builder(&args);
-
     let flat_simulation = match flat_model_builder {
         Ok(result) => flat_simulation(&args, result),
         Err(err) => panic!(err),
     };
-
     let mut chosen = Simulation::from(if args.is_present("flat") {
         match flat_simulation {
             Ok(result) => SimulationBuilder::from(result),
@@ -43,6 +42,30 @@ fn main() {
     chosen.increment_scope_pitch(args.value_of("scope-pitch").unwrap_or("0").parse().unwrap());
     chosen.increment_scope_yaw(args.value_of("scope-yaw").unwrap_or("0").parse().unwrap());
 
+    // let builder = flat_model_builder(&args);
+    // let try_build = match builder {
+    //     Ok(builder) => flat_simulation(&args, builder),
+    //     Err(err) => panic!(err),
+    // };
+    // let try_zero = match try_build {
+    //     Ok(built) => zero_simulation(&args, built),
+    //     Err(err) => panic!(err),
+    // };
+    // let chosen = match try_zero {
+    //     Ok(zeroed) => zeroed,
+    //     Err(err) => panic!(err),
+    // };
+
+
+    // let flat = Simulation::from(test_builder());
+    // let flat = Simulation::from(SimulationBuilder::default());
+    // let chosen = match flat.zero(200.0, 0.0, 0.0, 0.001) {
+    //     Ok(result) => result,
+    //     Err(err) => panic!(err),
+    // };
+    // let mut chosen = Simulation::from(test_builder());
+    // chosen.try_mut_zero(200.0, 0.0, 0.0, 0.001)?;
+
     let table = chosen.table(
         args.value_of("table-step")
             .unwrap_or("100")
@@ -65,6 +88,7 @@ fn main() {
     } else {
         plain::print(table, output_tolerance);
     }
+    Ok(())
 }
 
 trait Tabular
