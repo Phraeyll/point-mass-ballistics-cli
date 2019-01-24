@@ -3,49 +3,49 @@ use clap::ArgMatches;
 use point_mass_ballistics::error::Result;
 use point_mass_ballistics::model::core::*;
 
-pub fn test_builder() -> SimulationBuilder {
-    SimulationBuilder {
-        flags: FlagsBuilder {
-            coriolis: true,
-            drag: true,
-            gravity: true,
-        },
-        projectile: ProjectileBuilder {
-            weight: WeightMass::Grains(140.0),
-            caliber: Length::Inches(0.264),
-            bc: create_bc(0.305, G7),
-            velocity: Velocity::Fps(2710.0),
-        },
-        scope: ScopeBuilder {
-            yaw: Angle::Minutes(0.0),
-            pitch: Angle::Minutes(0.0),
-            roll: Angle::Degrees(0.0),
-            height: Length::Inches(1.5),
-            offset: Length::Inches(0.0),
-        },
-        atmosphere: AtmosphereBuilder {
-            temperature: Temperature::F(68.0),
-            pressure: Pressure::Inhg(29.92),
-            humidity: 0.0,
-        },
-        wind: WindBuilder {
-            yaw: Angle::Degrees(0.0),
-            pitch: Angle::Degrees(0.0),
-            roll: Angle::Degrees(0.0),
-            velocity: Velocity::Mph(0.0),
-        },
-        shooter: ShooterBuilder {
-            yaw: Angle::Minutes(0.0),
-            pitch: Angle::Minutes(0.0),
-            roll: Angle::Degrees(0.0),
-            lattitude: Angle::Degrees(0.0),
-            gravity: default_gravity(),
-        },
-        time_step: 0.000_01,
-    }
-}
+// pub fn test_builder() -> SimulationBuilder {
+//     SimulationBuilder {
+//         flags: FlagsBuilder {
+//             coriolis: true,
+//             drag: true,
+//             gravity: true,
+//         },
+//         projectile: ProjectileBuilder {
+//             weight: WeightMass::Grains(140.0),
+//             caliber: Length::Inches(0.264),
+//             bc: BcBuilder::new(0.305, G7),
+//             velocity: Velocity::Fps(2710.0),
+//         },
+//         scope: ScopeBuilder {
+//             yaw: Angle::Minutes(0.0),
+//             pitch: Angle::Minutes(0.0),
+//             roll: Angle::Degrees(0.0),
+//             height: Length::Inches(1.5),
+//             offset: Length::Inches(0.0),
+//         },
+//         atmosphere: AtmosphereBuilder {
+//             temperature: Temperature::F(68.0),
+//             pressure: Pressure::Inhg(29.92),
+//             humidity: 0.0,
+//         },
+//         wind: WindBuilder {
+//             yaw: Angle::Degrees(0.0),
+//             pitch: Angle::Degrees(0.0),
+//             roll: Angle::Degrees(0.0),
+//             velocity: Velocity::Mph(0.0),
+//         },
+//         shooter: ShooterBuilder {
+//             yaw: Angle::Minutes(0.0),
+//             pitch: Angle::Minutes(0.0),
+//             roll: Angle::Degrees(0.0),
+//             lattitude: Angle::Degrees(0.0),
+//             gravity: default_gravity(),
+//         },
+//         time_step: 0.000_01,
+//     }
+// }
 
-pub fn flat_model_builder(args: &ArgMatches) -> Result<SimulationBuilder> {
+pub fn builder(args: &ArgMatches) -> Result<Simulation> {
     Ok(SimulationBuilder::default()
         .time_step(
             args.value_of("time-step")
@@ -53,30 +53,46 @@ pub fn flat_model_builder(args: &ArgMatches) -> Result<SimulationBuilder> {
                 .parse()
                 .unwrap(),
         )?
+        .set_bc(
+            args.value_of("bc").unwrap_or("0.305").parse().unwrap(),
+            match args.value_of("bc-type").unwrap_or("g7") {
+                "G1" | "g1" => G1,
+                "G2" | "g2" => G2,
+                "G5" | "g5" => G5,
+                "G6" | "g6" => G6,
+                "G7" | "g7" => G7,
+                "G8" | "g8" => G8,
+                "GI" | "gi" => GI,
+                "GS" | "gs" => GS,
+                _ => panic!("Invalid BC Type"),
+            },
+        )?
         .use_coriolis(!args.is_present("disable-coriolis"))?
         .use_gravity(!args.is_present("disable-gravity"))?
         .use_drag(!args.is_present("disable-drag"))?
         .set_velocity(args.value_of("velocity").unwrap_or("2710").parse().unwrap())?
         .set_grains(args.value_of("grains").unwrap_or("140").parse().unwrap())?
         .set_caliber(args.value_of("caliber").unwrap_or("0.264").parse().unwrap())?
-        .set_height(
+        .set_scope_height(
             args.value_of("scope-height")
                 .unwrap_or("1.5")
                 .parse()
                 .unwrap(),
         )?
-        .set_offset(
+        .set_scope_offset(
             args.value_of("scope-offset")
                 .unwrap_or("0.0")
                 .parse()
                 .unwrap(),
         )?
-        .set_roll(
+        .set_scope_roll(
             args.value_of("scope-cant")
                 .unwrap_or("0.0")
                 .parse()
                 .unwrap(),
         )?
+        .set_scope_pitch(args.value_of("scope-pitch").unwrap_or("0").parse().unwrap())?
+        .set_scope_yaw(args.value_of("scope-yaw").unwrap_or("0").parse().unwrap())?
         .set_temperature(
             args.value_of("zero-temperature")
                 .unwrap_or("68")
@@ -131,25 +147,10 @@ pub fn flat_model_builder(args: &ArgMatches) -> Result<SimulationBuilder> {
                 .parse()
                 .unwrap(),
         )?)
+    .init()
 }
-pub fn flat_simulation(args: &ArgMatches, builder: SimulationBuilder) -> Result<Simulation> {
-    Ok(builder.init_with(
-        args.value_of("bc").unwrap_or("0.305").parse().unwrap(),
-        match args.value_of("bc-type").unwrap_or("g7") {
-            "G1" | "g1" => G1,
-            "G2" | "g2" => G2,
-            "G5" | "g5" => G5,
-            "G6" | "g6" => G6,
-            "G7" | "g7" => G7,
-            "G8" | "g8" => G8,
-            "GI" | "gi" => GI,
-            "GS" | "gs" => GS,
-            _ => panic!("Invalid BC Type"),
-        },
-    )?)
-}
-pub fn zero_simulation(args: &ArgMatches, simulation: Simulation) -> Result<Simulation> {
-    Ok(simulation.zero(
+pub fn try_zero_simulation(args: &ArgMatches, simulation: &mut Simulation) -> Result<()> {
+    simulation.try_mut_zero(
         args.value_of("zero-distance")
             .unwrap_or("200")
             .parse()
@@ -160,9 +161,10 @@ pub fn zero_simulation(args: &ArgMatches, simulation: Simulation) -> Result<Simu
             .unwrap_or("0.001")
             .parse()
             .unwrap(),
-    )?)
+    )?;
+    Ok(())
 }
-pub fn solution_builder(args: &ArgMatches, simulation: Simulation) -> Result<SimulationBuilder> {
+pub fn solution_after_zero(args: &ArgMatches, simulation: Simulation) -> Result<Simulation> {
     Ok(SimulationBuilder::from(simulation)
         .set_temperature(
             args.value_of("temperature")
@@ -188,4 +190,5 @@ pub fn solution_builder(args: &ArgMatches, simulation: Simulation) -> Result<Sim
                 .parse()
                 .unwrap(),
         )?)
+    .init()
 }

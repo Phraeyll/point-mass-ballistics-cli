@@ -14,57 +14,13 @@ mod printer {
 fn main() -> Result<(), Error> {
     let args = cli::parse().get_matches();
 
-    let flat_model_builder = flat_model_builder(&args);
-    let flat_simulation = match flat_model_builder {
-        Ok(result) => flat_simulation(&args, result),
-        Err(err) => panic!(err),
-    };
-    let mut chosen = Simulation::from(if args.is_present("flat") {
-        match flat_simulation {
-            Ok(result) => SimulationBuilder::from(result),
-            Err(err) => panic!(err),
-        }
+    let mut simulation = builder(&args)?;
+    let chosen = if args.is_present("flat") {
+        simulation
     } else {
-        let zeroed_simulation = match flat_simulation {
-            Ok(result) => zero_simulation(&args, result),
-            Err(err) => panic!(err),
-        };
-        let solved_builder = match zeroed_simulation {
-            Ok(result) => solution_builder(&args, result),
-            Err(err) => panic!(err),
-        };
-
-        match solved_builder {
-            Ok(result) => result,
-            Err(err) => panic!(err),
-        }
-    });
-    chosen.increment_scope_pitch(args.value_of("scope-pitch").unwrap_or("0").parse().unwrap());
-    chosen.increment_scope_yaw(args.value_of("scope-yaw").unwrap_or("0").parse().unwrap());
-
-    // let builder = flat_model_builder(&args);
-    // let try_build = match builder {
-    //     Ok(builder) => flat_simulation(&args, builder),
-    //     Err(err) => panic!(err),
-    // };
-    // let try_zero = match try_build {
-    //     Ok(built) => zero_simulation(&args, built),
-    //     Err(err) => panic!(err),
-    // };
-    // let chosen = match try_zero {
-    //     Ok(zeroed) => zeroed,
-    //     Err(err) => panic!(err),
-    // };
-
-
-    // let flat = Simulation::from(test_builder());
-    // let flat = Simulation::from(SimulationBuilder::default());
-    // let chosen = match flat.zero(200.0, 0.0, 0.0, 0.001) {
-    //     Ok(result) => result,
-    //     Err(err) => panic!(err),
-    // };
-    // let mut chosen = Simulation::from(test_builder());
-    // chosen.try_mut_zero(200.0, 0.0, 0.0, 0.001)?;
+        try_zero_simulation(&args, &mut simulation)?;
+        solution_after_zero(&args, simulation)?
+    };
 
     let table = chosen.table(
         args.value_of("table-step")
