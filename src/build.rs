@@ -3,6 +3,48 @@ use clap::ArgMatches;
 use point_mass_ballistics::error::Result;
 use point_mass_ballistics::model::core::*;
 
+pub fn test_simulation(args: &ArgMatches) -> Simulation {
+    Simulation::from(SimulationBuilder {
+        flags: FlagsBuilder {
+            coriolis: true,
+            drag: true,
+            gravity: true,
+        },
+        projectile: ProjectileBuilder {
+            weight: WeightMass::Grains(140.0),
+            caliber: Length::Inches(0.264),
+            bc: set_bc(0.305, G7),
+            velocity: Velocity::Fps(2710.0),
+        },
+        scope: ScopeBuilder {
+            yaw: Angle::Minutes(0.0),
+            pitch: Angle::Minutes(0.0),
+            roll: Angle::Degrees(0.0),
+            height: Length::Inches(1.5),
+            offset: Length::Inches(0.0),
+        },
+        atmosphere: AtmosphereBuilder {
+            temperature: Temperature::F(68.0),
+            pressure: Pressure::Inhg(29.92),
+            humidity: 0.0,
+        },
+        wind: WindBuilder {
+            yaw: Angle::Degrees(0.0),
+            pitch: Angle::Degrees(0.0),
+            roll: Angle::Degrees(0.0),
+            velocity: Velocity::Mph(0.0),
+        },
+        shooter: ShooterBuilder {
+            yaw: Angle::Minutes(0.0),
+            pitch: Angle::Minutes(0.0),
+            roll: Angle::Degrees(0.0),
+            lattitude: Angle::Degrees(0.0),
+            gravity: default_gravity(),
+        },
+        time_step: 0.000_01,
+    })
+}
+
 pub fn flat_model_builder(args: &ArgMatches) -> Result<SimulationBuilder> {
     Ok(SimulationBuilder::default()
         .time_step(
