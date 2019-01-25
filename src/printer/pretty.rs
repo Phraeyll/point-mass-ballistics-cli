@@ -1,7 +1,11 @@
 use super::helper::Adjustment::*;
 use point_mass_ballistics::model::*;
 
-pub fn print<I: IntoIterator<Item = impl Output>>(table: I, output_tolerance: Numeric) {
+pub fn print<I>(table: I, output_tolerance: Numeric)
+where
+    I: IntoIterator,
+    <I as IntoIterator>::Item: Output,
+{
     let divider = "+--------------+----------+---------------+-------------+------------+------------+----------------+--------------+----------+";
     println!("{}", divider);
     println!(
