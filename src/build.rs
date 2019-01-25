@@ -46,7 +46,7 @@ use point_mass_ballistics::model::core::*;
 // }
 
 pub fn builder(args: &ArgMatches) -> Result<Simulation> {
-    Ok(SimulationBuilder::default()
+    let builder = SimulationBuilder::default()
         .time_step(
             args.value_of("time-step")
                 .unwrap_or("0.00005")
@@ -146,8 +146,8 @@ pub fn builder(args: &ArgMatches) -> Result<Simulation> {
                 .unwrap_or(&default_gravity().to_fps2().to_num().to_string())
                 .parse()
                 .unwrap(),
-        )?)
-    .init()
+        )?;
+    Ok(builder.init())
 }
 pub fn try_zero_simulation(args: &ArgMatches, simulation: &mut Simulation) -> Result<()> {
     simulation.try_mut_zero(
@@ -165,7 +165,7 @@ pub fn try_zero_simulation(args: &ArgMatches, simulation: &mut Simulation) -> Re
     Ok(())
 }
 pub fn solution_after_zero(args: &ArgMatches, simulation: Simulation) -> Result<Simulation> {
-    Ok(SimulationBuilder::from(simulation)
+    let builder = SimulationBuilder::from(simulation)
         .set_temperature(
             args.value_of("temperature")
                 .unwrap_or("68")
@@ -189,6 +189,6 @@ pub fn solution_after_zero(args: &ArgMatches, simulation: Simulation) -> Result<
                 .unwrap_or(&default_gravity().to_fps2().to_num().to_string())
                 .parse()
                 .unwrap(),
-        )?)
-    .init()
+        )?;
+    Ok(builder.init())
 }

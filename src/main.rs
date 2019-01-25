@@ -21,7 +21,6 @@ fn main() -> Result<(), Error> {
         try_zero_simulation(&args, &mut simulation)?;
         solution_after_zero(&args, simulation)?
     };
-    dbg!(&chosen);
 
     let table = chosen.table(
         args.value_of("table-step").unwrap_or("100").parse()
