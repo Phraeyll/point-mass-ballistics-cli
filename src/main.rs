@@ -21,12 +21,11 @@ fn main() -> Result<(), Error> {
         try_zero_simulation(&args, &mut simulation)?;
         solution_after_zero(&args, simulation)?
     };
+    dbg!(&chosen);
 
     let table = chosen.table(
-        args.value_of("table-step")
-            .unwrap_or("100")
-            .parse()
-            .unwrap(),
+        args.value_of("table-step").unwrap_or("100").parse()
+.unwrap(),
         args.value_of("table-start").unwrap_or("0").parse().unwrap(),
         args.value_of("table-end")
             .unwrap_or("1000")

@@ -53,6 +53,9 @@ pub fn builder(args: &ArgMatches) -> Result<Simulation> {
                 .parse()
                 .unwrap(),
         )?
+        .use_coriolis(!args.is_present("disable-coriolis"))?
+        .use_gravity(!args.is_present("disable-gravity"))?
+        .use_drag(!args.is_present("disable-drag"))?
         .set_bc(
             args.value_of("bc").unwrap_or("0.305").parse().unwrap(),
             match args.value_of("bc-type").unwrap_or("g7") {
@@ -67,9 +70,6 @@ pub fn builder(args: &ArgMatches) -> Result<Simulation> {
                 _ => panic!("Invalid BC Type"),
             },
         )?
-        .use_coriolis(!args.is_present("disable-coriolis"))?
-        .use_gravity(!args.is_present("disable-gravity"))?
-        .use_drag(!args.is_present("disable-drag"))?
         .set_velocity(args.value_of("velocity").unwrap_or("2710").parse().unwrap())?
         .set_grains(args.value_of("grains").unwrap_or("140").parse().unwrap())?
         .set_caliber(args.value_of("caliber").unwrap_or("0.264").parse().unwrap())?
@@ -143,7 +143,7 @@ pub fn builder(args: &ArgMatches) -> Result<Simulation> {
         )?
         .set_gravity(
             args.value_of("zero-gravity")
-                .unwrap_or("-32.174")
+                .unwrap_or(&default_gravity().to_fps2().to_num().to_string())
                 .parse()
                 .unwrap(),
         )?)
@@ -186,7 +186,7 @@ pub fn solution_after_zero(args: &ArgMatches, simulation: Simulation) -> Result<
         .set_bearing(args.value_of("bearing").unwrap_or("0").parse().unwrap())?
         .set_gravity(
             args.value_of("gravity")
-                .unwrap_or("-32.174")
+                .unwrap_or(&default_gravity().to_fps2().to_num().to_string())
                 .parse()
                 .unwrap(),
         )?)

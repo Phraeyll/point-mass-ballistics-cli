@@ -1,7 +1,8 @@
 use super::helper::Adjustment::*;
 use point_mass_ballistics::model::*;
+use point_mass_ballistics::model::iter::Output;
 
-pub fn print<'s>(table: impl IntoIterator<Item = Packet<'s>>, output_tolerance: Numeric) {
+pub fn print<I: IntoIterator<Item = impl Output>>(table: I, output_tolerance: Numeric) {
     println!(
         "{:>12} {:>8} {:>13} {:>11} {:>10} {:>10} {:>14} {:>12} {:>8}",
         "Distance(yd)",
