@@ -23,15 +23,16 @@ fn main() -> Result<(), Error> {
     };
 
     let table = chosen.table(
-        args.value_of("table-step").unwrap_or("100").parse()
-.unwrap(),
+        args.value_of("table-step")
+            .unwrap_or("100")
+            .parse()
+            .unwrap(),
         args.value_of("table-start").unwrap_or("0").parse().unwrap(),
         args.value_of("table-end")
             .unwrap_or("1000")
             .parse()
             .unwrap(),
     );
-
     let output_tolerance = args
         .value_of("table-tolerance")
         .unwrap_or("0.005")
@@ -42,6 +43,7 @@ fn main() -> Result<(), Error> {
     } else {
         plain::print(table, output_tolerance);
     }
+
     Ok(())
 }
 
