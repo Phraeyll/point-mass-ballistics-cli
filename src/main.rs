@@ -50,12 +50,15 @@ fn main() -> Result<(), Error> {
 trait Tabular
 where
     Self: IntoIterator,
+    <Self as IntoIterator>::Item: Output,
 {
-    type Collection: IntoIterator<Item = <Self as IntoIterator>::Item>;
+    type Out: Output;
+    type Collection: IntoIterator<Item = Self::Out>;
     fn table(self, step: Natural, range_start: Natural, range_end: Natural) -> Self::Collection;
 }
 impl<'s> Tabular for &'s Simulation {
-    type Collection = Vec<<Self as IntoIterator>::Item>;
+    type Out = <Self as IntoIterator>::Item;
+    type Collection = Vec<Self::Out>;
     fn table(self, step: Natural, range_start: Natural, range_end: Natural) -> Self::Collection {
         let mut iter = self.into_iter().fuse();
         (range_start..=range_end)
