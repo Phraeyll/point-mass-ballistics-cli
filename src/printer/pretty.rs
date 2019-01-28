@@ -4,7 +4,7 @@ use point_mass_ballistics::model::*;
 pub fn print<I>(table: I, output_tolerance: Numeric)
 where
     I: IntoIterator,
-    <I as IntoIterator>::Item: Output,
+    <I as IntoIterator>::Item: Measurements,
 {
     let divider = "+--------------+----------+---------------+-------------+------------+------------+----------------+--------------+----------+";
     println!("{}", divider);

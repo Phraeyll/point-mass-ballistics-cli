@@ -4,7 +4,7 @@ use point_mass_ballistics::model::*;
 pub fn print<I>(table: I, output_tolerance: Numeric)
 where
     I: IntoIterator,
-    <I as IntoIterator>::Item: Output,
+    <I as IntoIterator>::Item: Measurements,
 {
     println!(
         "{:>12} {:>8} {:>13} {:>11} {:>10} {:>10} {:>14} {:>12} {:>8}",

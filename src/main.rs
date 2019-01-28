@@ -50,9 +50,9 @@ fn main() -> Result<(), Error> {
 trait Tabular
 where
     Self: IntoIterator,
-    <Self as IntoIterator>::Item: Output,
+    <Self as IntoIterator>::Item: Measurements,
 {
-    type Out: Output;
+    type Out: Measurements;
     type Collection: IntoIterator<Item = Self::Out>;
     fn table(self, step: Natural, range_start: Natural, range_end: Natural) -> Self::Collection;
 }
