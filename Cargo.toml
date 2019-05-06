@@ -9,7 +9,7 @@ name = "cli"
 path = "src/main.rs"
 
 [dependencies.clap]
-version = "^2.32"
+version = "^2.33"
 
 [dependencies.point-mass-ballistics]
 git = "https://github.com/Phraeyll/point-mass-ballistics"
