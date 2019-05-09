@@ -15,14 +15,15 @@ fn main() -> Result<(), Error> {
     let args = cli::parse().get_matches();
 
     let mut simulation = builder(&args)?;
-    let chosen = if args.is_present("flat") {
+    let simulation = if args.is_present("flat") {
         simulation
     } else {
         try_zero_simulation(&args, &mut simulation)?;
         solution_after_zero(&args, simulation)?
     };
 
-    let table = chosen.table(
+    let table = table(
+        &simulation,
         args.value_of("table-step")
             .unwrap_or("100")
             .parse()
@@ -47,26 +48,17 @@ fn main() -> Result<(), Error> {
     Ok(())
 }
 
-trait Tabular
-where
-    Self: IntoIterator,
-    <Self as IntoIterator>::Item: Measurements,
-{
-    type Out: Measurements;
-    type Collection: IntoIterator<Item = Self::Out>;
-    fn table(self, step: Natural, range_start: Natural, range_end: Natural) -> Self::Collection;
-}
-impl<'s> Tabular for &'s Simulation {
-    type Out = <Self as IntoIterator>::Item;
-    type Collection = Vec<Self::Out>;
-    fn table(self, step: Natural, range_start: Natural, range_end: Natural) -> Self::Collection {
-        let mut iter = self.into_iter().fuse();
-        (range_start..=range_end)
-            .step_by(step as usize)
-            .filter_map(|current_step| {
-                iter.by_ref()
-                    .find(|p| p.distance() >= Numeric::from(current_step))
-            })
-            .collect::<Self::Collection>()
-    }
+fn table<'s>(
+    simulation: &'s Simulation,
+    step: Natural,
+    range_start: Natural,
+    range_end: Natural,
+) -> impl IntoIterator<Item = impl Measurements + 's> + 's {
+    let mut iter = simulation.into_iter().fuse();
+    (range_start..=range_end)
+        .step_by(step as usize)
+        .filter_map(move |current_step| {
+            iter.by_ref()
+                .find(|p| p.distance() >= Numeric::from(current_step))
+        })
 }
