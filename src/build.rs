@@ -101,7 +101,7 @@ pub fn builder(args: &ArgMatches) -> Result<Simulation> {
         )?
         .set_gravity(
             args.value_of("zero-gravity")
-                .unwrap_or(&default_gravity().to_fps2().to_num().to_string())
+                .unwrap_or("-32.1740")
                 .parse()
                 .unwrap(),
         )?
@@ -142,11 +142,6 @@ pub fn solution_after_zero(args: &ArgMatches, simulation: Simulation) -> Result<
         .set_shot_angle(args.value_of("shot-angle").unwrap_or("0").parse().unwrap())?
         .set_lattitude(args.value_of("lattitude").unwrap_or("0").parse().unwrap())?
         .set_bearing(args.value_of("bearing").unwrap_or("0").parse().unwrap())?
-        .set_gravity(
-            args.value_of("gravity")
-                .unwrap_or(&default_gravity().to_fps2().to_num().to_string())
-                .parse()
-                .unwrap(),
-        )?;
+        .set_gravity(args.value_of("gravity").unwrap_or("-32.1740").parse().unwrap())?;
     Ok(builder.init()?)
 }
