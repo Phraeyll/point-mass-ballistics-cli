@@ -4,16 +4,16 @@ use point_mass_ballistics::error::Result;
 use point_mass_ballistics::model::core::*;
 
 pub fn builder(args: &ArgMatches) -> Result<Simulation> {
-    Ok(SimulationBuilder::default()
+    let builder = SimulationBuilder::default()
         .time_step(
             args.value_of("time-step")
                 .unwrap_or("0.00005")
                 .parse()
                 .unwrap(),
         )?
-        .use_coriolis(!args.is_present("disable-coriolis"))?
-        .use_gravity(!args.is_present("disable-gravity"))?
-        .use_drag(!args.is_present("disable-drag"))?
+        .use_coriolis(!args.is_present("disable-coriolis"))
+        .use_gravity(!args.is_present("disable-gravity"))
+        .use_drag(!args.is_present("disable-drag"))
         .set_bc(
             args.value_of("bc").unwrap_or("0.305").parse().unwrap(),
             match args
@@ -41,21 +41,21 @@ pub fn builder(args: &ArgMatches) -> Result<Simulation> {
                 .unwrap_or("1.5")
                 .parse()
                 .unwrap(),
-        )?
+        )
         .set_scope_offset(
             args.value_of("scope-offset")
                 .unwrap_or("0.0")
                 .parse()
                 .unwrap(),
-        )?
+        )
         .set_scope_roll(
             args.value_of("scope-cant")
                 .unwrap_or("0.0")
                 .parse()
                 .unwrap(),
-        )?
-        .set_scope_pitch(args.value_of("scope-pitch").unwrap_or("0").parse().unwrap())?
-        .set_scope_yaw(args.value_of("scope-yaw").unwrap_or("0").parse().unwrap())?
+        )
+        .set_scope_pitch(args.value_of("scope-pitch").unwrap_or("0").parse().unwrap())
+        .set_scope_yaw(args.value_of("scope-yaw").unwrap_or("0").parse().unwrap())
         .set_temperature(
             args.value_of("zero-temperature")
                 .unwrap_or("68")
@@ -109,8 +109,8 @@ pub fn builder(args: &ArgMatches) -> Result<Simulation> {
                 .unwrap_or("-32.1740")
                 .parse()
                 .unwrap(),
-        )?
-        .init()?)
+        );
+    Ok(builder.init()?)
 }
 pub fn try_zero_simulation(args: &ArgMatches, simulation: &mut Simulation) -> Result<()> {
     simulation.try_mut_zero(
@@ -152,6 +152,6 @@ pub fn solution_after_zero(args: &ArgMatches, simulation: Simulation) -> Result<
                 .unwrap_or("-32.1740")
                 .parse()
                 .unwrap(),
-        )?;
+        );
     Ok(builder.init()?)
 }
