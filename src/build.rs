@@ -16,15 +16,20 @@ pub fn builder(args: &ArgMatches) -> Result<Simulation> {
         .use_drag(!args.is_present("disable-drag"))?
         .set_bc(
             args.value_of("bc").unwrap_or("0.305").parse().unwrap(),
-            match args.value_of("bc-type").unwrap_or("g7") {
-                "G1" | "g1" => G1,
-                "G2" | "g2" => G2,
-                "G5" | "g5" => G5,
-                "G6" | "g6" => G6,
-                "G7" | "g7" => G7,
-                "G8" | "g8" => G8,
-                "GI" | "gi" => GI,
-                "GS" | "gs" => GS,
+            match args
+                .value_of("bc-type")
+                .unwrap_or("G7")
+                .to_ascii_uppercase()
+                .as_ref()
+            {
+                "G1" => G1,
+                "G2" => G2,
+                "G5" => G5,
+                "G6" => G6,
+                "G7" => G7,
+                "G8" => G8,
+                "GI" => GI,
+                "GS" => GS,
                 _ => panic!("Invalid BC Type"),
             },
         )?
@@ -142,6 +147,11 @@ pub fn solution_after_zero(args: &ArgMatches, simulation: Simulation) -> Result<
         .set_shot_angle(args.value_of("shot-angle").unwrap_or("0").parse().unwrap())?
         .set_lattitude(args.value_of("lattitude").unwrap_or("0").parse().unwrap())?
         .set_bearing(args.value_of("bearing").unwrap_or("0").parse().unwrap())?
-        .set_gravity(args.value_of("gravity").unwrap_or("-32.1740").parse().unwrap())?;
+        .set_gravity(
+            args.value_of("gravity")
+                .unwrap_or("-32.1740")
+                .parse()
+                .unwrap(),
+        )?;
     Ok(builder.init()?)
 }
