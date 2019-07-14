@@ -109,7 +109,7 @@ pub fn builder(args: &ArgMatches) -> Result<Simulation> {
                 .unwrap_or("-32.1740")
                 .parse()
                 .unwrap(),
-        );
+        )?;
     Ok(builder.init()?)
 }
 pub fn try_zero_simulation(args: &ArgMatches, simulation: &mut Simulation) -> Result<()> {
@@ -152,6 +152,6 @@ pub fn solution_after_zero(args: &ArgMatches, simulation: Simulation) -> Result<
                 .unwrap_or("-32.1740")
                 .parse()
                 .unwrap(),
-        );
+        )?;
     Ok(builder.init()?)
 }
