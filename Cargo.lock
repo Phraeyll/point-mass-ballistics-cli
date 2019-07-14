@@ -142,7 +142,7 @@ dependencies = [
 [[package]]
 name = "point-mass-ballistics"
 version = "0.0.1"
-source = "git+https://github.com/Phraeyll/point-mass-ballistics#871ab2b477e691e9520ac4951facc9faba160e71"
+source = "git+https://github.com/Phraeyll/point-mass-ballistics#dbbf7f9eaaef5071717968e6ef47b3c74770479a"
 dependencies = [
  "nalgebra 0.18.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "ordered-float 1.0.2 (registry+https://github.com/rust-lang/crates.io-index)",
