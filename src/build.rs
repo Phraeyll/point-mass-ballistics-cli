@@ -1,11 +1,11 @@
 use clap::ArgMatches;
 
 use point_mass_ballistics::error::Result;
-use point_mass_ballistics::model::core::*;
+use point_mass_ballistics::model::*;
 
 pub fn builder(args: &ArgMatches) -> Result<Simulation> {
     let builder = SimulationBuilder::default()
-        .time_step(
+        .set_time_step(
             args.value_of("time-step")
                 .unwrap_or("0.00005")
                 .parse()
