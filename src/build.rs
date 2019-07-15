@@ -4,7 +4,8 @@ use point_mass_ballistics::error::Result;
 use point_mass_ballistics::model::*;
 
 pub fn builder(args: &ArgMatches) -> Result<Simulation> {
-    let builder = SimulationBuilder::default()
+    let mut builder = SimulationBuilder::new();
+    builder
         .set_time_step(
             args.value_of("time-step")
                 .unwrap_or("0.00005")
@@ -128,7 +129,8 @@ pub fn try_zero_simulation(args: &ArgMatches, simulation: &mut Simulation) -> Re
     Ok(())
 }
 pub fn solution_after_zero(args: &ArgMatches, simulation: Simulation) -> Result<Simulation> {
-    let builder = SimulationBuilder::from(simulation)
+    let mut builder = SimulationBuilder::from(simulation);
+    builder
         .set_temperature(
             args.value_of("temperature")
                 .unwrap_or("68")
