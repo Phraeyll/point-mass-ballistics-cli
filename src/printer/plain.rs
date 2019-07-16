@@ -1,5 +1,5 @@
 use super::helper::Adjustment::*;
-use point_mass_ballistics::model::*;
+use point_mass_ballistics::{Measurements, Numeric};
 
 pub fn print<I>(table: I, output_tolerance: Numeric)
 where

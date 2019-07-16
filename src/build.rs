@@ -1,7 +1,6 @@
 use clap::ArgMatches;
 
-use point_mass_ballistics::error::Result;
-use point_mass_ballistics::model::*;
+use point_mass_ballistics::{BcKind::*, Result, Simulation, SimulationBuilder};
 
 pub fn builder(args: &ArgMatches) -> Result<Simulation> {
     let mut builder = SimulationBuilder::new();
