@@ -1,8 +1,8 @@
 use clap::ArgMatches;
 
-use point_mass_ballistics::{BcKind::*, Result, Simulation, SimulationBuilder};
+use point_mass_ballistics::{Bc, Numeric, Result, Simulation, SimulationBuilder};
 
-pub fn builder(args: &ArgMatches) -> Result<Simulation> {
+pub fn sim_before_zero<'t>(args: &ArgMatches, bc: &'t Bc) -> Result<SimulationBuilder<'t>> {
     let mut builder = SimulationBuilder::new();
     builder
         .set_time_step(
@@ -14,25 +14,7 @@ pub fn builder(args: &ArgMatches) -> Result<Simulation> {
         .use_coriolis(!args.is_present("disable-coriolis"))
         .use_gravity(!args.is_present("disable-gravity"))
         .use_drag(!args.is_present("disable-drag"))
-        .set_bc(
-            args.value_of("bc").unwrap_or("0.305").parse().unwrap(),
-            match args
-                .value_of("bc-type")
-                .unwrap_or("G7")
-                .to_ascii_uppercase()
-                .as_ref()
-            {
-                "G1" => G1,
-                "G2" => G2,
-                "G5" => G5,
-                "G6" => G6,
-                "G7" => G7,
-                "G8" => G8,
-                "GI" => GI,
-                "GS" => GS,
-                _ => panic!("Invalid BC Type"),
-            },
-        )?
+        .set_bc(&bc)
         .set_velocity(args.value_of("velocity").unwrap_or("2710").parse().unwrap())?
         .set_grains(args.value_of("grains").unwrap_or("140").parse().unwrap())?
         .set_caliber(args.value_of("caliber").unwrap_or("0.264").parse().unwrap())?
@@ -110,10 +92,13 @@ pub fn builder(args: &ArgMatches) -> Result<Simulation> {
                 .parse()
                 .unwrap(),
         )?;
-    Ok(builder.init()?)
+    Ok(builder)
 }
-pub fn try_zero_simulation(args: &ArgMatches, simulation: &mut Simulation) -> Result<()> {
-    simulation.try_mut_zero(
+pub fn try_zero_simulation<'t>(
+    args: &ArgMatches,
+    simulation: &'t mut Simulation<'t>,
+) -> Result<(Numeric, Numeric)> {
+    let (pitch, yaw) = simulation.find_zero_angles(
         args.value_of("zero-distance")
             .unwrap_or("200")
             .parse()
@@ -125,11 +110,17 @@ pub fn try_zero_simulation(args: &ArgMatches, simulation: &mut Simulation) -> Re
             .parse()
             .unwrap(),
     )?;
-    Ok(())
+    Ok((pitch, yaw))
 }
-pub fn solution_after_zero(args: &ArgMatches, simulation: Simulation) -> Result<Simulation> {
-    let mut builder = SimulationBuilder::from(simulation);
+pub fn sim_after_zero<'t>(
+    args: &ArgMatches,
+    mut builder: SimulationBuilder<'t>,
+    pitch: Numeric,
+    yaw: Numeric,
+) -> Result<SimulationBuilder<'t>> {
     builder
+        .set_scope_pitch(pitch)
+        .set_scope_yaw(yaw)
         .set_temperature(
             args.value_of("temperature")
                 .unwrap_or("68")
@@ -154,5 +145,5 @@ pub fn solution_after_zero(args: &ArgMatches, simulation: Simulation) -> Result<
                 .parse()
                 .unwrap(),
         )?;
-    Ok(builder.init()?)
+    Ok(builder)
 }

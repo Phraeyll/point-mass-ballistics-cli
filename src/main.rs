@@ -1,5 +1,5 @@
 use crate::build::*;
-use point_mass_ballistics::{Error, Measurements, Natural, Numeric, Simulation};
+use point_mass_ballistics::{Bc, BcKind::*, Error, Measurements, Natural, Numeric, Simulation};
 use printer::{plain, pretty};
 
 mod build;
@@ -12,14 +12,37 @@ mod printer {
 
 fn main() -> Result<(), Error> {
     let args = cli::parse().get_matches();
+    let bc = Bc::new(
+        args.value_of("bc").unwrap_or("0.305").parse().unwrap(),
+        match args
+            .value_of("bc-type")
+            .unwrap_or("G7")
+            .to_ascii_uppercase()
+            .as_ref()
+        {
+            "G1" => G1,
+            "G2" => G2,
+            "G5" => G5,
+            "G6" => G6,
+            "G7" => G7,
+            "G8" => G8,
+            "GI" => GI,
+            "GS" => GS,
+            _ => panic!("Invalid BC Type"),
+        },
+    )?;
 
-    let mut simulation = builder(&args)?;
-    let simulation = if args.is_present("flat") {
-        simulation
+    let mut builder = sim_before_zero(&args, &bc)?;
+    builder = if args.is_present("flat") {
+        builder
     } else {
-        try_zero_simulation(&args, &mut simulation)?;
-        solution_after_zero(&args, simulation)?
+        let builder_before = sim_before_zero(&args, &bc)?;
+        let mut zero_simulation = builder_before.init()?;
+        let (pitch, yaw) = try_zero_simulation(&args, &mut zero_simulation)?;
+        sim_after_zero(&args, builder, pitch, yaw)?
     };
+
+    let simulation = builder.init()?;
 
     let table = table(
         &simulation,
