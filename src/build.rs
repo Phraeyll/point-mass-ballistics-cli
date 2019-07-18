@@ -1,10 +1,10 @@
 use clap::ArgMatches;
 
-use point_mass_ballistics::{Bc, Numeric, Result, Simulation, SimulationBuilder};
+use point_mass_ballistics::{Numeric, Result, Simulation, SimulationBuilder};
 
-pub fn sim_before_zero<'t>(args: &ArgMatches, bc: &'t Bc) -> Result<SimulationBuilder<'t>> {
-    let mut builder = SimulationBuilder::new();
-    builder
+pub fn sim_before_zero<'t>(args: &ArgMatches) -> Result<SimulationBuilder<'t>> {
+    let builder = SimulationBuilder::new();
+    Ok(builder
         .set_time_step(
             args.value_of("time-step")
                 .unwrap_or("0.00005")
@@ -14,7 +14,6 @@ pub fn sim_before_zero<'t>(args: &ArgMatches, bc: &'t Bc) -> Result<SimulationBu
         .use_coriolis(!args.is_present("disable-coriolis"))
         .use_gravity(!args.is_present("disable-gravity"))
         .use_drag(!args.is_present("disable-drag"))
-        .set_bc(&bc)
         .set_velocity(args.value_of("velocity").unwrap_or("2710").parse().unwrap())?
         .set_grains(args.value_of("grains").unwrap_or("140").parse().unwrap())?
         .set_caliber(args.value_of("caliber").unwrap_or("0.264").parse().unwrap())?
@@ -91,8 +90,7 @@ pub fn sim_before_zero<'t>(args: &ArgMatches, bc: &'t Bc) -> Result<SimulationBu
                 .unwrap_or("-32.1740")
                 .parse()
                 .unwrap(),
-        )?;
-    Ok(builder)
+        )?)
 }
 pub fn try_zero_simulation<'t>(
     args: &ArgMatches,
@@ -114,11 +112,11 @@ pub fn try_zero_simulation<'t>(
 }
 pub fn sim_after_zero<'t>(
     args: &ArgMatches,
-    mut builder: SimulationBuilder<'t>,
+    builder: SimulationBuilder<'t>,
     pitch: Numeric,
     yaw: Numeric,
 ) -> Result<SimulationBuilder<'t>> {
-    builder
+    Ok(builder
         .set_scope_pitch(pitch)
         .set_scope_yaw(yaw)
         .set_temperature(
@@ -144,6 +142,5 @@ pub fn sim_after_zero<'t>(
                 .unwrap_or("-32.1740")
                 .parse()
                 .unwrap(),
-        )?;
-    Ok(builder)
+        )?)
 }

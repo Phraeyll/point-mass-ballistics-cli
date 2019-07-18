@@ -32,17 +32,17 @@ fn main() -> Result<(), Error> {
         },
     )?;
 
-    let mut builder = sim_before_zero(&args, &bc)?;
+    let mut builder = sim_before_zero(&args)?;
     builder = if args.is_present("flat") {
         builder
     } else {
-        let builder_before = sim_before_zero(&args, &bc)?;
-        let mut zero_simulation = builder_before.init()?;
+        let builder_before = sim_before_zero(&args)?;
+        let mut zero_simulation = builder_before.init_with_bc(&bc)?;
         let (pitch, yaw) = try_zero_simulation(&args, &mut zero_simulation)?;
         sim_after_zero(&args, builder, pitch, yaw)?
     };
 
-    let simulation = builder.init()?;
+    let simulation = builder.init_with_bc(&bc)?;
 
     let table = table(
         &simulation,
