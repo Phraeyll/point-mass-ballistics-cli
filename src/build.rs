@@ -1,6 +1,6 @@
 use clap::ArgMatches;
 
-use point_mass_ballistics::{Numeric, Result, Simulation, SimulationBuilder};
+use point_mass_ballistics::{BcKind::*, Numeric, Result, Simulation, SimulationBuilder};
 
 pub fn sim_before_zero<'t>(args: &ArgMatches) -> Result<SimulationBuilder<'t>> {
     let builder = SimulationBuilder::new();
@@ -10,6 +10,25 @@ pub fn sim_before_zero<'t>(args: &ArgMatches) -> Result<SimulationBuilder<'t>> {
                 .unwrap_or("0.00005")
                 .parse()
                 .unwrap(),
+        )?
+        .set_bc(
+            args.value_of("bc").unwrap_or("0.305").parse().unwrap(),
+            match args
+                .value_of("bc-type")
+                .unwrap_or("G7")
+                .to_ascii_uppercase()
+                .as_ref()
+            {
+                "G1" => G1,
+                "G2" => G2,
+                "G5" => G5,
+                "G6" => G6,
+                "G7" => G7,
+                "G8" => G8,
+                "GI" => GI,
+                "GS" => GS,
+                _ => panic!("Invalid BC Type"),
+            },
         )?
         .use_coriolis(!args.is_present("disable-coriolis"))
         .use_gravity(!args.is_present("disable-gravity"))
