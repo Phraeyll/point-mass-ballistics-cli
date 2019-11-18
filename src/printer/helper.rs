@@ -1,15 +1,15 @@
 pub use self::Adjustment::*;
 
-use point_mass_ballistics::Numeric;
+use point_mass_ballistics::Length;
 
 pub enum Adjustment<'n> {
-    Elevation(&'n Numeric),
-    Windage(&'n Numeric),
+    Elevation(&'n Length),
+    Windage(&'n Length),
 }
 
 // Show needed adjustments to correct shot
 impl Adjustment<'_> {
-    pub fn adjustment(&self, output_tolerance: Numeric) -> char {
+    pub fn adjustment(&self, output_tolerance: Length) -> char {
         let tolerance = output_tolerance;
         match self {
             Elevation(&m) => {

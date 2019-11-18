@@ -1,5 +1,7 @@
 use crate::build::*;
-use point_mass_ballistics::{Error, Measurements, Natural, Numeric, Simulation};
+use point_mass_ballistics::{
+    inch, yard, Error, Length, Measurements, Natural, Numeric, Simulation,
+};
 use printer::{plain, pretty};
 
 mod build;
@@ -37,11 +39,12 @@ fn main() -> Result<(), Error> {
             .parse()
             .unwrap(),
     );
-    let output_tolerance = args
-        .value_of("table-tolerance")
-        .unwrap_or("0.005")
-        .parse()
-        .unwrap();
+    let output_tolerance = Length::new::<inch>(
+        args.value_of("table-tolerance")
+            .unwrap_or("0.005")
+            .parse()
+            .unwrap(),
+    );
     if args.is_present("pretty") {
         pretty::print(table, output_tolerance);
     } else {
@@ -62,6 +65,6 @@ fn table<'s>(
         .step_by(step as usize)
         .filter_map(move |current_step| {
             iter.by_ref()
-                .find(|p| p.distance() >= Numeric::from(current_step))
+                .find(|p| p.distance() >= Length::new::<yard>(Numeric::from(current_step)))
         })
 }

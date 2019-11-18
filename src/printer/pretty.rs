@@ -1,7 +1,9 @@
 use super::helper::Adjustment::*;
-use point_mass_ballistics::{Measurements, Numeric};
+use point_mass_ballistics::{
+    foot_per_second, foot_pound, inch, moa, second, yard, Length, Measurements,
+};
 
-pub fn print<I>(table: I, output_tolerance: Numeric)
+pub fn print<I>(table: I, output_tolerance: Length)
 where
     I: IntoIterator,
     <I as IntoIterator>::Item: Measurements,
@@ -24,19 +26,19 @@ where
         println!("{}", divider);
         println!(
             "| {:>12.0} | {:>8.2} | {:>11.2} {} | {:>9.2} {} | {:>8.2} {} | {:>8.2} {} | {:>14.2} | {:>12.2} | {:>8.3} |",
-            p.distance(),
-            p.moa(),
-            p.elevation().abs(),
+            p.distance().get::<yard>(),
+            p.moa().get::<moa>(),
+            p.elevation().get::<inch>().abs(),
             Elevation(&p.elevation()).adjustment(output_tolerance),
-            p.windage().abs(),
+            p.windage().get::<inch>().abs(),
             Windage(&p.windage()).adjustment(output_tolerance),
-            p.vertical_moa(output_tolerance).abs(),
+            p.vertical_moa(output_tolerance).get::<moa>().abs(),
             Elevation(&p.elevation()).adjustment(output_tolerance),
-            p.horizontal_moa(output_tolerance).abs(),
+            p.horizontal_moa(output_tolerance).get::<moa>().abs(),
             Windage(&p.windage()).adjustment(output_tolerance),
-            p.velocity(),
-            p.energy(),
-            p.time(),
+            p.velocity().get::<foot_per_second>(),
+            p.energy().get::<foot_pound>(),
+            p.time().get::<second>(),
         );
     }
     println!("{}", divider);
