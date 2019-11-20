@@ -309,15 +309,19 @@ impl Options {
         &self,
         simulation: &'s Simulation,
     ) -> impl IntoIterator<Item = impl Measurements + 's> + 's {
-        let start = self.table.start.val.get::<yard>() as Natural;
-        let end = self.table.end.val.get::<yard>() as Natural;
-        let step = self.table.step.val.get::<yard>() as Natural;
-        let mut iter = simulation.into_iter().fuse();
-        (start..=end)
-            .step_by(step as usize)
-            .filter_map(move |current_step| {
-                iter.by_ref()
-                    .find(|p| p.distance() >= Length::new::<yard>(current_step as Numeric))
+        let mut start = self.table.start.val;
+        let end = self.table.end.val;
+        let step = self.table.step.val;
+        simulation
+            .into_iter()
+            .take_while(move |p| p.distance() <= end + step)
+            .filter(move |p| {
+                if p.distance() >= start {
+                    start += step;
+                    true
+                } else {
+                    false
+                }
             })
     }
     pub fn try_zero(&self, mut simulation: Simulation) -> Result<(Angle, Angle)> {
