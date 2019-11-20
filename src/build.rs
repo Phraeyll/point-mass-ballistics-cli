@@ -76,18 +76,6 @@ pub fn sim_before_zero<'t>(args: &ArgMatches) -> Result<SimulationBuilder<'t>> {
                 .parse::<Numeric>()
                 .unwrap(),
         ))
-        .set_scope_pitch(Angle::new::<moa>(
-            args.value_of("scope-pitch")
-                .unwrap_or("0")
-                .parse::<Numeric>()
-                .unwrap(),
-        ))
-        .set_scope_yaw(Angle::new::<moa>(
-            args.value_of("scope-yaw")
-                .unwrap_or("0")
-                .parse::<Numeric>()
-                .unwrap(),
-        ))
         .set_temperature(ThermodynamicTemperature::new::<fahrenheit>(
             args.value_of("zero-temperature")
                 .unwrap_or("68")
@@ -182,8 +170,18 @@ pub fn sim_after_zero<'t>(
     yaw: Angle,
 ) -> Result<SimulationBuilder<'t>> {
     Ok(builder
-        .set_scope_pitch(pitch)
-        .set_scope_yaw(yaw)
+        .set_scope_pitch(pitch + Angle::new::<moa>(
+            args.value_of("scope-pitch")
+                .unwrap_or("0")
+                .parse::<Numeric>()
+                .unwrap(),
+        ))
+        .set_scope_yaw(yaw + Angle::new::<moa>(
+            args.value_of("scope-yaw")
+                .unwrap_or("0")
+                .parse::<Numeric>()
+                .unwrap(),
+        ))
         .set_temperature(ThermodynamicTemperature::new::<fahrenheit>(
             args.value_of("temperature")
                 .unwrap_or("68")
