@@ -1,4 +1,12 @@
-use point_mass_ballistics::Numeric;
+use crate::printer::*;
+
+use std::{str::FromStr, string::ToString};
+
+use point_mass_ballistics::{
+    meter, yard, Acceleration, Angle, BcKind, Length, Mass, Measurements, Natural, Numeric,
+    ParseQuantityError, Pressure, Result, Simulation, SimulationBuilder, ThermodynamicTemperature,
+    Time, Velocity,
+};
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -22,13 +30,13 @@ pub struct Options {
     flat: bool,
 
     #[structopt(long = "disable-drag")]
-    drag: bool,
+    disable_drag: bool,
 
     #[structopt(long = "disable-coriolis")]
-    coriolis: bool,
+    disable_coriolis: bool,
 
     #[structopt(long = "disable-gravity")]
-    gravity: bool,
+    disable_gravity: bool,
 
     #[structopt(long = "pretty")]
     pretty: bool,
@@ -40,6 +48,9 @@ pub struct Options {
     scope: Scope,
 
     #[structopt(flatten)]
+    atmosphere: Atmosphere,
+
+    #[structopt(flatten)]
     wind: Wind,
 
     #[structopt(flatten)]
@@ -49,10 +60,10 @@ pub struct Options {
     zero_scope: ZeroScope,
 
     #[structopt(flatten)]
-    zero_wind: ZeroWind,
+    zero_atmosphere: ZeroAtmosphere,
 
     #[structopt(flatten)]
-    zero_atmosphere: ZeroAtmosphere,
+    zero_wind: ZeroWind,
 
     #[structopt(flatten)]
     zero_shooter: ZeroShooter,
@@ -63,153 +74,388 @@ pub struct Options {
     #[structopt(flatten)]
     zero: Zero,
 
-    #[structopt(long = "time-step")]
-    time: Option<Numeric>,
-}
-
-#[derive(Debug, StructOpt)]
-struct Projectile {
-    #[structopt(long = "velocity")]
-    velocity: Option<Numeric>,
-
-    #[structopt(long = "mass")]
-    mass: Option<Numeric>,
-
-    #[structopt(long = "caliber")]
-    caliber: Option<Numeric>,
-
-    #[structopt(long = "bc")]
-    bc: Option<Numeric>,
-
-    #[structopt(long = "bc-type")]
-    bc_type: Option<Numeric>,
+    #[structopt(long = "time-interval", default_value = "0.00005 s")]
+    time_interval: MyTime,
 }
 
 #[derive(Debug, StructOpt)]
 struct Scope {
     #[structopt(long = "scope-height")]
-    height: Option<Numeric>,
+    scope_height: Option<MyLength>,
 
     #[structopt(long = "scope-offset")]
-    offset: Option<Numeric>,
+    scope_offset: Option<MyLength>,
 
     #[structopt(long = "scope-pitch")]
-    pitch: Option<Numeric>,
+    scope_pitch: Option<MyAngle>,
 
     #[structopt(long = "scope-yaw")]
-    yaw: Option<Numeric>,
+    scope_yaw: Option<MyAngle>,
 
     #[structopt(long = "scope-cant")]
-    cant: Option<Numeric>,
+    scope_cant: Option<MyAngle>,
 }
+
 #[derive(Debug, StructOpt)]
 struct ZeroScope {
     #[structopt(long = "zero-scope-height")]
-    height: Option<Numeric>,
+    zero_scope_height: Option<MyLength>,
 
     #[structopt(long = "zero-scope-offset")]
-    offset: Option<Numeric>,
+    zero_scope_offset: Option<MyLength>,
 
     #[structopt(long = "zero-scope-pitch")]
-    pitch: Option<Numeric>,
+    zero_scope_pitch: Option<MyAngle>,
 
     #[structopt(long = "zero-scope-yaw")]
-    yaw: Option<Numeric>,
+    zero_scope_yaw: Option<MyAngle>,
 
     #[structopt(long = "zero-scope-cant")]
-    cant: Option<Numeric>,
+    zero_scope_cant: Option<MyAngle>,
 }
 
 #[derive(Debug, StructOpt)]
 struct Wind {
     #[structopt(long = "wind-speed")]
-    speed: Option<Numeric>,
+    wind_speed: Option<MyVelocity>,
 
     #[structopt(long = "wind-angle")]
-    angle: Option<Numeric>,
+    wind_angle: Option<MyAngle>,
 }
+
 #[derive(Debug, StructOpt)]
 struct ZeroWind {
     #[structopt(long = "zero-wind-speed")]
-    speed: Option<Numeric>,
+    zero_wind_speed: Option<MyVelocity>,
 
     #[structopt(long = "zero-wind-angle")]
-    angle: Option<Numeric>,
+    zero_wind_angle: Option<MyAngle>,
 }
 
 #[derive(Debug, StructOpt)]
 struct Atmosphere {
     #[structopt(long = "temperature")]
-    temperature: Option<Numeric>,
+    temperature: Option<MyThermodynamicTemperature>,
 
     #[structopt(long = "pressure")]
-    pressure: Option<Numeric>,
+    pressure: Option<MyPressure>,
 
     #[structopt(long = "humidity")]
     humidity: Option<Numeric>,
 }
+
 #[derive(Debug, StructOpt)]
 struct ZeroAtmosphere {
     #[structopt(long = "zero-temperature")]
-    temperature: Option<Numeric>,
+    zero_temperature: Option<MyThermodynamicTemperature>,
 
     #[structopt(long = "zero-pressure")]
-    pressure: Option<Numeric>,
+    zero_pressure: Option<MyPressure>,
 
     #[structopt(long = "zero-humidity")]
-    humidity: Option<Numeric>,
+    zero_humidity: Option<Numeric>,
 }
 
 #[derive(Debug, StructOpt)]
 struct Shooter {
     #[structopt(long = "lattitude")]
-    lattitude: Option<Numeric>,
+    lattitude: Option<MyAngle>,
 
     #[structopt(long = "bearing")]
-    bearing: Option<Numeric>,
+    bearing: Option<MyAngle>,
 
     #[structopt(long = "shot-angle")]
-    angle: Option<Numeric>,
+    shot_angle: Option<MyAngle>,
 
     #[structopt(long = "gravity")]
-    gravity: Option<Numeric>,
+    gravity: Option<MyAcceleration>,
 }
 
 #[derive(Debug, StructOpt)]
 struct ZeroShooter {
     #[structopt(long = "zero-lattitude")]
-    lattitude: Option<Numeric>,
+    zero_lattitude: Option<MyAngle>,
 
     #[structopt(long = "zero-bearing")]
-    bearing: Option<Numeric>,
+    zero_bearing: Option<MyAngle>,
 
     #[structopt(long = "zero-shot-angle")]
-    angle: Option<Numeric>,
+    zero_shot_angle: Option<MyAngle>,
 
     #[structopt(long = "zero-gravity")]
-    gravity: Option<Numeric>,
+    zero_gravity: Option<MyAcceleration>,
 }
 
 #[derive(Debug, StructOpt)]
 struct Table {
-    #[structopt(long = "start")]
-    start: Option<Numeric>,
+    #[structopt(long = "start", default_value = "0.0 yd")]
+    start: MyLength,
 
-    #[structopt(long = "end")]
-    end: Option<Numeric>,
+    #[structopt(long = "end", default_value = "1000.0 yd")]
+    end: MyLength,
 
-    #[structopt(long = "step")]
-    step: Option<Numeric>,
+    #[structopt(long = "step", default_value = "100.0 yd")]
+    step: MyLength,
 
-    #[structopt(long = "table-tolerance")]
-    tolerance: Option<Numeric>,
+    #[structopt(long = "table-tolerance", default_value = "0.005 in")]
+    tolerance: MyLength,
 }
 
 #[derive(Debug, StructOpt)]
 struct Zero {
-    #[structopt(long = "zero-distance")]
-    distance: Option<Numeric>,
+    #[structopt(long = "zero-target-distance", default_value = "200.0 yd")]
+    zero_target_distance: MyLength,
 
-    #[structopt(long = "zero-tolerance")]
-    tolerance: Option<Numeric>,
+    #[structopt(long = "zero-target-height", default_value = "0.0 in")]
+    zero_target_height: MyLength,
+
+    #[structopt(long = "zero-target-offset", default_value = "0.0 in")]
+    zero_target_offset: MyLength,
+
+    #[structopt(long = "zero-target-tolerance", default_value = "0.001 in")]
+    zero_target_tolerance: MyLength,
+}
+
+#[derive(Debug, StructOpt)]
+struct Projectile {
+    #[structopt(long = "initial-velocity")]
+    projectile_velocity: Option<MyVelocity>,
+
+    #[structopt(long = "mass")]
+    mass: Option<MyMass>,
+
+    #[structopt(long = "caliber")]
+    caliber: Option<MyLength>,
+
+    #[structopt(long = "bc")]
+    bc: Option<Numeric>,
+
+    #[structopt(long = "bc-type", default_value = "G7")]
+    bc_type: MyBcKind,
+}
+
+#[derive(Debug)]
+struct MyParseQuantityError {
+    error: ParseQuantityError,
+}
+
+impl ToString for MyParseQuantityError {
+    fn to_string(&self) -> String {
+        match self.error {
+            ParseQuantityError::NoSeparator => "No Separator".to_string(),
+            ParseQuantityError::UnknownUnit => "Unknown Unit".to_string(),
+            ParseQuantityError::ValueParseError => "Value Parse Error".to_string(),
+        }
+    }
+}
+
+#[derive(Debug, StructOpt)]
+struct MyBcKind {
+    val: BcKind,
+}
+
+impl FromStr for MyBcKind {
+    type Err = <BcKind as FromStr>::Err;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        <BcKind as FromStr>::from_str(s).map(|val| MyBcKind { val })
+    }
+}
+
+macro_rules! my_quantities {
+    ( $($my:ident => $uom:ident,)+ ) => {
+        my_quantities! {
+            $($my => $uom),+
+        }
+    };
+    ( $($my:ident => $uom:ident),* ) => {
+        $(
+            #[derive(Debug)]
+            struct $my {
+                val: $uom,
+            }
+            impl FromStr for $my {
+                type Err = MyParseQuantityError;
+                fn from_str(s: &str) -> Result<Self, Self::Err> {
+                    <$uom as FromStr>::from_str(s)
+                        .map(|val| $my { val })
+                        .map_err(|error| MyParseQuantityError { error })
+                }
+            }
+        )*
+    };
+}
+
+my_quantities! {
+    MyAngle => Angle,
+    MyMass => Mass,
+    MyLength => Length,
+    MyTime => Time,
+    MyVelocity => Velocity,
+    MyAcceleration => Acceleration,
+    MyThermodynamicTemperature => ThermodynamicTemperature,
+    MyPressure => Pressure,
+}
+
+impl Options {
+    pub fn print(&self, simulation: &Simulation) {
+        let output_tolerance = self.table.tolerance.val;
+        if self.pretty {
+            pretty::print(self.table(&simulation), output_tolerance);
+        } else {
+            plain::print(self.table(&simulation), output_tolerance);
+        }
+    }
+    pub fn table<'s>(
+        &self,
+        simulation: &'s Simulation,
+    ) -> impl IntoIterator<Item = impl Measurements + 's> + 's {
+        let start = self.table.start.val.get::<yard>() as Natural;
+        let end = self.table.end.val.get::<yard>() as Natural;
+        let step = self.table.step.val.get::<yard>() as Natural;
+        let mut iter = simulation.into_iter().fuse();
+        (start..=end)
+            .step_by(step as usize)
+            .filter_map(move |current_step| {
+                iter.by_ref()
+                    .find(|p| p.distance() >= Length::new::<yard>(current_step as Numeric))
+            })
+    }
+    pub fn try_zero(&self, mut simulation: Simulation) -> Result<(Angle, Angle)> {
+        Ok(simulation.find_zero_angles(
+            self.zero.zero_target_distance.val,
+            self.zero.zero_target_height.val,
+            self.zero.zero_target_offset.val,
+            self.zero.zero_target_tolerance.val,
+        )?)
+    }
+    pub fn shared_params(&self) -> Result<SimulationBuilder> {
+        let mut builder = SimulationBuilder::new();
+        builder = builder.set_time_step(self.time_interval.val)?;
+
+        builder = builder.use_coriolis(!self.disable_coriolis);
+        builder = builder.use_drag(!self.disable_drag);
+        builder = builder.use_gravity(!self.disable_gravity);
+
+        // Projectile
+        if let Some(val) = self.projectile.bc {
+            builder = builder.set_bc(val, self.projectile.bc_type.val)?
+        }
+        if let Some(ref val) = self.projectile.projectile_velocity {
+            builder = builder.set_velocity(val.val)?
+        }
+        if let Some(ref val) = self.projectile.mass {
+            builder = builder.set_mass(val.val)?
+        }
+        if let Some(ref val) = self.projectile.caliber {
+            builder = builder.set_caliber(val.val)?
+        }
+        Ok(builder)
+    }
+    pub fn zero_scenario(&self, mut builder: SimulationBuilder) -> Result<Simulation> {
+        // Scope
+        if let Some(ref val) = self.zero_scope.zero_scope_height {
+            builder = builder.set_scope_height(val.val)
+        }
+        if let Some(ref val) = self.zero_scope.zero_scope_offset {
+            builder = builder.set_scope_offset(val.val)
+        }
+        if let Some(ref val) = self.zero_scope.zero_scope_cant {
+            builder = builder.set_scope_roll(val.val)
+        }
+
+        // Atmosphere
+        if let Some(ref val) = self.zero_atmosphere.zero_temperature {
+            builder = builder.set_temperature(val.val)?
+        }
+        if let Some(ref val) = self.zero_atmosphere.zero_pressure {
+            builder = builder.set_pressure(val.val)?
+        }
+        if let Some(val) = self.zero_atmosphere.zero_humidity {
+            builder = builder.set_humidity(val)?
+        }
+
+        // Wind
+        if let Some(ref val) = self.zero_wind.zero_wind_speed {
+            builder = builder.set_wind_speed(val.val)?
+        }
+        if let Some(ref val) = self.zero_wind.zero_wind_angle {
+            builder = builder.set_wind_angle(val.val)?
+        }
+
+        // Shooter
+        if let Some(ref val) = self.zero_shooter.zero_shot_angle {
+            builder = builder.set_shot_angle(val.val)?
+        }
+        if let Some(ref val) = self.zero_shooter.zero_lattitude {
+            builder = builder.set_lattitude(val.val)?
+        }
+        if let Some(ref val) = self.zero_shooter.zero_bearing {
+            builder = builder.set_bearing(val.val)?
+        }
+        if let Some(ref val) = self.zero_shooter.zero_gravity {
+            builder = builder.set_gravity(val.val)?
+        }
+        Ok(builder.init())
+    }
+    pub fn firing_scenario(
+        &self,
+        mut builder: SimulationBuilder,
+        pitch: Angle,
+        yaw: Angle,
+    ) -> Result<Simulation> {
+        // Scope
+        if let Some(ref val) = self.scope.scope_height {
+            builder = builder.set_scope_height(val.val)
+        }
+        if let Some(ref val) = self.scope.scope_offset {
+            builder = builder.set_scope_offset(val.val)
+        }
+        if let Some(ref val) = self.scope.scope_pitch {
+            builder = builder.set_scope_pitch(dbg!(val.val + pitch))
+        } else {
+            builder = builder.set_scope_pitch(pitch)
+        }
+        if let Some(ref val) = self.scope.scope_yaw {
+            builder = builder.set_scope_yaw(dbg!(val.val + yaw))
+        } else {
+            builder = builder.set_scope_yaw(yaw)
+        }
+        if let Some(ref val) = self.scope.scope_cant {
+            builder = builder.set_scope_roll(val.val)
+        }
+
+        // Atmosphere
+        if let Some(ref val) = self.atmosphere.temperature {
+            builder = builder.set_temperature(val.val)?
+        }
+        if let Some(ref val) = self.atmosphere.pressure {
+            builder = builder.set_pressure(val.val)?
+        }
+        if let Some(val) = self.atmosphere.humidity {
+            builder = builder.set_humidity(val)?
+        }
+
+        // Wind
+        if let Some(ref val) = self.wind.wind_speed {
+            builder = builder.set_wind_speed(val.val)?
+        }
+        if let Some(ref val) = self.wind.wind_angle {
+            builder = builder.set_wind_angle(val.val)?
+        }
+
+        // Shooter
+        if let Some(ref val) = self.shooter.shot_angle {
+            builder = builder.set_shot_angle(val.val)?
+        }
+        if let Some(ref val) = self.shooter.lattitude {
+            builder = builder.set_lattitude(val.val)?
+        }
+        if let Some(ref val) = self.shooter.bearing {
+            builder = builder.set_bearing(val.val)?
+        }
+        if let Some(ref val) = self.shooter.gravity {
+            builder = builder.set_gravity(val.val)?
+        }
+        Ok(builder.init())
+    }
 }
