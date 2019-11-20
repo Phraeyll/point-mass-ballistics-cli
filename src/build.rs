@@ -1,5 +1,3 @@
-use clap::ArgMatches;
-
 use point_mass_ballistics::{
     degree, fahrenheit, foot_per_second, foot_per_second_squared, grain, inch, inch_of_mercury,
     mile_per_hour, moa, second, yard, Acceleration, Angle, BcKind::*, Length, Mass, Numeric,

@@ -1,8 +1,13 @@
-use crate::build::*;
+use crate::{
+    build::*,
+    cli::Options,
+    printer::{plain, pretty},
+};
+
 use point_mass_ballistics::{
     inch, yard, Error, Length, Measurements, Natural, Numeric, Simulation,
 };
-use printer::{plain, pretty};
+use structopt::StructOpt;
 
 mod build;
 mod cli;
@@ -13,7 +18,7 @@ mod printer {
 }
 
 fn main() -> Result<(), Error> {
-    let args = cli::parse().get_matches();
+    let opt = Options::from_args();
 
     let mut builder = sim_before_zero(&args)?;
     builder = if args.is_present("flat") {
