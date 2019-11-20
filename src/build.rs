@@ -170,18 +170,23 @@ pub fn sim_after_zero<'t>(
     yaw: Angle,
 ) -> Result<SimulationBuilder<'t>> {
     Ok(builder
-        .set_scope_pitch(pitch + Angle::new::<moa>(
-            args.value_of("scope-pitch")
-                .unwrap_or("0")
-                .parse::<Numeric>()
-                .unwrap(),
-        ))
-        .set_scope_yaw(yaw + Angle::new::<moa>(
-            args.value_of("scope-yaw")
-                .unwrap_or("0")
-                .parse::<Numeric>()
-                .unwrap(),
-        ))
+        .set_scope_pitch(
+            pitch
+                + Angle::new::<moa>(
+                    args.value_of("scope-pitch")
+                        .unwrap_or("0")
+                        .parse::<Numeric>()
+                        .unwrap(),
+                ),
+        )
+        .set_scope_yaw(
+            yaw + Angle::new::<moa>(
+                args.value_of("scope-yaw")
+                    .unwrap_or("0")
+                    .parse::<Numeric>()
+                    .unwrap(),
+            ),
+        )
         .set_temperature(ThermodynamicTemperature::new::<fahrenheit>(
             args.value_of("temperature")
                 .unwrap_or("68")
