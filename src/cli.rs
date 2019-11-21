@@ -3,8 +3,9 @@ use crate::printer::*;
 use std::{str::FromStr, string::ToString};
 
 use point_mass_ballistics::{
-    Acceleration, Angle, BcKind, Length, Mass, Measurements, Numeric, ParseQuantityError, Pressure,
-    Result, Simulation, SimulationBuilder, ThermodynamicTemperature, Time, Velocity,
+    Acceleration, Angle, BcKind, FmtMeasurements, Length, Mass, Measurements, Numeric,
+    ParseQuantityError, Pressure, Result, Simulation, SimulationBuilder, ThermodynamicTemperature,
+    Time, Velocity,
 };
 use structopt::StructOpt;
 
@@ -274,7 +275,7 @@ impl Options {
     pub fn table<'s>(
         &self,
         simulation: &'s Simulation,
-    ) -> impl IntoIterator<Item = impl Measurements + 's> + 's {
+    ) -> impl IntoIterator<Item = impl Measurements + FmtMeasurements + 's> + 's {
         let mut start = self.table.start.val;
         let end = self.table.end.val;
         let step = self.table.step.val;
