@@ -226,11 +226,11 @@ struct Projectile {
     #[structopt(long = "caliber")]
     caliber: Option<MyLength>,
 
-    #[structopt(long = "bc")]
-    bc: Option<Numeric>,
+    #[structopt(long = "bc-value")]
+    bc_value: Option<Numeric>,
 
-    #[structopt(long = "bc-type", default_value = "G7")]
-    bc_type: MyBcKind,
+    #[structopt(long = "bc-kind")]
+    bc_kind: Option<BcKind>,
 }
 
 #[derive(Debug)]
@@ -245,18 +245,6 @@ impl ToString for MyParseQuantityError {
             ParseQuantityError::UnknownUnit => "Unknown Unit".to_string(),
             ParseQuantityError::ValueParseError => "Value Parse Error".to_string(),
         }
-    }
-}
-
-#[derive(Debug, StructOpt)]
-struct MyBcKind {
-    val: BcKind,
-}
-
-impl FromStr for MyBcKind {
-    type Err = <BcKind as FromStr>::Err;
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        <BcKind as FromStr>::from_str(s).map(|val| MyBcKind { val })
     }
 }
 
@@ -340,8 +328,11 @@ impl Options {
         builder = builder.use_gravity(!self.disable_gravity);
 
         // Projectile
-        if let Some(val) = self.projectile.bc {
-            builder = builder.set_bc(val, self.projectile.bc_type.val)?
+        if let Some(val) = self.projectile.bc_value {
+            builder = builder.set_bc_value(val)?
+        }
+        if let Some(val) = self.projectile.bc_kind {
+            builder = builder.set_bc_kind(val)?
         }
         if let Some(ref val) = self.projectile.projectile_velocity {
             builder = builder.set_velocity(val.val)?
