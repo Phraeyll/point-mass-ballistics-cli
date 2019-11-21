@@ -1,4 +1,4 @@
-use super::helper::Adjustment::*;
+use super::Adjustment::*;
 use point_mass_ballistics::{
     foot_per_second, foot_pound, inch, moa, second, yard, Length, Measurements,
 };

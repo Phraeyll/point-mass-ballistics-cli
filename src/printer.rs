@@ -2,6 +2,9 @@ pub use self::Adjustment::*;
 
 use point_mass_ballistics::Length;
 
+pub mod plain;
+pub mod pretty;
+
 pub enum Adjustment<'n> {
     Elevation(&'n Length),
     Windage(&'n Length),

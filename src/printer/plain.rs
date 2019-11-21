@@ -1,13 +1,12 @@
-use super::helper::Adjustment::*;
+use super::Adjustment::*;
 use point_mass_ballistics::{
-    foot_per_second, foot_pound, inch, moa, second, yard, DisplayStyle, FmtMeasurements, Length,
-    Measurements,
+    foot_per_second, foot_pound, inch, moa, second, yard, Length, Measurements,
 };
 
 pub fn print<I>(table: I, output_tolerance: Length)
 where
     I: IntoIterator,
-    <I as IntoIterator>::Item: FmtMeasurements + Measurements,
+    <I as IntoIterator>::Item: Measurements,
 {
     println!(
         "{:>12} {:>8} {:>13} {:>11} {:>10} {:>10} {:>14} {:>12} {:>8}",
