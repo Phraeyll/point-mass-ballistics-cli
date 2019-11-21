@@ -3,9 +3,8 @@ use crate::printer::*;
 use std::{str::FromStr, string::ToString};
 
 use point_mass_ballistics::{
-    meter, yard, Acceleration, Angle, BcKind, Length, Mass, Measurements, Natural, Numeric,
-    ParseQuantityError, Pressure, Result, Simulation, SimulationBuilder, ThermodynamicTemperature,
-    Time, Velocity,
+    Acceleration, Angle, BcKind, Length, Mass, Measurements, Numeric, ParseQuantityError, Pressure,
+    Result, Simulation, SimulationBuilder, ThermodynamicTemperature, Time, Velocity,
 };
 use structopt::StructOpt;
 
