@@ -56,9 +56,6 @@ pub struct Options {
     shooter: Shooter,
 
     #[structopt(flatten)]
-    zero_scope: ZeroScope,
-
-    #[structopt(flatten)]
     zero_atmosphere: ZeroAtmosphere,
 
     #[structopt(flatten)]
@@ -93,24 +90,6 @@ struct Scope {
 
     #[structopt(long = "scope-cant")]
     scope_cant: Option<MyAngle>,
-}
-
-#[derive(Debug, StructOpt)]
-struct ZeroScope {
-    #[structopt(long = "zero-scope-height")]
-    zero_scope_height: Option<MyLength>,
-
-    #[structopt(long = "zero-scope-offset")]
-    zero_scope_offset: Option<MyLength>,
-
-    #[structopt(long = "zero-scope-pitch")]
-    zero_scope_pitch: Option<MyAngle>,
-
-    #[structopt(long = "zero-scope-yaw")]
-    zero_scope_yaw: Option<MyAngle>,
-
-    #[structopt(long = "zero-scope-cant")]
-    zero_scope_cant: Option<MyAngle>,
 }
 
 #[derive(Debug, StructOpt)]
@@ -343,20 +322,21 @@ impl Options {
         if let Some(ref val) = self.projectile.caliber {
             builder = builder.set_caliber(val.val)?
         }
-        Ok(builder)
-    }
-    pub fn zero_scenario(&self, mut builder: SimulationBuilder) -> Result<Simulation> {
+
         // Scope
-        if let Some(ref val) = self.zero_scope.zero_scope_height {
+        if let Some(ref val) = self.scope.scope_height {
             builder = builder.set_scope_height(val.val)
         }
-        if let Some(ref val) = self.zero_scope.zero_scope_offset {
+        if let Some(ref val) = self.scope.scope_offset {
             builder = builder.set_scope_offset(val.val)
         }
-        if let Some(ref val) = self.zero_scope.zero_scope_cant {
+        if let Some(ref val) = self.scope.scope_cant {
             builder = builder.set_scope_roll(val.val)
         }
 
+        Ok(builder)
+    }
+    pub fn zero_scenario(&self, mut builder: SimulationBuilder) -> Result<Simulation> {
         // Atmosphere
         if let Some(ref val) = self.zero_atmosphere.zero_temperature {
             builder = builder.set_temperature(val.val)?
@@ -397,13 +377,7 @@ impl Options {
         pitch: Angle,
         yaw: Angle,
     ) -> Result<Simulation> {
-        // Scope
-        if let Some(ref val) = self.scope.scope_height {
-            builder = builder.set_scope_height(val.val)
-        }
-        if let Some(ref val) = self.scope.scope_offset {
-            builder = builder.set_scope_offset(val.val)
-        }
+        // Adjust pitch/yaw with val from args, and provided deltas
         if let Some(ref val) = self.scope.scope_pitch {
             builder = builder.set_scope_pitch(dbg!(val.val + pitch))
         } else {
@@ -413,9 +387,6 @@ impl Options {
             builder = builder.set_scope_yaw(dbg!(val.val + yaw))
         } else {
             builder = builder.set_scope_yaw(yaw)
-        }
-        if let Some(ref val) = self.scope.scope_cant {
-            builder = builder.set_scope_roll(val.val)
         }
 
         // Atmosphere
