@@ -86,10 +86,10 @@ pub struct Projectile {
 }
 #[derive(Debug, StructOpt)]
 pub struct Bc {
-    #[structopt(long = "bc-value")]
+    #[structopt(requires = "bc-kind")]
     bc_value: Option<Numeric>,
 
-    #[structopt(long = "bc-kind")]
+    #[structopt(requires = "bc-value")]
     bc_kind: Option<BcKind>,
 }
 #[derive(Debug, StructOpt)]
@@ -415,5 +415,22 @@ impl ZeroingTarget {
     }
     pub fn tolerance(&self) -> Length {
         self.zeroing_target_tolerance.val
+    }
+}
+
+impl FromStr for Bc {
+    type Err = Error;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s.to_ascii_uppercase().as_ref() {
+            "G1" => Ok(G1),
+            "G2" => Ok(G2),
+            "G5" => Ok(G5),
+            "G6" => Ok(G6),
+            "G7" => Ok(G7),
+            "G8" => Ok(G8),
+            "GI" => Ok(GI),
+            "GS" => Ok(GS),
+            _ => Err(Error::new(ErrorKind::InvalidBcKind(s.to_string()))),
+        }
     }
 }

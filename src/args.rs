@@ -106,10 +106,10 @@ impl Options {
 
         // Projectile
         if let Some(val) = self.projectile().bc().value() {
-            builder = builder.set_bc_value(val)?
-        }
-        if let Some(val) = self.projectile().bc().kind() {
-            builder = builder.set_bc_kind(val)?
+            if let Some(kind) = self.projectile().bc().kind() {
+                builder = builder.set_bc_value(val)?;
+                builder = builder.set_bc_kind(kind)?;
+            }
         }
         if let Some(val) = self.projectile().velocity() {
             builder = builder.set_velocity(val)?
