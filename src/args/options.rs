@@ -86,10 +86,10 @@ pub struct Projectile {
 }
 #[derive(Debug, StructOpt)]
 pub struct Bc {
-    #[structopt(requires = "bc-kind")]
+    #[structopt(long = "bc-value", requires = "bc-kind")]
     bc_value: Option<Numeric>,
 
-    #[structopt(requires = "bc-value")]
+    #[structopt(long = "bc-kind", requires = "bc-value")]
     bc_kind: Option<BcKind>,
 }
 #[derive(Debug, StructOpt)]
