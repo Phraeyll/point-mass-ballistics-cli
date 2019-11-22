@@ -35,13 +35,13 @@ macro_rules! my_quantities {
         $(
             #[derive(Clone, Copy, Debug)]
             struct $my {
-                val: $uom,
+                value: $uom,
             }
             impl FromStr for $my {
                 type Err = MyParseQuantityError;
                 fn from_str(s: &str) -> Result<Self, Self::Err> {
                     <$uom as FromStr>::from_str(s)
-                        .map(|val| $my { val })
+                        .map(|value| $my { value })
                         .map_err(|error| MyParseQuantityError { error })
                 }
             }
@@ -105,67 +105,66 @@ impl Options {
         builder = builder.use_gravity(self.flags().gravity());
 
         // Projectile
-        if let Some(val) = self.projectile().bc().value() {
+        if let Some(value) = self.projectile().bc().value() {
             if let Some(kind) = self.projectile().bc().kind() {
-                builder = builder.set_bc_value(val)?;
-                builder = builder.set_bc_kind(kind)?;
+                builder = builder.set_bc(value, kind)?;
             }
         }
-        if let Some(val) = self.projectile().velocity() {
-            builder = builder.set_velocity(val)?
+        if let Some(value) = self.projectile().velocity() {
+            builder = builder.set_velocity(value)?
         }
-        if let Some(val) = self.projectile().mass() {
-            builder = builder.set_mass(val)?
+        if let Some(value) = self.projectile().mass() {
+            builder = builder.set_mass(value)?
         }
-        if let Some(val) = self.projectile().caliber() {
-            builder = builder.set_caliber(val)?
+        if let Some(value) = self.projectile().caliber() {
+            builder = builder.set_caliber(value)?
         }
 
         // Scope
-        if let Some(val) = self.scope().height() {
-            builder = builder.set_scope_height(val)
+        if let Some(value) = self.scope().height() {
+            builder = builder.set_scope_height(value)
         }
-        if let Some(val) = self.scope().offset() {
-            builder = builder.set_scope_offset(val)
+        if let Some(value) = self.scope().offset() {
+            builder = builder.set_scope_offset(value)
         }
-        if let Some(val) = self.scope().cant() {
-            builder = builder.set_scope_roll(val)
+        if let Some(value) = self.scope().cant() {
+            builder = builder.set_scope_roll(value)
         }
 
         Ok(builder)
     }
     pub fn zero_scenario(&self, mut builder: SimulationBuilder) -> Result<Simulation> {
         // Atmosphere
-        if let Some(val) = self.zeroing().atmosphere().temperature() {
-            builder = builder.set_temperature(val)?
+        if let Some(value) = self.zeroing().atmosphere().temperature() {
+            builder = builder.set_temperature(value)?
         }
-        if let Some(val) = self.zeroing().atmosphere().pressure() {
-            builder = builder.set_pressure(val)?
+        if let Some(value) = self.zeroing().atmosphere().pressure() {
+            builder = builder.set_pressure(value)?
         }
-        if let Some(val) = self.zeroing().atmosphere().humidity() {
-            builder = builder.set_humidity(val)?
+        if let Some(value) = self.zeroing().atmosphere().humidity() {
+            builder = builder.set_humidity(value)?
         }
 
         // Wind
-        if let Some(val) = self.zeroing().wind().speed() {
-            builder = builder.set_wind_speed(val)?
+        if let Some(value) = self.zeroing().wind().speed() {
+            builder = builder.set_wind_speed(value)?
         }
-        if let Some(val) = self.zeroing().wind().angle() {
-            builder = builder.set_wind_angle(val)?
+        if let Some(value) = self.zeroing().wind().angle() {
+            builder = builder.set_wind_angle(value)?
         }
 
         // Shooter
-        if let Some(val) = self.zeroing().shooter().angle() {
-            builder = builder.set_shot_angle(val)?
+        if let Some(value) = self.zeroing().shooter().angle() {
+            builder = builder.set_shot_angle(value)?
         }
-        if let Some(val) = self.zeroing().shooter().lattitude() {
-            builder = builder.set_lattitude(val)?
+        if let Some(value) = self.zeroing().shooter().lattitude() {
+            builder = builder.set_lattitude(value)?
         }
-        if let Some(val) = self.zeroing().shooter().bearing() {
-            builder = builder.set_bearing(val)?
+        if let Some(value) = self.zeroing().shooter().bearing() {
+            builder = builder.set_bearing(value)?
         }
-        if let Some(val) = self.zeroing().shooter().gravity() {
-            builder = builder.set_gravity(val)?
+        if let Some(value) = self.zeroing().shooter().gravity() {
+            builder = builder.set_gravity(value)?
         }
         Ok(builder.init())
     }
@@ -175,49 +174,49 @@ impl Options {
         pitch: Angle,
         yaw: Angle,
     ) -> Result<Simulation> {
-        // Adjust pitch/yaw with val from args, and provided deltas
-        if let Some(val) = self.scope().pitch() {
-            builder = builder.set_scope_pitch(dbg!(val + pitch))
+        // Adjust pitch/yaw with value from args, and provided deltas
+        if let Some(value) = self.scope().pitch() {
+            builder = builder.set_scope_pitch(dbg!(value + pitch))
         } else {
             builder = builder.set_scope_pitch(pitch)
         }
-        if let Some(val) = self.scope().yaw() {
-            builder = builder.set_scope_yaw(dbg!(val + yaw))
+        if let Some(value) = self.scope().yaw() {
+            builder = builder.set_scope_yaw(dbg!(value + yaw))
         } else {
             builder = builder.set_scope_yaw(yaw)
         }
 
         // Atmosphere
-        if let Some(val) = self.firing().atmosphere().temperature() {
-            builder = builder.set_temperature(val)?
+        if let Some(value) = self.firing().atmosphere().temperature() {
+            builder = builder.set_temperature(value)?
         }
-        if let Some(val) = self.firing().atmosphere().pressure() {
-            builder = builder.set_pressure(val)?
+        if let Some(value) = self.firing().atmosphere().pressure() {
+            builder = builder.set_pressure(value)?
         }
-        if let Some(val) = self.firing().atmosphere().humidity() {
-            builder = builder.set_humidity(val)?
+        if let Some(value) = self.firing().atmosphere().humidity() {
+            builder = builder.set_humidity(value)?
         }
 
         // Wind
-        if let Some(val) = self.firing().wind().speed() {
-            builder = builder.set_wind_speed(val)?
+        if let Some(value) = self.firing().wind().speed() {
+            builder = builder.set_wind_speed(value)?
         }
-        if let Some(val) = self.firing().wind().angle() {
-            builder = builder.set_wind_angle(val)?
+        if let Some(value) = self.firing().wind().angle() {
+            builder = builder.set_wind_angle(value)?
         }
 
         // Shooter
-        if let Some(val) = self.firing().shooter().angle() {
-            builder = builder.set_shot_angle(val)?
+        if let Some(value) = self.firing().shooter().angle() {
+            builder = builder.set_shot_angle(value)?
         }
-        if let Some(val) = self.firing().shooter().lattitude() {
-            builder = builder.set_lattitude(val)?
+        if let Some(value) = self.firing().shooter().lattitude() {
+            builder = builder.set_lattitude(value)?
         }
-        if let Some(val) = self.firing().shooter().bearing() {
-            builder = builder.set_bearing(val)?
+        if let Some(value) = self.firing().shooter().bearing() {
+            builder = builder.set_bearing(value)?
         }
-        if let Some(val) = self.firing().shooter().gravity() {
-            builder = builder.set_gravity(val)?
+        if let Some(value) = self.firing().shooter().gravity() {
+            builder = builder.set_gravity(value)?
         }
         Ok(builder.init())
     }

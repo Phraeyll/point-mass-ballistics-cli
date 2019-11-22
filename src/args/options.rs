@@ -18,8 +18,8 @@ use structopt::StructOpt;
             "#
 )]
 pub struct Options {
-    #[structopt(long = "time-interval", default_value = "0.00005 s")]
-    time_interval: MyTime,
+    #[structopt(long = "time-intervalue", default_value = "0.00005 s")]
+    time_intervalue: MyTime,
 
     #[structopt(flatten)]
     flags: Flags,
@@ -217,7 +217,7 @@ pub struct ZeroingTarget {
 
 impl Options {
     pub fn time(&self) -> Time {
-        self.time_interval.val
+        self.time_intervalue.value
     }
     pub fn flags(&self) -> &Flags {
         &self.flags
@@ -257,27 +257,27 @@ impl Flags {
 }
 impl Table {
     pub fn start(&self) -> Length {
-        self.table_start.val
+        self.table_start.value
     }
     pub fn end(&self) -> Length {
-        self.table_end.val
+        self.table_end.value
     }
     pub fn step(&self) -> Length {
-        self.table_step.val
+        self.table_step.value
     }
     pub fn tolerance(&self) -> Length {
-        self.table_tolerance.val
+        self.table_tolerance.value
     }
 }
 impl Projectile {
     pub fn velocity(&self) -> Option<Velocity> {
-        self.projectile_velocity.map(|val| val.val)
+        self.projectile_velocity.map(|value| value.value)
     }
     pub fn mass(&self) -> Option<Mass> {
-        self.projectile_mass.map(|val| val.val)
+        self.projectile_mass.map(|value| value.value)
     }
     pub fn caliber(&self) -> Option<Length> {
-        self.projectile_caliber.map(|val| val.val)
+        self.projectile_caliber.map(|value| value.value)
     }
     pub fn bc(&self) -> &Bc {
         &self.projectile_bc
@@ -293,19 +293,19 @@ impl Bc {
 }
 impl Scope {
     pub fn height(&self) -> Option<Length> {
-        self.scope_height.map(|val| val.val)
+        self.scope_height.map(|value| value.value)
     }
     pub fn offset(&self) -> Option<Length> {
-        self.scope_offset.map(|val| val.val)
+        self.scope_offset.map(|value| value.value)
     }
     pub fn pitch(&self) -> Option<Angle> {
-        self.scope_pitch.map(|val| val.val)
+        self.scope_pitch.map(|value| value.value)
     }
     pub fn yaw(&self) -> Option<Angle> {
-        self.scope_yaw.map(|val| val.val)
+        self.scope_yaw.map(|value| value.value)
     }
     pub fn cant(&self) -> Option<Angle> {
-        self.scope_cant.map(|val| val.val)
+        self.scope_cant.map(|value| value.value)
     }
 }
 impl Firing {
@@ -321,20 +321,20 @@ impl Firing {
 }
 impl FiringWind {
     pub fn speed(&self) -> Option<Velocity> {
-        self.firing_wind_speed.map(|val| val.val)
+        self.firing_wind_speed.map(|value| value.value)
     }
     pub fn angle(&self) -> Option<Angle> {
-        self.firing_wind_angle.map(|val| val.val)
+        self.firing_wind_angle.map(|value| value.value)
     }
 }
 impl FiringAtmosphere {
     pub fn temperature(&self) -> Option<ThermodynamicTemperature> {
         self.firing_atmosphere_temperature
             .as_ref()
-            .map(|val| val.val)
+            .map(|value| value.value)
     }
     pub fn pressure(&self) -> Option<Pressure> {
-        self.firing_atmosphere_pressure.map(|val| val.val)
+        self.firing_atmosphere_pressure.map(|value| value.value)
     }
     pub fn humidity(&self) -> Option<Numeric> {
         self.firing_atmosphere_humidity
@@ -342,16 +342,16 @@ impl FiringAtmosphere {
 }
 impl FiringShooter {
     pub fn lattitude(&self) -> Option<Angle> {
-        self.firing_shooter_lattitude.map(|val| val.val)
+        self.firing_shooter_lattitude.map(|value| value.value)
     }
     pub fn bearing(&self) -> Option<Angle> {
-        self.firing_shooter_bearing.map(|val| val.val)
+        self.firing_shooter_bearing.map(|value| value.value)
     }
     pub fn angle(&self) -> Option<Angle> {
-        self.firing_shooter_angle.map(|val| val.val)
+        self.firing_shooter_angle.map(|value| value.value)
     }
     pub fn gravity(&self) -> Option<Acceleration> {
-        self.firing_shooter_gravity.map(|val| val.val)
+        self.firing_shooter_gravity.map(|value| value.value)
     }
 }
 impl Zeroing {
@@ -370,20 +370,20 @@ impl Zeroing {
 }
 impl ZeroingWind {
     pub fn speed(&self) -> Option<Velocity> {
-        self.zeroing_wind_speed.map(|val| val.val)
+        self.zeroing_wind_speed.map(|value| value.value)
     }
     pub fn angle(&self) -> Option<Angle> {
-        self.zeroing_wind_angle.map(|val| val.val)
+        self.zeroing_wind_angle.map(|value| value.value)
     }
 }
 impl ZeroingAtmosphere {
     pub fn temperature(&self) -> Option<ThermodynamicTemperature> {
         self.zeroing_atmosphere_temperature
             .as_ref()
-            .map(|val| val.val)
+            .map(|value| value.value)
     }
     pub fn pressure(&self) -> Option<Pressure> {
-        self.zeroing_atmosphere_pressure.map(|val| val.val)
+        self.zeroing_atmosphere_pressure.map(|value| value.value)
     }
     pub fn humidity(&self) -> Option<Numeric> {
         self.zeroing_atmosphere_humidity
@@ -391,46 +391,29 @@ impl ZeroingAtmosphere {
 }
 impl ZeroingShooter {
     pub fn lattitude(&self) -> Option<Angle> {
-        self.zeroing_shooter_lattitude.map(|val| val.val)
+        self.zeroing_shooter_lattitude.map(|value| value.value)
     }
     pub fn bearing(&self) -> Option<Angle> {
-        self.zeroing_shooter_bearing.map(|val| val.val)
+        self.zeroing_shooter_bearing.map(|value| value.value)
     }
     pub fn angle(&self) -> Option<Angle> {
-        self.zeroing_shooter_angle.map(|val| val.val)
+        self.zeroing_shooter_angle.map(|value| value.value)
     }
     pub fn gravity(&self) -> Option<Acceleration> {
-        self.zeroing_shooter_gravity.map(|val| val.val)
+        self.zeroing_shooter_gravity.map(|value| value.value)
     }
 }
 impl ZeroingTarget {
     pub fn distance(&self) -> Length {
-        self.zeroing_target_distance.val
+        self.zeroing_target_distance.value
     }
     pub fn height(&self) -> Length {
-        self.zeroing_target_height.val
+        self.zeroing_target_height.value
     }
     pub fn offset(&self) -> Length {
-        self.zeroing_target_offset.val
+        self.zeroing_target_offset.value
     }
     pub fn tolerance(&self) -> Length {
-        self.zeroing_target_tolerance.val
-    }
-}
-
-impl FromStr for Bc {
-    type Err = Error;
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s.to_ascii_uppercase().as_ref() {
-            "G1" => Ok(G1),
-            "G2" => Ok(G2),
-            "G5" => Ok(G5),
-            "G6" => Ok(G6),
-            "G7" => Ok(G7),
-            "G8" => Ok(G8),
-            "GI" => Ok(GI),
-            "GS" => Ok(GS),
-            _ => Err(Error::new(ErrorKind::InvalidBcKind(s.to_string()))),
-        }
+        self.zeroing_target_tolerance.value
     }
 }
