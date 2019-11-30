@@ -10,7 +10,7 @@ macro_rules! time {
         let start = Instant::now();
         match $expr {
             tmp => {
-                println!("Finished '{}' in: {:#?}", stringify!($expr), start.elapsed());
+                println!("'{}': {:#?}", stringify!($expr), start.elapsed());
                 tmp
             }
         }
@@ -18,21 +18,15 @@ macro_rules! time {
 }
 
 fn main() -> Result<(), Error> {
-    time!({
-        let opt = time!(Options::from_args());
-        let mut angles = (Angle::new::<radian>(0.0), Angle::new::<radian>(0.0));
-        if !opt.flags().flat() {
-            time!({
-                let zero_builder = opt.shared_params()?;
-                let zero_simulation = opt.zero_scenario(zero_builder)?;
-                angles = opt.try_zero(zero_simulation)?;
-            });
-        }
-        time!({
-            let firing_builder = opt.shared_params()?;
-            let firing_simulation = opt.firing_scenario(firing_builder, angles.0, angles.1)?;
-            opt.print(&firing_simulation);
-        });
-    });
+    let opt = time!(Options::from_args());
+    let mut angles = (Angle::new::<radian>(0.0), Angle::new::<radian>(0.0));
+    if !opt.flags().flat() {
+        let zero_builder = time!(opt.shared_params()?);
+        let zero_simulation = time!(opt.zero_scenario(zero_builder)?);
+        angles = time!(opt.try_zero(zero_simulation)?);
+    };
+    let firing_builder = time!(opt.shared_params()?);
+    let firing_simulation = time!(opt.firing_scenario(firing_builder, angles.0, angles.1)?);
+    time!(opt.print(&firing_simulation));
     Ok(())
 }
