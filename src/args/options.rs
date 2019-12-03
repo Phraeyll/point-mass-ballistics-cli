@@ -17,6 +17,17 @@ use structopt::StructOpt;
             as well, for factoring in gyroscopic drift and aerodynamic jump (4-DOF models)
             "#
 )]
+pub enum SimulationKind {
+    G1(Options),
+    G2(Options),
+    G5(Options),
+    G6(Options),
+    G7(Options),
+    G8(Options),
+    GI(Options),
+    GS(Options),
+}
+#[derive(Debug, StructOpt)]
 pub struct Options {
     #[structopt(long = "time-intervalue", default_value = "0.00005 s")]
     time_intervalue: MyTime,
@@ -81,13 +92,8 @@ pub struct Projectile {
     #[structopt(long = "caliber")]
     projectile_caliber: Option<MyLength>,
 
-    #[structopt(flatten)]
-    projectile_bc: Bc,
-}
-#[derive(Debug, StructOpt)]
-pub struct Bc {
-    #[structopt(long = "bc-value", requires = "bc-kind")]
-    bc_value: Option<Numeric>,
+    #[structopt(long = "bc")]
+    projectile_bc: Option<Numeric>,
 }
 #[derive(Debug, StructOpt)]
 pub struct Scope {
@@ -276,13 +282,8 @@ impl Projectile {
     pub fn caliber(&self) -> Option<Length> {
         self.projectile_caliber.map(|value| value.value)
     }
-    pub fn bc(&self) -> &Bc {
-        &self.projectile_bc
-    }
-}
-impl Bc {
-    pub fn value(&self) -> Option<Numeric> {
-        self.bc_value
+    pub fn bc(&self) -> Option<Numeric> {
+        self.projectile_bc
     }
 }
 impl Scope {

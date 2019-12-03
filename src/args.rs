@@ -1,14 +1,27 @@
-use self::options::Options;
+use self::options::{Options, SimulationKind};
 use crate::printer::*;
 
-use std::{str::FromStr, string::ToString};
+use std::{error::Error, str::FromStr, string::ToString, stringify, time::Instant};
 
 use point_mass_ballistics::{
-    Acceleration, Angle, DragTable, Length, Mass, Measurements, Numeric, ParseQuantityError,
-    Pressure, Result, Simulation, SimulationBuilder, ThermodynamicTemperature, Time, Velocity,
+    drag_tables as bc, radian, Acceleration, Angle, DragTable, Length, Mass, Measurements, Numeric,
+    ParseQuantityError, Pressure, Simulation, SimulationBuilder, ThermodynamicTemperature, Time,
+    Velocity,
 };
 
 pub mod options;
+
+macro_rules! time {
+    ($expr:expr) => {{
+        let start = Instant::now();
+        match $expr {
+            tmp => {
+                println!("'{}': {:#?}", stringify!($expr), start.elapsed());
+                tmp
+            }
+        }
+    }};
+}
 
 #[derive(Debug)]
 struct MyParseQuantityError {
@@ -60,7 +73,37 @@ my_quantities! {
     MyPressure => Pressure,
 }
 
+impl SimulationKind {
+    pub fn run(&self) -> Result<(), Box<dyn Error>> {
+        match self {
+            Self::G1(params) => params.run::<bc::G1>(),
+            Self::G2(params) => params.run::<bc::G2>(),
+            Self::G5(params) => params.run::<bc::G5>(),
+            Self::G6(params) => params.run::<bc::G6>(),
+            Self::G7(params) => params.run::<bc::G7>(),
+            Self::G8(params) => params.run::<bc::G8>(),
+            Self::GI(params) => params.run::<bc::GI>(),
+            Self::GS(params) => params.run::<bc::GS>(),
+        }
+    }
+}
+
 impl Options {
+    pub fn run<T>(&self) -> Result<(), Box<dyn Error>>
+    where
+        T: DragTable,
+    {
+        let mut angles = (Angle::new::<radian>(0.0), Angle::new::<radian>(0.0));
+        if !self.flags().flat() {
+            let zero_builder = time!(self.shared_params::<T>()?);
+            let zero_simulation = time!(self.zero_scenario(zero_builder)?);
+            angles = time!(self.try_zero(zero_simulation)?);
+        };
+        let firing_builder = time!(self.shared_params::<T>()?);
+        let firing_simulation = time!(self.firing_scenario(firing_builder, angles.0, angles.1)?);
+        time!(self.print(&firing_simulation));
+        Ok(())
+    }
     pub fn print<T>(&self, simulation: &Simulation<T>)
     where
         T: DragTable,
@@ -94,7 +137,10 @@ impl Options {
                 }
             })
     }
-    pub fn try_zero<T>(&self, mut simulation: Simulation<T>) -> Result<(Angle, Angle)>
+    pub fn try_zero<T>(
+        &self,
+        mut simulation: Simulation<T>,
+    ) -> Result<(Angle, Angle), Box<dyn Error>>
     where
         T: DragTable,
     {
@@ -105,7 +151,7 @@ impl Options {
             self.zeroing().target().tolerance(),
         )?)
     }
-    pub fn shared_params<T>(&self) -> Result<SimulationBuilder<T>>
+    pub fn shared_params<T>(&self) -> Result<SimulationBuilder<T>, Box<dyn Error>>
     where
         T: DragTable,
     {
@@ -117,7 +163,7 @@ impl Options {
         builder = builder.use_gravity(self.flags().gravity());
 
         // Projectile
-        if let Some(value) = self.projectile().bc().value() {
+        if let Some(value) = self.projectile().bc() {
             builder = builder.set_bc(value)?
         }
         if let Some(value) = self.projectile().velocity() {
@@ -143,7 +189,10 @@ impl Options {
 
         Ok(builder)
     }
-    pub fn zero_scenario<T>(&self, mut builder: SimulationBuilder<T>) -> Result<Simulation<T>>
+    pub fn zero_scenario<T>(
+        &self,
+        mut builder: SimulationBuilder<T>,
+    ) -> Result<Simulation<T>, Box<dyn Error>>
     where
         T: DragTable,
     {
@@ -186,7 +235,7 @@ impl Options {
         mut builder: SimulationBuilder<T>,
         pitch: Angle,
         yaw: Angle,
-    ) -> Result<Simulation<T>>
+    ) -> Result<Simulation<T>, Box<dyn Error>>
     where
         T: DragTable,
     {
