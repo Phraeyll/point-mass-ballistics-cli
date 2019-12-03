@@ -88,9 +88,6 @@ pub struct Projectile {
 pub struct Bc {
     #[structopt(long = "bc-value", requires = "bc-kind")]
     bc_value: Option<Numeric>,
-
-    #[structopt(long = "bc-kind", requires = "bc-value")]
-    bc_kind: Option<BcKind>,
 }
 #[derive(Debug, StructOpt)]
 pub struct Scope {
@@ -286,9 +283,6 @@ impl Projectile {
 impl Bc {
     pub fn value(&self) -> Option<Numeric> {
         self.bc_value
-    }
-    pub fn kind(&self) -> Option<BcKind> {
-        self.bc_kind
     }
 }
 impl Scope {

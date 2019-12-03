@@ -4,8 +4,8 @@ use crate::printer::*;
 use std::{str::FromStr, string::ToString};
 
 use point_mass_ballistics::{
-    Acceleration, Angle, BcKind, Length, Mass, Measurements, Numeric, ParseQuantityError, Pressure,
-    Result, Simulation, SimulationBuilder, ThermodynamicTemperature, Time, Velocity,
+    Acceleration, Angle, DragTable, Length, Mass, Measurements, Numeric, ParseQuantityError,
+    Pressure, Result, Simulation, SimulationBuilder, ThermodynamicTemperature, Time, Velocity,
 };
 
 pub mod options;
@@ -61,7 +61,10 @@ my_quantities! {
 }
 
 impl Options {
-    pub fn print(&self, simulation: &Simulation) {
+    pub fn print<T>(&self, simulation: &Simulation<T>)
+    where
+        T: DragTable,
+    {
         let output_tolerance = self.table().tolerance();
         if self.flags().pretty() {
             pretty::print(self.table_gen(&simulation), output_tolerance);
@@ -69,10 +72,13 @@ impl Options {
             plain::print(self.table_gen(&simulation), output_tolerance);
         }
     }
-    pub fn table_gen<'s>(
+    pub fn table_gen<'s, T>(
         &self,
-        simulation: &'s Simulation,
-    ) -> impl IntoIterator<Item = impl Measurements + 's> + 's {
+        simulation: &'s Simulation<T>,
+    ) -> impl IntoIterator<Item = impl Measurements + 's> + 's
+    where
+        T: DragTable,
+    {
         let mut start = self.table().start();
         let end = self.table().end();
         let step = self.table().step();
@@ -88,7 +94,10 @@ impl Options {
                 }
             })
     }
-    pub fn try_zero(&self, mut simulation: Simulation) -> Result<(Angle, Angle)> {
+    pub fn try_zero<T>(&self, mut simulation: Simulation<T>) -> Result<(Angle, Angle)>
+    where
+        T: DragTable,
+    {
         Ok(simulation.find_zero_angles(
             self.zeroing().target().distance(),
             self.zeroing().target().height(),
@@ -96,7 +105,10 @@ impl Options {
             self.zeroing().target().tolerance(),
         )?)
     }
-    pub fn shared_params(&self) -> Result<SimulationBuilder> {
+    pub fn shared_params<T>(&self) -> Result<SimulationBuilder<T>>
+    where
+        T: DragTable,
+    {
         let mut builder = SimulationBuilder::new();
         builder = builder.set_time_step(self.time())?;
 
@@ -106,9 +118,7 @@ impl Options {
 
         // Projectile
         if let Some(value) = self.projectile().bc().value() {
-            if let Some(kind) = self.projectile().bc().kind() {
-                builder = builder.set_bc(value, kind)?;
-            }
+            builder = builder.set_bc(value)?
         }
         if let Some(value) = self.projectile().velocity() {
             builder = builder.set_velocity(value)?
@@ -133,7 +143,10 @@ impl Options {
 
         Ok(builder)
     }
-    pub fn zero_scenario(&self, mut builder: SimulationBuilder) -> Result<Simulation> {
+    pub fn zero_scenario<T>(&self, mut builder: SimulationBuilder<T>) -> Result<Simulation<T>>
+    where
+        T: DragTable,
+    {
         // Atmosphere
         if let Some(value) = self.zeroing().atmosphere().temperature() {
             builder = builder.set_temperature(value)?
@@ -168,12 +181,15 @@ impl Options {
         }
         Ok(builder.init())
     }
-    pub fn firing_scenario(
+    pub fn firing_scenario<T>(
         &self,
-        mut builder: SimulationBuilder,
+        mut builder: SimulationBuilder<T>,
         pitch: Angle,
         yaw: Angle,
-    ) -> Result<Simulation> {
+    ) -> Result<Simulation<T>>
+    where
+        T: DragTable,
+    {
         // Adjust pitch/yaw with value from args, and provided deltas
         if let Some(value) = self.scope().pitch() {
             builder = builder.set_scope_pitch(dbg!(value + pitch))
