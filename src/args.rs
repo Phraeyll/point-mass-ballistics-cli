@@ -75,15 +75,15 @@ my_quantities! {
 
 impl SimulationKind {
     pub fn run(&self) -> Result<(), Box<dyn Error>> {
-        match self {
-            Self::G1(params) => params.run::<bc::G1>(),
-            Self::G2(params) => params.run::<bc::G2>(),
-            Self::G5(params) => params.run::<bc::G5>(),
-            Self::G6(params) => params.run::<bc::G6>(),
-            Self::G7(params) => params.run::<bc::G7>(),
-            Self::G8(params) => params.run::<bc::G8>(),
-            Self::GI(params) => params.run::<bc::GI>(),
-            Self::GS(params) => params.run::<bc::GS>(),
+        match *self {
+            Self::G1(ref params) => params.run::<bc::G1>(),
+            Self::G2(ref params) => params.run::<bc::G2>(),
+            Self::G5(ref params) => params.run::<bc::G5>(),
+            Self::G6(ref params) => params.run::<bc::G6>(),
+            Self::G7(ref params) => params.run::<bc::G7>(),
+            Self::G8(ref params) => params.run::<bc::G8>(),
+            Self::GI(ref params) => params.run::<bc::GI>(),
+            Self::GS(ref params) => params.run::<bc::GS>(),
         }
     }
 }
