@@ -186,7 +186,7 @@ dependencies = [
 [[package]]
 name = "point-mass-ballistics"
 version = "0.0.1"
-source = "git+https://github.com/Phraeyll/point-mass-ballistics#17de3d3e1310969d5df691a2fee60afcdfa9ad40"
+source = "git+https://github.com/Phraeyll/point-mass-ballistics#41f08b98f1851d4d92663b3e4e73ece08455ec50"
 dependencies = [
  "alga 0.9.2 (registry+https://github.com/rust-lang/crates.io-index)",
  "lazy_static 1.4.0 (registry+https://github.com/rust-lang/crates.io-index)",
