@@ -29,8 +29,8 @@ pub enum SimulationKind {
 }
 #[derive(Debug, StructOpt)]
 pub struct Options {
-    #[structopt(long = "time-intervalue", default_value = "0.00005 s")]
-    time_intervalue: MyTime,
+    #[structopt(long = "time-interval", default_value = "0.00005 s")]
+    time_interval: MyTime,
 
     #[structopt(flatten)]
     flags: Flags,
@@ -220,7 +220,7 @@ pub struct ZeroingTarget {
 
 impl Options {
     pub fn time(&self) -> Time {
-        self.time_intervalue.value
+        self.time_interval.value
     }
     pub fn flags(&self) -> &Flags {
         &self.flags
