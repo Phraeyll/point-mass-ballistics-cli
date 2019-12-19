@@ -23,11 +23,6 @@ macro_rules! time {
     }};
 }
 
-#[derive(Debug)]
-struct MyParseQuantityError {
-    error: ParseQuantityError,
-}
-
 impl ToString for MyParseQuantityError {
     fn to_string(&self) -> String {
         match self.error {
@@ -45,6 +40,10 @@ macro_rules! my_quantities {
         }
     };
     ( $($my:ident => $uom:ident),* ) => {
+        #[derive(Debug)]
+        struct MyParseQuantityError {
+            error: ParseQuantityError,
+        }
         $(
             #[derive(Clone, Copy, Debug)]
             struct $my {
