@@ -23,16 +23,6 @@ macro_rules! time {
     }};
 }
 
-impl ToString for MyParseQuantityError {
-    fn to_string(&self) -> String {
-        match self.error {
-            ParseQuantityError::NoSeparator => "No Separator".to_string(),
-            ParseQuantityError::UnknownUnit => "Unknown Unit".to_string(),
-            ParseQuantityError::ValueParseError => "Value Parse Error".to_string(),
-        }
-    }
-}
-
 macro_rules! my_quantities {
     ( $($my:ident => $uom:ident,)+ ) => {
         my_quantities! {
@@ -43,6 +33,15 @@ macro_rules! my_quantities {
         #[derive(Debug)]
         struct MyParseQuantityError {
             error: ParseQuantityError,
+        }
+        impl ToString for MyParseQuantityError {
+            fn to_string(&self) -> String {
+                match self.error {
+                    ParseQuantityError::NoSeparator => "No Separator".to_string(),
+                    ParseQuantityError::UnknownUnit => "Unknown Unit".to_string(),
+                    ParseQuantityError::ValueParseError => "Value Parse Error".to_string(),
+                }
+            }
         }
         $(
             #[derive(Clone, Copy, Debug)]
