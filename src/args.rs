@@ -1,7 +1,7 @@
 use self::options::{Options, SimulationKind};
 use crate::printer::*;
 
-use std::{error::Error, str::FromStr, string::ToString, stringify, time::Instant};
+use std::{error::Error, file, line, str::FromStr, string::ToString, stringify, time::Instant};
 
 use point_mass_ballistics::{
     drag_tables as bc, radian, Acceleration, Angle, DragTable, Length, Mass, Measurements, Numeric,
@@ -13,10 +13,16 @@ pub mod options;
 
 macro_rules! time {
     ($expr:expr) => {{
-        let start = Instant::now();
+        let time = Instant::now();
         match $expr {
             tmp => {
-                println!("'{}': {:#?}", stringify!($expr), start.elapsed());
+                eprintln!(
+                    "[{}:{}] {} = {:#?}",
+                    file!(),
+                    line!(),
+                    stringify!($expr),
+                    time.elapsed()
+                );
                 tmp
             }
         }
