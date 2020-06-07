@@ -13,8 +13,8 @@ name = "cli"
 path = "src/main.rs"
 
 [dependencies]
-clap = "2.33.0"
-structopt = "0.3.13"
+clap = "2.33.1"
+structopt = "0.3.14"
 
 [dependencies.point-mass-ballistics]
 git = "https://github.com/Phraeyll/point-mass-ballistics"
