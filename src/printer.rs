@@ -35,7 +35,7 @@ where
     I: IntoIterator,
     <I as IntoIterator>::Item: Measurements,
 {
-    let (div, start, end) = if pretty {
+    let (div, lpad, rpad) = if pretty {
         (
             "+--------------+----------+---------------+-------------+------------+------------+----------------+--------------+----------+\n",
             "| ",
@@ -45,7 +45,7 @@ where
         ("", "", "")
     };
     println!(
-        "{div}{start}{:>12} {start}{:>8} {start}{:>13} {start}{:>11} {start}{:>10} {start}{:>10} {start}{:>14} {start}{:>12} {start}{:>8}{end}",
+        "{div}{lpad}{:>12} {lpad}{:>8} {lpad}{:>13} {lpad}{:>11} {lpad}{:>10} {lpad}{:>10} {lpad}{:>14} {lpad}{:>12} {lpad}{:>8}{rpad}",
         "Distance(yd)",
         "MOA",
         "Elevation(in)",
@@ -55,13 +55,13 @@ where
         "Velocity(ft/s)",
         "Energy(ftlb)",
         "Time(s)",
-        start=start,
-        end=end,
+        lpad=lpad,
+        rpad=rpad,
         div=div,
     );
     for p in table.into_iter() {
         println!(
-            "{div}{start}{:>12.0} {start}{:>8.2} {start}{:>11.2} {} {start}{:>9.2} {} {start}{:>8.2} {} {start}{:>8.2} {} {start}{:>14.2} {start}{:>12.2} {start}{:>8.3}{end}",
+            "{div}{lpad}{:>12.0} {lpad}{:>8.2} {lpad}{:>11.2} {} {lpad}{:>9.2} {} {lpad}{:>8.2} {} {lpad}{:>8.2} {} {lpad}{:>14.2} {lpad}{:>12.2} {lpad}{:>8.3}{rpad}",
             p.distance().get::<yard>(),
             p.angle().get::<moa>(),
             p.elevation().get::<inch>().abs(),
@@ -75,8 +75,8 @@ where
             p.velocity().get::<foot_per_second>(),
             p.energy().get::<foot_pound>(),
             p.time().get::<second>(),
-            start=start,
-            end=end,
+            lpad=lpad,
+            rpad=rpad,
             div=div,
         );
     }
