@@ -1,5 +1,5 @@
 use self::options::{Options, SimulationKind};
-use crate::printer::*;
+use crate::printer;
 
 use std::{error::Error, file, line, str::FromStr, string::ToString, stringify, time::Instant};
 
@@ -113,11 +113,7 @@ impl Options {
         T: DragTable,
     {
         let output_tolerance = self.table().tolerance();
-        if self.flags().pretty() {
-            pretty::print(self.table_gen(&simulation), output_tolerance);
-        } else {
-            plain::print(self.table_gen(&simulation), output_tolerance);
-        }
+        printer::print(self.table_gen(&simulation), output_tolerance, self.flags().pretty());
     }
     pub fn table_gen<'s, T>(
         &self,
