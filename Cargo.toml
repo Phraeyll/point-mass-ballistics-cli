@@ -14,7 +14,7 @@ path = "src/main.rs"
 
 [dependencies]
 clap = "2.33.3"
-structopt = "0.3.16"
+structopt = "0.3.18"
 
 [dependencies.point-mass-ballistics]
 git = "https://github.com/Phraeyll/point-mass-ballistics"

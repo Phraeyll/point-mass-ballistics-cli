@@ -113,7 +113,11 @@ impl Options {
         T: DragTable,
     {
         let output_tolerance = self.table().tolerance();
-        printer::print(self.table_gen(&simulation), output_tolerance, self.flags().pretty());
+        printer::print(
+            self.table_gen(&simulation),
+            output_tolerance,
+            self.flags().pretty(),
+        );
     }
     pub fn table_gen<'s, T>(
         &self,
