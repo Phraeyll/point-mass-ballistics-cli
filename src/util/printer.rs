@@ -4,9 +4,6 @@ use point_mass_ballistics::{
     foot_per_second, foot_pound, inch, moa, second, yard, Length, Measurements,
 };
 
-// pub mod plain;
-// pub mod pretty;
-
 #[derive(Clone, Copy)]
 pub enum Adjustment {
     Elevation(Length),
@@ -44,8 +41,8 @@ where
     } else {
         ("", "", "")
     };
-    println!(
-        "{div}{lpad}{:>12} {lpad}{:>8} {lpad}{:>13} {lpad}{:>11} {lpad}{:>10} {lpad}{:>10} {lpad}{:>14} {lpad}{:>12} {lpad}{:>8}{rpad}",
+    print!(
+        "{div}{lpad}{:>12} {lpad}{:>8} {lpad}{:>13} {lpad}{:>11} {lpad}{:>10} {lpad}{:>10} {lpad}{:>14} {lpad}{:>12} {lpad}{:>8}{rpad}\n{div}",
         "Distance(yd)",
         "MOA",
         "Elevation(in)",
@@ -60,8 +57,8 @@ where
         div=div,
     );
     for p in table.into_iter() {
-        println!(
-            "{div}{lpad}{:>12.0} {lpad}{:>8.2} {lpad}{:>11.2} {} {lpad}{:>9.2} {} {lpad}{:>8.2} {} {lpad}{:>8.2} {} {lpad}{:>14.2} {lpad}{:>12.2} {lpad}{:>8.3}{rpad}",
+        print!(
+            "{lpad}{:>12.0} {lpad}{:>8.2} {lpad}{:>11.2} {} {lpad}{:>9.2} {} {lpad}{:>8.2} {} {lpad}{:>8.2} {} {lpad}{:>14.2} {lpad}{:>12.2} {lpad}{:>8.3}{rpad}\n{div}",
             p.distance().get::<yard>(),
             p.angle().get::<moa>(),
             p.elevation().get::<inch>().abs(),
@@ -80,5 +77,4 @@ where
             div=div,
         );
     }
-    print!("{}", div);
 }

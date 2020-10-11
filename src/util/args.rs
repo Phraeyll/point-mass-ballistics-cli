@@ -1,4 +1,9 @@
-use super::*;
+use std::{str::FromStr, string::ToString};
+
+use point_mass_ballistics::{
+    Acceleration, Angle, Length, Mass, Numeric, ParseQuantityError, Pressure,
+    ThermodynamicTemperature, Time, Velocity,
+};
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
@@ -18,17 +23,66 @@ use structopt::StructOpt;
             "#
 )]
 pub enum SimulationKind {
-    G1(Options),
-    G2(Options),
-    G5(Options),
-    G6(Options),
-    G7(Options),
-    G8(Options),
-    GI(Options),
-    GS(Options),
+    G1(Args),
+    G2(Args),
+    G5(Args),
+    G6(Args),
+    G7(Args),
+    G8(Args),
+    GI(Args),
+    GS(Args),
 }
+
+macro_rules! my_quantities {
+    ( $($my:ident => $uom:ident,)+ ) => {
+        my_quantities! {
+            $($my => $uom),+
+        }
+    };
+    ( $($my:ident => $uom:ident),* ) => {
+        #[derive(Debug)]
+        struct MyParseQuantityError {
+            error: ParseQuantityError,
+        }
+        impl ToString for MyParseQuantityError {
+            fn to_string(&self) -> String {
+                match self.error {
+                    ParseQuantityError::NoSeparator => "No Separator".to_string(),
+                    ParseQuantityError::UnknownUnit => "Unknown Unit".to_string(),
+                    ParseQuantityError::ValueParseError => "Value Parse Error".to_string(),
+                }
+            }
+        }
+        $(
+            #[derive(Clone, Copy, Debug)]
+            struct $my {
+                value: $uom,
+            }
+            impl FromStr for $my {
+                type Err = MyParseQuantityError;
+                fn from_str(s: &str) -> Result<Self, Self::Err> {
+                    <$uom as FromStr>::from_str(s)
+                        .map(|value| $my { value })
+                        .map_err(|error| MyParseQuantityError { error })
+                }
+            }
+        )*
+    };
+}
+
+my_quantities! {
+    MyAngle => Angle,
+    MyMass => Mass,
+    MyLength => Length,
+    MyTime => Time,
+    MyVelocity => Velocity,
+    MyAcceleration => Acceleration,
+    MyThermodynamicTemperature => ThermodynamicTemperature,
+    MyPressure => Pressure,
+}
+
 #[derive(Debug, StructOpt)]
-pub struct Options {
+pub struct Args {
     #[structopt(long = "time-interval", default_value = "0.00005 s")]
     time_interval: MyTime,
 
@@ -218,7 +272,7 @@ pub struct ZeroingTarget {
     zeroing_target_tolerance: MyLength,
 }
 
-impl Options {
+impl Args {
     pub fn time(&self) -> Time {
         self.time_interval.value
     }

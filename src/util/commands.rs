@@ -1,16 +1,15 @@
-use self::options::{Options, SimulationKind};
-use crate::printer;
-
-use std::{error::Error, file, line, str::FromStr, string::ToString, stringify, time::Instant};
-
-use point_mass_ballistics::{
-    drag_tables as bc, radian, Acceleration, Angle, DragTable, Length, Mass, Measurements, Numeric,
-    ParseQuantityError, Pressure, Simulation, SimulationBuilder, ThermodynamicTemperature, Time,
-    Velocity,
+use super::{
+    args::{Args, SimulationKind},
+    printer,
 };
 
-pub mod options;
+use std::{error::Error, file, line, stringify, time::Instant};
 
+use point_mass_ballistics::{
+    drag_tables as bc, radian, Angle, DragTable, Measurements, Simulation, SimulationBuilder,
+};
+
+#[macro_export]
 macro_rules! time {
     ($expr:expr) => {{
         let time = Instant::now();
@@ -29,54 +28,6 @@ macro_rules! time {
     }};
 }
 
-macro_rules! my_quantities {
-    ( $($my:ident => $uom:ident,)+ ) => {
-        my_quantities! {
-            $($my => $uom),+
-        }
-    };
-    ( $($my:ident => $uom:ident),* ) => {
-        #[derive(Debug)]
-        struct MyParseQuantityError {
-            error: ParseQuantityError,
-        }
-        impl ToString for MyParseQuantityError {
-            fn to_string(&self) -> String {
-                match self.error {
-                    ParseQuantityError::NoSeparator => "No Separator".to_string(),
-                    ParseQuantityError::UnknownUnit => "Unknown Unit".to_string(),
-                    ParseQuantityError::ValueParseError => "Value Parse Error".to_string(),
-                }
-            }
-        }
-        $(
-            #[derive(Clone, Copy, Debug)]
-            struct $my {
-                value: $uom,
-            }
-            impl FromStr for $my {
-                type Err = MyParseQuantityError;
-                fn from_str(s: &str) -> Result<Self, Self::Err> {
-                    <$uom as FromStr>::from_str(s)
-                        .map(|value| $my { value })
-                        .map_err(|error| MyParseQuantityError { error })
-                }
-            }
-        )*
-    };
-}
-
-my_quantities! {
-    MyAngle => Angle,
-    MyMass => Mass,
-    MyLength => Length,
-    MyTime => Time,
-    MyVelocity => Velocity,
-    MyAcceleration => Acceleration,
-    MyThermodynamicTemperature => ThermodynamicTemperature,
-    MyPressure => Pressure,
-}
-
 impl SimulationKind {
     pub fn run(&self) -> Result<(), Box<dyn Error>> {
         match *self {
@@ -92,7 +43,7 @@ impl SimulationKind {
     }
 }
 
-impl Options {
+impl Args {
     pub fn run<T>(&self) -> Result<(), Box<dyn Error>>
     where
         T: DragTable,
