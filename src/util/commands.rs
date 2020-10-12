@@ -9,7 +9,6 @@ use point_mass_ballistics::{
     drag_tables as bc, radian, Angle, DragTable, Measurements, Simulation, SimulationBuilder,
 };
 
-#[macro_export]
 macro_rules! time {
     ($expr:expr) => {{
         let time = Instant::now();
