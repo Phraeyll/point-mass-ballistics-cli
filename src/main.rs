@@ -5,9 +5,8 @@ use std::error::Error;
 use structopt::StructOpt;
 
 mod util {
-    #[macro_use]
-    pub mod commands;
     pub mod args;
+    pub mod commands;
     pub mod printer;
 }
 
