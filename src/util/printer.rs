@@ -32,17 +32,29 @@ where
     I: IntoIterator,
     <I as IntoIterator>::Item: Measurements,
 {
-    let (div, lpad, rpad) = if pretty {
+    let (div, lpad, eol) = if pretty {
         (
             "+--------------+----------+---------------+-------------+------------+------------+----------------+--------------+----------+\n",
             "| ",
-            " |",
+            " |\n",
         )
     } else {
-        ("", "", "")
+        ("", "", "\n")
     };
     print!(
-        "{div}{lpad}{:>12} {lpad}{:>8} {lpad}{:>13} {lpad}{:>11} {lpad}{:>10} {lpad}{:>10} {lpad}{:>14} {lpad}{:>12} {lpad}{:>8}{rpad}\n{div}",
+        "\
+        {div}\
+        {lpad}{:>12} \
+        {lpad}{:>08} \
+        {lpad}{:>13} \
+        {lpad}{:>11} \
+        {lpad}{:>10} \
+        {lpad}{:>10} \
+        {lpad}{:>14} \
+        {lpad}{:>12} \
+        {lpad}{:>08}{eol}\
+        {div}\
+        ",
         "Distance(yd)",
         "MOA",
         "Elevation(in)",
@@ -52,13 +64,24 @@ where
         "Velocity(ft/s)",
         "Energy(ftlb)",
         "Time(s)",
-        lpad=lpad,
-        rpad=rpad,
-        div=div,
+        lpad = lpad,
+        eol = eol,
+        div = div,
     );
     for p in table.into_iter() {
         print!(
-            "{lpad}{:>12.0} {lpad}{:>8.2} {lpad}{:>11.2} {} {lpad}{:>9.2} {} {lpad}{:>8.2} {} {lpad}{:>8.2} {} {lpad}{:>14.2} {lpad}{:>12.2} {lpad}{:>8.3}{rpad}\n{div}",
+            "\
+            {lpad}{:>12.0} \
+            {lpad}{:>08.2} \
+            {lpad}{:>11.2} {} \
+            {lpad}{:>09.2} {} \
+            {lpad}{:>08.2} {} \
+            {lpad}{:>08.2} {} \
+            {lpad}{:>14.2} \
+            {lpad}{:>12.2} \
+            {lpad}{:>08.3}{eol}\
+            {div}\
+            ",
             p.distance().get::<yard>(),
             p.angle().get::<moa>(),
             p.elevation().get::<inch>().abs(),
@@ -72,9 +95,9 @@ where
             p.velocity().get::<foot_per_second>(),
             p.energy().get::<foot_pound>(),
             p.time().get::<second>(),
-            lpad=lpad,
-            rpad=rpad,
-            div=div,
+            lpad = lpad,
+            eol = eol,
+            div = div,
         );
     }
 }
