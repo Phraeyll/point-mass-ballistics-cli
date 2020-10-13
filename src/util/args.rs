@@ -9,6 +9,11 @@ use point_mass_ballistics::{
 };
 use structopt::StructOpt;
 
+trait InnerUnit {
+    type Unit;
+    fn inner(self) -> Self::Unit;
+}
+
 macro_rules! my_quantities {
     ( $($my:ident => $uom:ident,)+ ) => {
         my_quantities! {
@@ -17,12 +22,10 @@ macro_rules! my_quantities {
     };
     ( $($my:ident => $uom:ident),* ) => {
         #[derive(Debug)]
-        struct MyParseQuantityError {
-            error: ParseQuantityError,
-        }
+        struct MyParseQuantityError(ParseQuantityError);
         impl ToString for MyParseQuantityError {
             fn to_string(&self) -> String {
-                match self.error {
+                match self.0 {
                     ParseQuantityError::NoSeparator => "No Separator".to_string(),
                     ParseQuantityError::UnknownUnit => "Unknown Unit".to_string(),
                     ParseQuantityError::ValueParseError => "Value Parse Error".to_string(),
@@ -31,15 +34,21 @@ macro_rules! my_quantities {
         }
         $(
             #[derive(Clone, Copy, Debug)]
-            struct $my {
-                value: $uom,
+            struct $my($uom);
+
+            impl InnerUnit for $my {
+                type Unit = $uom;
+                fn inner(self) -> Self::Unit {
+                    self.0
+                }
             }
+
             impl FromStr for $my {
                 type Err = MyParseQuantityError;
                 fn from_str(s: &str) -> Result<Self, Self::Err> {
                     <$uom as FromStr>::from_str(s)
-                        .map(|value| $my { value })
-                        .map_err(|error| MyParseQuantityError { error })
+                        .map($my)
+                        .map_err(MyParseQuantityError)
                 }
             }
         )*
@@ -277,7 +286,7 @@ pub struct ZeroingTarget {
 
 impl Args {
     pub fn time(&self) -> Time {
-        self.time_interval.value
+        self.time_interval.inner()
     }
     pub fn flags(&self) -> &Flags {
         &self.flags
@@ -317,27 +326,27 @@ impl Flags {
 }
 impl Table {
     pub fn start(&self) -> Length {
-        self.table_start.value
+        self.table_start.inner()
     }
     pub fn end(&self) -> Length {
-        self.table_end.value
+        self.table_end.inner()
     }
     pub fn step(&self) -> Length {
-        self.table_step.value
+        self.table_step.inner()
     }
     pub fn tolerance(&self) -> Length {
-        self.table_tolerance.value
+        self.table_tolerance.inner()
     }
 }
 impl Projectile {
     pub fn velocity(&self) -> Option<Velocity> {
-        self.projectile_velocity.map(|value| value.value)
+        self.projectile_velocity.map(InnerUnit::inner)
     }
     pub fn mass(&self) -> Option<Mass> {
-        self.projectile_mass.map(|value| value.value)
+        self.projectile_mass.map(InnerUnit::inner)
     }
     pub fn caliber(&self) -> Option<Length> {
-        self.projectile_caliber.map(|value| value.value)
+        self.projectile_caliber.map(InnerUnit::inner)
     }
     pub fn bc(&self) -> Option<Numeric> {
         self.projectile_bc
@@ -345,19 +354,19 @@ impl Projectile {
 }
 impl Scope {
     pub fn height(&self) -> Option<Length> {
-        self.scope_height.map(|value| value.value)
+        self.scope_height.map(InnerUnit::inner)
     }
     pub fn offset(&self) -> Option<Length> {
-        self.scope_offset.map(|value| value.value)
+        self.scope_offset.map(InnerUnit::inner)
     }
     pub fn pitch(&self) -> Option<Angle> {
-        self.scope_pitch.map(|value| value.value)
+        self.scope_pitch.map(InnerUnit::inner)
     }
     pub fn yaw(&self) -> Option<Angle> {
-        self.scope_yaw.map(|value| value.value)
+        self.scope_yaw.map(InnerUnit::inner)
     }
     pub fn cant(&self) -> Option<Angle> {
-        self.scope_cant.map(|value| value.value)
+        self.scope_cant.map(InnerUnit::inner)
     }
 }
 impl Firing {
@@ -373,20 +382,18 @@ impl Firing {
 }
 impl FiringWind {
     pub fn speed(&self) -> Option<Velocity> {
-        self.firing_wind_speed.map(|value| value.value)
+        self.firing_wind_speed.map(InnerUnit::inner)
     }
     pub fn angle(&self) -> Option<Angle> {
-        self.firing_wind_angle.map(|value| value.value)
+        self.firing_wind_angle.map(InnerUnit::inner)
     }
 }
 impl FiringAtmosphere {
     pub fn temperature(&self) -> Option<ThermodynamicTemperature> {
-        self.firing_atmosphere_temperature
-            .as_ref()
-            .map(|value| value.value)
+        self.firing_atmosphere_temperature.map(InnerUnit::inner)
     }
     pub fn pressure(&self) -> Option<Pressure> {
-        self.firing_atmosphere_pressure.map(|value| value.value)
+        self.firing_atmosphere_pressure.map(InnerUnit::inner)
     }
     pub fn humidity(&self) -> Option<Numeric> {
         self.firing_atmosphere_humidity
@@ -394,16 +401,16 @@ impl FiringAtmosphere {
 }
 impl FiringShooter {
     pub fn lattitude(&self) -> Option<Angle> {
-        self.firing_shooter_lattitude.map(|value| value.value)
+        self.firing_shooter_lattitude.map(InnerUnit::inner)
     }
     pub fn bearing(&self) -> Option<Angle> {
-        self.firing_shooter_bearing.map(|value| value.value)
+        self.firing_shooter_bearing.map(InnerUnit::inner)
     }
     pub fn angle(&self) -> Option<Angle> {
-        self.firing_shooter_angle.map(|value| value.value)
+        self.firing_shooter_angle.map(InnerUnit::inner)
     }
     pub fn gravity(&self) -> Option<Acceleration> {
-        self.firing_shooter_gravity.map(|value| value.value)
+        self.firing_shooter_gravity.map(InnerUnit::inner)
     }
 }
 impl Zeroing {
@@ -422,20 +429,18 @@ impl Zeroing {
 }
 impl ZeroingWind {
     pub fn speed(&self) -> Option<Velocity> {
-        self.zeroing_wind_speed.map(|value| value.value)
+        self.zeroing_wind_speed.map(MyVelocity::inner)
     }
     pub fn angle(&self) -> Option<Angle> {
-        self.zeroing_wind_angle.map(|value| value.value)
+        self.zeroing_wind_angle.map(InnerUnit::inner)
     }
 }
 impl ZeroingAtmosphere {
     pub fn temperature(&self) -> Option<ThermodynamicTemperature> {
-        self.zeroing_atmosphere_temperature
-            .as_ref()
-            .map(|value| value.value)
+        self.zeroing_atmosphere_temperature.map(InnerUnit::inner)
     }
     pub fn pressure(&self) -> Option<Pressure> {
-        self.zeroing_atmosphere_pressure.map(|value| value.value)
+        self.zeroing_atmosphere_pressure.map(InnerUnit::inner)
     }
     pub fn humidity(&self) -> Option<Numeric> {
         self.zeroing_atmosphere_humidity
@@ -443,29 +448,29 @@ impl ZeroingAtmosphere {
 }
 impl ZeroingShooter {
     pub fn lattitude(&self) -> Option<Angle> {
-        self.zeroing_shooter_lattitude.map(|value| value.value)
+        self.zeroing_shooter_lattitude.map(InnerUnit::inner)
     }
     pub fn bearing(&self) -> Option<Angle> {
-        self.zeroing_shooter_bearing.map(|value| value.value)
+        self.zeroing_shooter_bearing.map(InnerUnit::inner)
     }
     pub fn angle(&self) -> Option<Angle> {
-        self.zeroing_shooter_angle.map(|value| value.value)
+        self.zeroing_shooter_angle.map(InnerUnit::inner)
     }
     pub fn gravity(&self) -> Option<Acceleration> {
-        self.zeroing_shooter_gravity.map(|value| value.value)
+        self.zeroing_shooter_gravity.map(InnerUnit::inner)
     }
 }
 impl ZeroingTarget {
     pub fn distance(&self) -> Length {
-        self.zeroing_target_distance.value
+        self.zeroing_target_distance.inner()
     }
     pub fn height(&self) -> Length {
-        self.zeroing_target_height.value
+        self.zeroing_target_height.inner()
     }
     pub fn offset(&self) -> Length {
-        self.zeroing_target_offset.value
+        self.zeroing_target_offset.inner()
     }
     pub fn tolerance(&self) -> Length {
-        self.zeroing_target_tolerance.value
+        self.zeroing_target_tolerance.inner()
     }
 }
