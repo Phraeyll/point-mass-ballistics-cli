@@ -1,8 +1,11 @@
 use std::{str::FromStr, string::ToString};
 
 use point_mass_ballistics::{
-    Acceleration, Angle, Length, Mass, Numeric, ParseQuantityError, Pressure,
-    ThermodynamicTemperature, Time, Velocity,
+    units::{
+        Acceleration, Angle, Length, Mass, ParseQuantityError, Pressure, ThermodynamicTemperature,
+        Time, Velocity,
+    },
+    Numeric,
 };
 use structopt::StructOpt;
 

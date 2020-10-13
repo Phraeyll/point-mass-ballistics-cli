@@ -6,7 +6,10 @@ use super::{
 use std::{error::Error, file, line, stringify, time::Instant};
 
 use point_mass_ballistics::{
-    drag_tables as bc, radian, Angle, DragTable, Measurements, Simulation, SimulationBuilder,
+    drag_tables::{self as bc, DragTable},
+    output::Measurements,
+    simulation::{Simulation, SimulationBuilder},
+    units::{radian, Angle},
 };
 
 macro_rules! time {

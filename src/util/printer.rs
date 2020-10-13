@@ -1,7 +1,8 @@
 use self::Adjustment::*;
 
 use point_mass_ballistics::{
-    foot_per_second, foot_pound, inch, moa, second, yard, Length, Measurements,
+    output::Measurements,
+    units::{foot_per_second, foot_pound, inch, moa, second, yard, Length},
 };
 
 #[derive(Clone, Copy)]
