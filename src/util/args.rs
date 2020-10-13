@@ -6,33 +6,6 @@ use point_mass_ballistics::{
 };
 use structopt::StructOpt;
 
-#[derive(Debug, StructOpt)]
-#[structopt(
-    name = "Ballistic Solver",
-    author = "Phraeyll <Phraeyll@users.no-reply.github.com",
-    about = r#"
-            Produces range table from vector based simulation of Newtons Equations
-            using standard, unmodified, point mass model of ballistics.
-            Currently, this accounts for drag, gravity, and Coriolis/Eotvos forces.
-            This does not currently factor in gyroscopic drift, nor aerodynamic jump.
-            Drag tables obtained from JBM Ballistics, and methodologies are mostly from
-            Robert L. McCoy's "Modern Exterior Ballistics" ISBN 978-0-7643-3825-0
-
-            The eventual goal of this program is to support modified point mass trajectories
-            as well, for factoring in gyroscopic drift and aerodynamic jump (4-DOF models)
-            "#
-)]
-pub enum SimulationKind {
-    G1(Args),
-    G2(Args),
-    G5(Args),
-    G6(Args),
-    G7(Args),
-    G8(Args),
-    GI(Args),
-    GS(Args),
-}
-
 macro_rules! my_quantities {
     ( $($my:ident => $uom:ident,)+ ) => {
         my_quantities! {
@@ -79,6 +52,33 @@ my_quantities! {
     MyAcceleration => Acceleration,
     MyThermodynamicTemperature => ThermodynamicTemperature,
     MyPressure => Pressure,
+}
+
+#[derive(Debug, StructOpt)]
+#[structopt(
+    name = "Ballistic Solver",
+    author = "Phraeyll <Phraeyll@users.no-reply.github.com",
+    about = r#"
+            Produces range table from vector based simulation of Newtons Equations
+            using standard, unmodified, point mass model of ballistics.
+            Currently, this accounts for drag, gravity, and Coriolis/Eotvos forces.
+            This does not currently factor in gyroscopic drift, nor aerodynamic jump.
+            Drag tables obtained from JBM Ballistics, and methodologies are mostly from
+            Robert L. McCoy's "Modern Exterior Ballistics" ISBN 978-0-7643-3825-0
+
+            The eventual goal of this program is to support modified point mass trajectories
+            as well, for factoring in gyroscopic drift and aerodynamic jump (4-DOF models)
+            "#
+)]
+pub enum SimulationKind {
+    G1(Args),
+    G2(Args),
+    G5(Args),
+    G6(Args),
+    G7(Args),
+    G8(Args),
+    GI(Args),
+    GS(Args),
 }
 
 #[derive(Debug, StructOpt)]
