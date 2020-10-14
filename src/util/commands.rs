@@ -6,8 +6,8 @@ use super::{
 use std::{error::Error, file, line, stringify, time::Instant};
 
 use point_mass_ballistics::{
-    drag_tables::{self as bc, DragTable},
     output::Measurements,
+    projectiles::{self as bc, AdjustProjectile, Projectile, ProjectileImpl},
     simulation::{Simulation, SimulationBuilder},
     units::{radian, Angle},
 };
@@ -48,7 +48,7 @@ impl SimulationKind {
 impl Args {
     pub fn run<T>(&self) -> Result<(), Box<dyn Error>>
     where
-        T: DragTable,
+        T: Projectile + From<ProjectileImpl> + AdjustProjectile,
     {
         let mut angles = (Angle::new::<radian>(0.0), Angle::new::<radian>(0.0));
         if !self.flags().flat() {
@@ -63,7 +63,7 @@ impl Args {
     }
     pub fn print<T>(&self, simulation: &Simulation<T>)
     where
-        T: DragTable,
+        T: Projectile,
     {
         let output_tolerance = self.table().tolerance();
         printer::print(
@@ -77,7 +77,7 @@ impl Args {
         simulation: &'s Simulation<T>,
     ) -> impl IntoIterator<Item = impl Measurements + 's> + 's
     where
-        T: DragTable,
+        T: Projectile,
     {
         let mut start = self.table().start();
         let end = self.table().end();
@@ -99,7 +99,7 @@ impl Args {
         mut simulation: Simulation<T>,
     ) -> Result<(Angle, Angle), Box<dyn Error>>
     where
-        T: DragTable,
+        T: Projectile,
     {
         Ok(simulation.find_zero_angles(
             self.zeroing().target().distance(),
@@ -110,7 +110,7 @@ impl Args {
     }
     pub fn shared_params<T>(&self) -> Result<SimulationBuilder<T>, Box<dyn Error>>
     where
-        T: DragTable,
+        T: Projectile + From<ProjectileImpl> + AdjustProjectile,
     {
         let mut builder = SimulationBuilder::new();
         builder = builder.set_time_step(self.time())?;
@@ -151,7 +151,7 @@ impl Args {
         mut builder: SimulationBuilder<T>,
     ) -> Result<Simulation<T>, Box<dyn Error>>
     where
-        T: DragTable,
+        T: Projectile + From<ProjectileImpl> + AdjustProjectile,
     {
         // Atmosphere
         if let Some(value) = self.zeroing().atmosphere().temperature() {
@@ -194,7 +194,7 @@ impl Args {
         yaw: Angle,
     ) -> Result<Simulation<T>, Box<dyn Error>>
     where
-        T: DragTable,
+        T: Projectile + From<ProjectileImpl> + AdjustProjectile,
     {
         // Adjust pitch/yaw with value from args, and provided deltas
         if let Some(value) = self.scope().pitch() {
