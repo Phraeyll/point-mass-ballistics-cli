@@ -151,7 +151,7 @@ impl Args {
         mut builder: SimulationBuilder<T>,
     ) -> Result<Simulation<T>, Box<dyn Error>>
     where
-        T: Projectile + From<ProjectileImpl> + AdjustProjectile,
+        T: Projectile,
     {
         // Atmosphere
         if let Some(value) = self.zeroing().atmosphere().temperature() {
@@ -194,7 +194,7 @@ impl Args {
         yaw: Angle,
     ) -> Result<Simulation<T>, Box<dyn Error>>
     where
-        T: Projectile + From<ProjectileImpl> + AdjustProjectile,
+        T: Projectile,
     {
         // Adjust pitch/yaw with value from args, and provided deltas
         if let Some(value) = self.scope().pitch() {
