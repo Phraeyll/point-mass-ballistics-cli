@@ -3,11 +3,11 @@ use super::{
     printer,
 };
 
-use std::{error::Error, file, line, stringify, time::Instant};
+use std::{error::Error, file, line, ops::DerefMut, stringify, time::Instant};
 
 use point_mass_ballistics::{
     output::Measurements,
-    projectiles::{self as bc, AdjustProjectile, Projectile, ProjectileImpl},
+    projectiles::{self as bc, Projectile, ProjectileImpl},
     simulation::{Simulation, SimulationBuilder},
     units::{radian, Angle},
 };
@@ -48,7 +48,7 @@ impl SimulationKind {
 impl Args {
     pub fn run<T>(&self) -> Result<(), Box<dyn Error>>
     where
-        T: Projectile + From<ProjectileImpl> + AdjustProjectile,
+        T: Projectile + From<ProjectileImpl> + DerefMut<Target = ProjectileImpl>,
     {
         let mut angles = (Angle::new::<radian>(0.0), Angle::new::<radian>(0.0));
         if !self.flags().flat() {
@@ -110,7 +110,7 @@ impl Args {
     }
     pub fn shared_params<T>(&self) -> Result<SimulationBuilder<T>, Box<dyn Error>>
     where
-        T: Projectile + From<ProjectileImpl> + AdjustProjectile,
+        T: Projectile + From<ProjectileImpl> + DerefMut<Target = ProjectileImpl>,
     {
         let mut builder = SimulationBuilder::new();
         builder = builder.set_time_step(self.time())?;
