@@ -210,7 +210,7 @@ dependencies = [
 [[package]]
 name = "point-mass-ballistics"
 version = "0.0.1"
-source = "git+https://github.com/Phraeyll/point-mass-ballistics?branch=master#ac7a25552978e97ba6b2506a4b1cc34166b43f51"
+source = "git+https://github.com/Phraeyll/point-mass-ballistics?branch=master#38f56fb141d1ea8f5862e9116d4326cf84a09f38"
 dependencies = [
  "lazy_static",
  "nalgebra",
