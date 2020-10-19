@@ -1,4 +1,5 @@
 use std::{
+    fmt,
     ops::{Deref, DerefMut},
     str::FromStr,
     string::ToString,
@@ -15,12 +16,12 @@ use structopt::StructOpt;
 
 #[derive(Debug)]
 struct MyParseQuantityError(ParseQuantityError);
-impl ToString for MyParseQuantityError {
-    fn to_string(&self) -> String {
+impl fmt::Display for MyParseQuantityError {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match **self {
-            ParseQuantityError::NoSeparator => "No Separator".to_string(),
-            ParseQuantityError::UnknownUnit => "Unknown Unit".to_string(),
-            ParseQuantityError::ValueParseError => "Value Parse Error".to_string(),
+            ParseQuantityError::NoSeparator => write!(f, "No Separator"),
+            ParseQuantityError::UnknownUnit => write!(f, "Unknown Unit"),
+            ParseQuantityError::ValueParseError => write!(f, "Value Parse Error"),
         }
     }
 }
