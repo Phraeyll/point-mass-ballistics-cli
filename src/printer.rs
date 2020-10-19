@@ -11,8 +11,8 @@ pub enum Adjustment {
 
 // Show needed adjustments to correct shot
 impl Adjustment {
-    pub fn adjustment(&self, tolerance: Length) -> char {
-        let (n, positive, negative) = match *self {
+    pub fn adjustment(self, tolerance: Length) -> char {
+        let (n, positive, negative) = match self {
             Self::Elevation(n) => (n, 'D', 'U'),
             Self::Windage(n) => (n, 'L', 'R'),
         };
