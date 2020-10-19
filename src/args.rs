@@ -1,4 +1,8 @@
-use std::{str::FromStr, string::ToString};
+use std::{
+    ops::{Deref, DerefMut},
+    str::FromStr,
+    string::ToString,
+};
 
 use point_mass_ballistics::{
     units::{
@@ -9,9 +13,41 @@ use point_mass_ballistics::{
 };
 use structopt::StructOpt;
 
-trait InnerUnit {
-    type Unit;
-    fn inner(self) -> Self::Unit;
+#[derive(Debug)]
+struct MyParseQuantityError(ParseQuantityError);
+impl ToString for MyParseQuantityError {
+    fn to_string(&self) -> String {
+        match **self {
+            ParseQuantityError::NoSeparator => "No Separator".to_string(),
+            ParseQuantityError::UnknownUnit => "Unknown Unit".to_string(),
+            ParseQuantityError::ValueParseError => "Value Parse Error".to_string(),
+        }
+    }
+}
+
+impl From<ParseQuantityError> for MyParseQuantityError {
+    fn from(other: ParseQuantityError) -> Self {
+        Self(other)
+    }
+}
+
+impl From<MyParseQuantityError> for ParseQuantityError {
+    fn from(other: MyParseQuantityError) -> Self {
+        other.0
+    }
+}
+
+impl Deref for MyParseQuantityError {
+    type Target = ParseQuantityError;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for MyParseQuantityError {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
 }
 
 macro_rules! my_quantities {
@@ -21,34 +57,41 @@ macro_rules! my_quantities {
         }
     };
     ( $($my:ident => $uom:ident),* ) => {
-        #[derive(Debug)]
-        struct MyParseQuantityError(ParseQuantityError);
-        impl ToString for MyParseQuantityError {
-            fn to_string(&self) -> String {
-                match self.0 {
-                    ParseQuantityError::NoSeparator => "No Separator".to_string(),
-                    ParseQuantityError::UnknownUnit => "Unknown Unit".to_string(),
-                    ParseQuantityError::ValueParseError => "Value Parse Error".to_string(),
-                }
-            }
-        }
         $(
             #[derive(Clone, Copy, Debug)]
             struct $my($uom);
 
-            impl InnerUnit for $my {
-                type Unit = $uom;
-                fn inner(self) -> Self::Unit {
-                    self.0
+            impl From<$uom> for $my {
+                fn from(other: $uom) -> Self {
+                    Self(other)
+                }
+            }
+
+            impl From<$my> for $uom {
+                fn from(other: $my) -> Self {
+                    other.0
+                }
+            }
+
+            impl Deref for $my {
+                type Target = $uom;
+
+                fn deref(&self) -> &Self::Target {
+                    &self.0
+                }
+            }
+
+            impl DerefMut for $my {
+                fn deref_mut(&mut self) -> &mut Self::Target {
+                    &mut self.0
                 }
             }
 
             impl FromStr for $my {
                 type Err = MyParseQuantityError;
                 fn from_str(s: &str) -> Result<Self, Self::Err> {
-                    <$uom as FromStr>::from_str(s)
-                        .map($my)
-                        .map_err(MyParseQuantityError)
+                    Ok(<$uom as FromStr>::from_str(s)
+                        .map(From::from)?)
                 }
             }
         )*
@@ -286,7 +329,7 @@ pub struct ZeroingTarget {
 
 impl Args {
     pub fn time(&self) -> Time {
-        self.time_interval.inner()
+        *self.time_interval
     }
     pub fn flags(&self) -> &Flags {
         &self.flags
@@ -326,27 +369,27 @@ impl Flags {
 }
 impl Table {
     pub fn start(&self) -> Length {
-        self.table_start.inner()
+        *self.table_start
     }
     pub fn end(&self) -> Length {
-        self.table_end.inner()
+        *self.table_end
     }
     pub fn step(&self) -> Length {
-        self.table_step.inner()
+        *self.table_step
     }
     pub fn tolerance(&self) -> Length {
-        self.table_tolerance.inner()
+        *self.table_tolerance
     }
 }
 impl Projectile {
     pub fn velocity(&self) -> Option<Velocity> {
-        self.projectile_velocity.map(InnerUnit::inner)
+        self.projectile_velocity.map(From::from)
     }
     pub fn mass(&self) -> Option<Mass> {
-        self.projectile_mass.map(InnerUnit::inner)
+        self.projectile_mass.map(From::from)
     }
     pub fn caliber(&self) -> Option<Length> {
-        self.projectile_caliber.map(InnerUnit::inner)
+        self.projectile_caliber.map(From::from)
     }
     pub fn bc(&self) -> Option<Numeric> {
         self.projectile_bc
@@ -354,19 +397,19 @@ impl Projectile {
 }
 impl Scope {
     pub fn height(&self) -> Option<Length> {
-        self.scope_height.map(InnerUnit::inner)
+        self.scope_height.map(From::from)
     }
     pub fn offset(&self) -> Option<Length> {
-        self.scope_offset.map(InnerUnit::inner)
+        self.scope_offset.map(From::from)
     }
     pub fn pitch(&self) -> Option<Angle> {
-        self.scope_pitch.map(InnerUnit::inner)
+        self.scope_pitch.map(From::from)
     }
     pub fn yaw(&self) -> Option<Angle> {
-        self.scope_yaw.map(InnerUnit::inner)
+        self.scope_yaw.map(From::from)
     }
     pub fn cant(&self) -> Option<Angle> {
-        self.scope_cant.map(InnerUnit::inner)
+        self.scope_cant.map(From::from)
     }
 }
 impl Firing {
@@ -382,18 +425,18 @@ impl Firing {
 }
 impl FiringWind {
     pub fn speed(&self) -> Option<Velocity> {
-        self.firing_wind_speed.map(InnerUnit::inner)
+        self.firing_wind_speed.map(From::from)
     }
     pub fn angle(&self) -> Option<Angle> {
-        self.firing_wind_angle.map(InnerUnit::inner)
+        self.firing_wind_angle.map(From::from)
     }
 }
 impl FiringAtmosphere {
     pub fn temperature(&self) -> Option<ThermodynamicTemperature> {
-        self.firing_atmosphere_temperature.map(InnerUnit::inner)
+        self.firing_atmosphere_temperature.map(From::from)
     }
     pub fn pressure(&self) -> Option<Pressure> {
-        self.firing_atmosphere_pressure.map(InnerUnit::inner)
+        self.firing_atmosphere_pressure.map(From::from)
     }
     pub fn humidity(&self) -> Option<Numeric> {
         self.firing_atmosphere_humidity
@@ -401,16 +444,16 @@ impl FiringAtmosphere {
 }
 impl FiringShooter {
     pub fn lattitude(&self) -> Option<Angle> {
-        self.firing_shooter_lattitude.map(InnerUnit::inner)
+        self.firing_shooter_lattitude.map(From::from)
     }
     pub fn bearing(&self) -> Option<Angle> {
-        self.firing_shooter_bearing.map(InnerUnit::inner)
+        self.firing_shooter_bearing.map(From::from)
     }
     pub fn angle(&self) -> Option<Angle> {
-        self.firing_shooter_angle.map(InnerUnit::inner)
+        self.firing_shooter_angle.map(From::from)
     }
     pub fn gravity(&self) -> Option<Acceleration> {
-        self.firing_shooter_gravity.map(InnerUnit::inner)
+        self.firing_shooter_gravity.map(From::from)
     }
 }
 impl Zeroing {
@@ -429,18 +472,18 @@ impl Zeroing {
 }
 impl ZeroingWind {
     pub fn speed(&self) -> Option<Velocity> {
-        self.zeroing_wind_speed.map(MyVelocity::inner)
+        self.zeroing_wind_speed.map(From::from)
     }
     pub fn angle(&self) -> Option<Angle> {
-        self.zeroing_wind_angle.map(InnerUnit::inner)
+        self.zeroing_wind_angle.map(From::from)
     }
 }
 impl ZeroingAtmosphere {
     pub fn temperature(&self) -> Option<ThermodynamicTemperature> {
-        self.zeroing_atmosphere_temperature.map(InnerUnit::inner)
+        self.zeroing_atmosphere_temperature.map(From::from)
     }
     pub fn pressure(&self) -> Option<Pressure> {
-        self.zeroing_atmosphere_pressure.map(InnerUnit::inner)
+        self.zeroing_atmosphere_pressure.map(From::from)
     }
     pub fn humidity(&self) -> Option<Numeric> {
         self.zeroing_atmosphere_humidity
@@ -448,29 +491,29 @@ impl ZeroingAtmosphere {
 }
 impl ZeroingShooter {
     pub fn lattitude(&self) -> Option<Angle> {
-        self.zeroing_shooter_lattitude.map(InnerUnit::inner)
+        self.zeroing_shooter_lattitude.map(From::from)
     }
     pub fn bearing(&self) -> Option<Angle> {
-        self.zeroing_shooter_bearing.map(InnerUnit::inner)
+        self.zeroing_shooter_bearing.map(From::from)
     }
     pub fn angle(&self) -> Option<Angle> {
-        self.zeroing_shooter_angle.map(InnerUnit::inner)
+        self.zeroing_shooter_angle.map(From::from)
     }
     pub fn gravity(&self) -> Option<Acceleration> {
-        self.zeroing_shooter_gravity.map(InnerUnit::inner)
+        self.zeroing_shooter_gravity.map(From::from)
     }
 }
 impl ZeroingTarget {
     pub fn distance(&self) -> Length {
-        self.zeroing_target_distance.inner()
+        *self.zeroing_target_distance
     }
     pub fn height(&self) -> Length {
-        self.zeroing_target_height.inner()
+        *self.zeroing_target_height
     }
     pub fn offset(&self) -> Length {
-        self.zeroing_target_offset.inner()
+        *self.zeroing_target_offset
     }
     pub fn tolerance(&self) -> Length {
-        self.zeroing_target_tolerance.inner()
+        *self.zeroing_target_tolerance
     }
 }
