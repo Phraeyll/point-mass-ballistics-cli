@@ -1,5 +1,3 @@
-use self::Adjustment::*;
-
 use point_mass_ballistics::{
     output::Measurements,
     units::{foot_per_second, foot_pound, inch, moa, second, yard, Length},
@@ -28,7 +26,7 @@ impl Adjustment {
     }
 }
 
-pub fn print<I>(table: I, output_tolerance: Length, pretty: bool)
+pub fn print_table<I>(table: I, output_tolerance: Length, pretty: bool)
 where
     I: IntoIterator,
     <I as IntoIterator>::Item: Measurements,
@@ -86,13 +84,13 @@ where
             p.distance().get::<yard>(),
             p.angle().get::<moa>(),
             p.elevation().get::<inch>().abs(),
-            Elevation(p.elevation()).adjustment(output_tolerance),
+            Adjustment::Elevation(p.elevation()).adjustment(output_tolerance),
             p.windage().get::<inch>().abs(),
-            Windage(p.windage()).adjustment(output_tolerance),
+            Adjustment::Windage(p.windage()).adjustment(output_tolerance),
             p.vertical_angle(output_tolerance).get::<moa>().abs(),
-            Elevation(p.elevation()).adjustment(output_tolerance),
+            Adjustment::Elevation(p.elevation()).adjustment(output_tolerance),
             p.horizontal_angle(output_tolerance).get::<moa>().abs(),
-            Windage(p.windage()).adjustment(output_tolerance),
+            Adjustment::Windage(p.windage()).adjustment(output_tolerance),
             p.velocity().get::<foot_per_second>(),
             p.energy().get::<foot_pound>(),
             p.time().get::<second>(),

@@ -1,6 +1,6 @@
-use super::{
+use crate::{
     args::{Args, SimulationKind},
-    printer,
+    printer::print_table,
 };
 
 use std::{error::Error, file, line, ops::DerefMut, stringify, time::Instant};
@@ -66,7 +66,7 @@ impl Args {
         T: Projectile,
     {
         let output_tolerance = self.table().tolerance();
-        printer::print(
+        print_table(
             self.table_gen(&simulation),
             output_tolerance,
             self.flags().pretty(),
