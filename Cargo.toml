@@ -9,7 +9,6 @@ name = "cli"
 path = "src/main.rs"
 
 [dependencies]
-clap = "2.33.3"
 structopt = "0.3.20"
 
 [dependencies.point-mass-ballistics]
