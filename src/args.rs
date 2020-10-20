@@ -76,7 +76,6 @@ macro_rules! my_quantities {
 
             impl Deref for $my {
                 type Target = $uom;
-
                 fn deref(&self) -> &Self::Target {
                     &self.0
                 }
@@ -91,8 +90,7 @@ macro_rules! my_quantities {
             impl FromStr for $my {
                 type Err = MyParseQuantityError;
                 fn from_str(s: &str) -> Result<Self, Self::Err> {
-                    Ok(<$uom as FromStr>::from_str(s)
-                        .map(From::from)?)
+                    Ok(<$uom as FromStr>::from_str(s).map(From::from)?)
                 }
             }
         )*
