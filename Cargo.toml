@@ -9,7 +9,7 @@ name = "cli"
 path = "src/main.rs"
 
 [dependencies]
-structopt = "0.3.20"
+structopt = "0.3.21"
 
 [dependencies.point-mass-ballistics]
 git = "https://github.com/Phraeyll/point-mass-ballistics"
