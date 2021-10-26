@@ -2,14 +2,14 @@
 name = "point-mass-ballistics-cli"
 version = "0.0.1"
 authors = ["Phraeyll <Phraeyll@users.noreply.github.com>"]
-edition = "2018"
+edition = "2021"
 
 [[bin]]
 name = "cli"
 path = "src/main.rs"
 
 [dependencies]
-structopt = "0.3.21"
+structopt = "0.3.25"
 
 [dependencies.point-mass-ballistics]
 git = "https://github.com/Phraeyll/point-mass-ballistics"
