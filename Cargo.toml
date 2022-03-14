@@ -8,6 +8,9 @@ edition = "2021"
 name = "cli"
 path = "src/main.rs"
 
+[dependencies]
+indoc = { version = "1.0.4" }
+
 [dependencies.clap]
 version = "3.1.6"
 features = ["derive"]
