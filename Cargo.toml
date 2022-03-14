@@ -8,8 +8,9 @@ edition = "2021"
 name = "cli"
 path = "src/main.rs"
 
-[dependencies]
-structopt = "0.3.25"
+[dependencies.clap]
+version = "3.1.6"
+features = ["derive"]
 
 [dependencies.point-mass-ballistics]
 git = "https://github.com/Phraeyll/point-mass-ballistics"

@@ -2,14 +2,13 @@ use self::args::SimulationKind;
 
 use std::error::Error;
 
-use structopt::StructOpt;
+use clap::Parser;
 
 mod args;
-mod commands;
 mod printer;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let cmd = SimulationKind::from_args();
+    let cmd = SimulationKind::parse();
     cmd.run()?;
     Ok(())
 }
