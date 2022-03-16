@@ -1,14 +1,14 @@
-use self::args::SimulationKind;
+use self::args::Args;
 
-use std::error::Error;
+use args::Result;
 
 use clap::Parser;
 
 mod args;
 mod printer;
 
-fn main() -> Result<(), Box<dyn Error>> {
-    let cmd = SimulationKind::parse();
+fn main() -> Result<()> {
+    let cmd = Args::parse();
     cmd.run()?;
     Ok(())
 }

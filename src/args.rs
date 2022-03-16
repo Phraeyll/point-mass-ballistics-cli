@@ -15,6 +15,8 @@ use point_mass_ballistics::{
     Numeric,
 };
 
+pub type Result<T> = std::result::Result<T, Box<dyn Error>>;
+
 #[derive(Debug, Parser)]
 #[clap(
     name = "Ballistic Solver",
@@ -31,19 +33,25 @@ use point_mass_ballistics::{
         as well, for factoring in gyroscopic drift and aerodynamic jump (4-DOF models)
     "#}
 )]
-pub enum SimulationKind {
-    G1(Args),
-    G2(Args),
-    G5(Args),
-    G6(Args),
-    G7(Args),
-    G8(Args),
-    GI(Args),
-    GS(Args),
+pub struct Args {
+    #[clap(subcommand)]
+    simulation: SimulationKind,
 }
 
 #[derive(Debug, Parser)]
-pub struct Args {
+pub enum SimulationKind {
+    G1(InnerArgs),
+    G2(InnerArgs),
+    G5(InnerArgs),
+    G6(InnerArgs),
+    G7(InnerArgs),
+    G8(InnerArgs),
+    GI(InnerArgs),
+    GS(InnerArgs),
+}
+
+#[derive(Debug, Parser)]
+pub struct InnerArgs {
     #[clap(long = "time-step", default_value = "0.00005 s")]
     time_step: Time,
 
@@ -251,23 +259,29 @@ macro_rules! time {
     }};
 }
 
+impl Args {
+    pub fn run(&self) -> Result<()> {
+        self.simulation.run()
+    }
+}
+
 impl SimulationKind {
-    pub fn run(&self) -> Result<(), Box<dyn Error>> {
+    pub fn run(&self) -> Result<()> {
         match *self {
-            Self::G1(ref params) => params.run::<bc::G1>(),
-            Self::G2(ref params) => params.run::<bc::G2>(),
-            Self::G5(ref params) => params.run::<bc::G5>(),
-            Self::G6(ref params) => params.run::<bc::G6>(),
-            Self::G7(ref params) => params.run::<bc::G7>(),
-            Self::G8(ref params) => params.run::<bc::G8>(),
-            Self::GI(ref params) => params.run::<bc::GI>(),
-            Self::GS(ref params) => params.run::<bc::GS>(),
+            Self::G1(ref inner) => inner.run::<bc::G1>(),
+            Self::G2(ref inner) => inner.run::<bc::G2>(),
+            Self::G5(ref inner) => inner.run::<bc::G5>(),
+            Self::G6(ref inner) => inner.run::<bc::G6>(),
+            Self::G7(ref inner) => inner.run::<bc::G7>(),
+            Self::G8(ref inner) => inner.run::<bc::G8>(),
+            Self::GI(ref inner) => inner.run::<bc::GI>(),
+            Self::GS(ref inner) => inner.run::<bc::GS>(),
         }
     }
 }
 
-impl Args {
-    pub fn run<T>(&self) -> Result<(), Box<dyn Error>>
+impl InnerArgs {
+    pub fn run<T>(&self) -> Result<()>
     where
         T: Projectile + From<ProjectileImpl> + DerefMut<Target = ProjectileImpl>,
     {
@@ -315,10 +329,7 @@ impl Args {
                 }
             })
     }
-    pub fn try_zero<T>(
-        &self,
-        mut simulation: Simulation<T>,
-    ) -> Result<(Angle, Angle), Box<dyn Error>>
+    pub fn try_zero<T>(&self, mut simulation: Simulation<T>) -> Result<(Angle, Angle)>
     where
         T: Projectile,
     {
@@ -329,7 +340,7 @@ impl Args {
             self.zeroing.zeroing_target.zeroing_target_tolerance,
         )?)
     }
-    pub fn shared_params<T>(&self) -> Result<SimulationBuilder<T>, Box<dyn Error>>
+    pub fn shared_params<T>(&self) -> Result<SimulationBuilder<T>>
     where
         T: Projectile + From<ProjectileImpl> + DerefMut<Target = ProjectileImpl>,
     {
@@ -367,10 +378,7 @@ impl Args {
 
         Ok(builder)
     }
-    pub fn zero_scenario<T>(
-        &self,
-        mut builder: SimulationBuilder<T>,
-    ) -> Result<Simulation<T>, Box<dyn Error>>
+    pub fn zero_scenario<T>(&self, mut builder: SimulationBuilder<T>) -> Result<Simulation<T>>
     where
         T: Projectile,
     {
@@ -417,7 +425,7 @@ impl Args {
         mut builder: SimulationBuilder<T>,
         pitch: Angle,
         yaw: Angle,
-    ) -> Result<Simulation<T>, Box<dyn Error>>
+    ) -> Result<Simulation<T>>
     where
         T: Projectile,
     {
