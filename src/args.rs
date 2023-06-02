@@ -18,9 +18,10 @@ use point_mass_ballistics::{
 pub type Result<T> = std::result::Result<T, Box<dyn Error>>;
 
 #[derive(Debug, Parser)]
-#[clap(
+#[command(
+    author,
+    version,
     name = "Ballistic Solver",
-    author = "Phraeyll <Phraeyll@users.no-reply.github.com",
     about = indoc!{r#"
         Produces range table from vector based simulation of Newtons Equations
         using standard, unmodified, point mass model of ballistics.
@@ -34,7 +35,7 @@ pub type Result<T> = std::result::Result<T, Box<dyn Error>>;
     "#}
 )]
 pub struct Args {
-    #[clap(subcommand)]
+    #[command(subcommand)]
     simulation: SimulationKind,
 }
 
@@ -52,192 +53,192 @@ pub enum SimulationKind {
 
 #[derive(Debug, Parser)]
 pub struct InnerArgs {
-    #[clap(long = "time-step", default_value = "0.00005 s")]
+    #[arg(long = "time-step", default_value = "0.00005 s")]
     time_step: Time,
 
-    #[clap(flatten)]
+    #[command(flatten)]
     flags: Flags,
 
-    #[clap(flatten)]
+    #[command(flatten)]
     table: Table,
 
-    #[clap(flatten)]
+    #[command(flatten)]
     projectile: ProjectileArg,
 
-    #[clap(flatten)]
+    #[command(flatten)]
     scope: Scope,
 
-    #[clap(flatten)]
+    #[command(flatten)]
     firing: Firing,
 
-    #[clap(flatten)]
+    #[command(flatten)]
     zeroing: Zeroing,
 }
 #[derive(Debug, Parser)]
 struct Flags {
-    #[clap(long = "flat")]
+    #[arg(long = "flat")]
     flat: bool,
 
-    #[clap(long = "disable-drag")]
+    #[arg(long = "disable-drag")]
     disable_drag: bool,
 
-    #[clap(long = "disable-coriolis")]
+    #[arg(long = "disable-coriolis")]
     disable_coriolis: bool,
 
-    #[clap(long = "disable-gravity")]
+    #[arg(long = "disable-gravity")]
     disable_gravity: bool,
 
-    #[clap(long = "pretty")]
+    #[arg(long = "pretty")]
     pretty: bool,
 }
 #[derive(Debug, Parser)]
 struct Table {
-    #[clap(long = "start", default_value = "0.0 yd")]
+    #[arg(long = "start", default_value = "0.0 yd")]
     table_start: Length,
 
-    #[clap(long = "end", default_value = "1000.0 yd")]
+    #[arg(long = "end", default_value = "1000.0 yd")]
     table_end: Length,
 
-    #[clap(long = "step", default_value = "100.0 yd")]
+    #[arg(long = "step", default_value = "100.0 yd")]
     table_step: Length,
 
-    #[clap(long = "table-tolerance", default_value = "0.005 in")]
+    #[arg(long = "table-tolerance", default_value = "0.005 in")]
     table_tolerance: Length,
 }
 #[derive(Debug, Parser)]
 struct ProjectileArg {
-    #[clap(long = "initial-velocity")]
+    #[arg(long = "initial-velocity")]
     projectile_velocity: Option<Velocity>,
 
-    #[clap(long = "mass")]
+    #[arg(long = "mass")]
     projectile_mass: Option<Mass>,
 
-    #[clap(long = "caliber")]
+    #[arg(long = "caliber")]
     projectile_caliber: Option<Length>,
 
-    #[clap(long = "bc")]
+    #[arg(long = "bc")]
     projectile_bc: Option<Numeric>,
 }
 #[derive(Debug, Parser)]
 struct Scope {
-    #[clap(long = "scope-height")]
+    #[arg(long = "scope-height")]
     scope_height: Option<Length>,
 
-    #[clap(long = "scope-offset")]
+    #[arg(long = "scope-offset")]
     scope_offset: Option<Length>,
 
-    #[clap(long = "scope-pitch")]
+    #[arg(long = "scope-pitch")]
     scope_pitch: Option<Angle>,
 
-    #[clap(long = "scope-yaw")]
+    #[arg(long = "scope-yaw")]
     scope_yaw: Option<Angle>,
 
-    #[clap(long = "scope-cant")]
+    #[arg(long = "scope-cant")]
     scope_cant: Option<Angle>,
 }
 #[derive(Debug, Parser)]
 struct Firing {
-    #[clap(flatten)]
+    #[command(flatten)]
     firing_atmosphere: FiringAtmosphere,
 
-    #[clap(flatten)]
+    #[command(flatten)]
     firing_wind: FiringWind,
 
-    #[clap(flatten)]
+    #[command(flatten)]
     firing_shooter: FiringShooter,
 }
 #[derive(Debug, Parser)]
 struct FiringWind {
-    #[clap(long = "wind-speed")]
+    #[arg(long = "wind-speed")]
     firing_wind_speed: Option<Velocity>,
 
-    #[clap(long = "wind-angle")]
+    #[arg(long = "wind-angle")]
     firing_wind_angle: Option<Angle>,
 }
 #[derive(Debug, Parser)]
 struct FiringAtmosphere {
-    #[clap(long = "temperature")]
+    #[arg(long = "temperature")]
     firing_atmosphere_temperature: Option<ThermodynamicTemperature>,
 
-    #[clap(long = "pressure")]
+    #[arg(long = "pressure")]
     firing_atmosphere_pressure: Option<Pressure>,
 
-    #[clap(long = "humidity")]
+    #[arg(long = "humidity")]
     firing_atmosphere_humidity: Option<Numeric>,
 }
 #[derive(Debug, Parser)]
 struct FiringShooter {
-    #[clap(long = "lattitude")]
+    #[arg(long = "lattitude")]
     firing_shooter_lattitude: Option<Angle>,
 
-    #[clap(long = "bearing")]
+    #[arg(long = "bearing")]
     firing_shooter_bearing: Option<Angle>,
 
-    #[clap(long = "shot-angle")]
+    #[arg(long = "shot-angle")]
     firing_shooter_angle: Option<Angle>,
 
-    #[clap(long = "gravity")]
+    #[arg(long = "gravity")]
     firing_shooter_gravity: Option<Acceleration>,
 }
 #[derive(Debug, Parser)]
 struct Zeroing {
-    #[clap(flatten)]
+    #[command(flatten)]
     zeroing_wind: ZeroingWind,
 
-    #[clap(flatten)]
+    #[command(flatten)]
     zeroing_atmosphere: ZeroingAtmosphere,
 
-    #[clap(flatten)]
+    #[command(flatten)]
     zeroing_shooter: ZeroingShooter,
 
-    #[clap(flatten)]
+    #[command(flatten)]
     zeroing_target: ZeroingTarget,
 }
 #[derive(Debug, Parser)]
 struct ZeroingWind {
-    #[clap(long = "zeroing-wind-speed")]
+    #[arg(long = "zeroing-wind-speed")]
     zeroing_wind_speed: Option<Velocity>,
 
-    #[clap(long = "zeroing-wind-angle")]
+    #[arg(long = "zeroing-wind-angle")]
     zeroing_wind_angle: Option<Angle>,
 }
 #[derive(Debug, Parser)]
 struct ZeroingAtmosphere {
-    #[clap(long = "zeroing-temperature")]
+    #[arg(long = "zeroing-temperature")]
     zeroing_atmosphere_temperature: Option<ThermodynamicTemperature>,
 
-    #[clap(long = "zeroing-pressure")]
+    #[arg(long = "zeroing-pressure")]
     zeroing_atmosphere_pressure: Option<Pressure>,
 
-    #[clap(long = "zeroing-humidity")]
+    #[arg(long = "zeroing-humidity")]
     zeroing_atmosphere_humidity: Option<Numeric>,
 }
 #[derive(Debug, Parser)]
 struct ZeroingShooter {
-    #[clap(long = "zeroing-lattitude")]
+    #[arg(long = "zeroing-lattitude")]
     zeroing_shooter_lattitude: Option<Angle>,
 
-    #[clap(long = "zeroing-bearing")]
+    #[arg(long = "zeroing-bearing")]
     zeroing_shooter_bearing: Option<Angle>,
 
-    #[clap(long = "zeroing-shot-angle")]
+    #[arg(long = "zeroing-shot-angle")]
     zeroing_shooter_angle: Option<Angle>,
 
-    #[clap(long = "zeroing-gravity")]
+    #[arg(long = "zeroing-gravity")]
     zeroing_shooter_gravity: Option<Acceleration>,
 }
 #[derive(Debug, Parser)]
 struct ZeroingTarget {
-    #[clap(long = "zeroing-target-distance", default_value = "200.0 yd")]
+    #[arg(long = "zeroing-target-distance", default_value = "200.0 yd")]
     zeroing_target_distance: Length,
 
-    #[clap(long = "zeroing-target-height", default_value = "0.0 in")]
+    #[arg(long = "zeroing-target-height", default_value = "0.0 in")]
     zeroing_target_height: Length,
 
-    #[clap(long = "zeroing-target-offset", default_value = "0.0 in")]
+    #[arg(long = "zeroing-target-offset", default_value = "0.0 in")]
     zeroing_target_offset: Length,
 
-    #[clap(long = "zeroing-target-tolerance", default_value = "0.001 in")]
+    #[arg(long = "zeroing-target-tolerance", default_value = "0.001 in")]
     zeroing_target_tolerance: Length,
 }
 
