@@ -306,7 +306,7 @@ checksum = "9f746c4065a8fa3fe23974dd82f15431cc8d40779821001404d10d2e79ca7d79"
 [[package]]
 name = "point-mass-ballistics"
 version = "0.0.1"
-source = "git+https://github.com/Phraeyll/point-mass-ballistics?branch=master#908734542868573f44ef1d49d04f737b73e4c6fe"
+source = "git+https://github.com/Phraeyll/point-mass-ballistics?branch=master#f9e945ec9763b206a3155c63563af1731dfe5180"
 dependencies = [
  "nalgebra",
  "num-traits",
