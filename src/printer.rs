@@ -3,30 +3,7 @@ use point_mass_ballistics::{
     units::{foot_per_second, foot_pound, inch, moa, second, yard, Length},
 };
 
-#[derive(Clone, Copy)]
-pub enum Adjustment {
-    Elevation(Length),
-    Windage(Length),
-}
-
-// Show needed adjustments to correct shot
-impl Adjustment {
-    pub fn adjustment(self, tolerance: Length) -> char {
-        let (n, positive, negative) = match self {
-            Self::Elevation(n) => (n, 'D', 'U'),
-            Self::Windage(n) => (n, 'L', 'R'),
-        };
-        if n > tolerance {
-            positive
-        } else if n < -tolerance {
-            negative
-        } else {
-            '*'
-        }
-    }
-}
-
-pub fn print_table<I>(table: I, output_tolerance: Length, pretty: bool)
+pub fn print_table<I>(table: I, output_tolerance: Length, pretty: bool, precision: usize)
 where
     I: IntoIterator,
     <I as IntoIterator>::Item: Measurements,
@@ -44,22 +21,20 @@ where
         "\
         {div}\
         {lpad}{:>12} \
-        {lpad}{:>08} \
         {lpad}{:>13} \
-        {lpad}{:>11} \
         {lpad}{:>10} \
+        {lpad}{:>11} \
         {lpad}{:>10} \
         {lpad}{:>14} \
         {lpad}{:>12} \
-        {lpad}{:>08}{eol}\
+        {lpad}{:>8}{eol}\
         {div}\
         ",
         "Distance(yd)",
-        "MOA",
-        "Elevation(in)",
-        "Windage(in)",
-        "Vertical",
-        "Horizontal",
+        "Drop(in)",
+        "Drop(MOA)",
+        "Wind(in)",
+        "Wind(MOA)",
         "Velocity(ft/s)",
         "Energy(ftlb)",
         "Time(s)",
@@ -71,26 +46,20 @@ where
         print!(
             "\
             {lpad}{:>12.0} \
-            {lpad}{:>08.2} \
-            {lpad}{:>11.2} {} \
-            {lpad}{:>09.2} {} \
-            {lpad}{:>08.2} {} \
-            {lpad}{:>08.2} {} \
-            {lpad}{:>14.2} \
-            {lpad}{:>12.2} \
-            {lpad}{:>08.3}{eol}\
+            {lpad}{:>13.precision$} \
+            {lpad}{:>10.precision$} \
+            {lpad}{:>11.precision$} \
+            {lpad}{:>10.precision$} \
+            {lpad}{:>14.precision$} \
+            {lpad}{:>12.precision$} \
+            {lpad}{:>8.3}{eol}\
             {div}\
             ",
             p.distance().get::<yard>(),
-            p.angle().get::<moa>(),
-            p.elevation().get::<inch>().abs(),
-            Adjustment::Elevation(p.elevation()).adjustment(output_tolerance),
-            p.windage().get::<inch>().abs(),
-            Adjustment::Windage(p.windage()).adjustment(output_tolerance),
-            p.vertical_angle(output_tolerance).get::<moa>().abs(),
-            Adjustment::Elevation(p.elevation()).adjustment(output_tolerance),
-            p.horizontal_angle(output_tolerance).get::<moa>().abs(),
-            Adjustment::Windage(p.windage()).adjustment(output_tolerance),
+            p.elevation().get::<inch>(),
+            p.vertical_angle(output_tolerance).get::<moa>(),
+            p.windage().get::<inch>(),
+            p.horizontal_angle(output_tolerance).get::<moa>(),
             p.velocity().get::<foot_per_second>(),
             p.energy().get::<foot_pound>(),
             p.time().get::<second>(),

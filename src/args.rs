@@ -90,6 +90,9 @@ struct Flags {
 
     #[arg(long = "pretty")]
     pretty: bool,
+
+    #[arg(long = "precision", default_value = "1")]
+    precision: usize,
 }
 #[derive(Debug, Parser)]
 struct Table {
@@ -306,6 +309,7 @@ impl InnerArgs {
             self.table_gen(&simulation),
             output_tolerance,
             self.flags.pretty,
+            self.flags.precision,
         );
     }
     pub fn table_gen<'s, T>(
