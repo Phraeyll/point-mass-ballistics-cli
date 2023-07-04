@@ -6,7 +6,7 @@ use clap::Parser;
 use indoc::indoc;
 use point_mass_ballistics::{
     output::Measurements,
-    projectiles::{self as bc, Projectile, ProjectileImpl},
+    projectiles::{g1, g2, g5, g6, g7, g8, gi, gs, Projectile, ProjectileImpl},
     simulation::{Simulation, SimulationBuilder},
     units::{
         radian, Acceleration, Angle, Length, Mass, Pressure, ThermodynamicTemperature, Time,
@@ -272,14 +272,14 @@ impl Args {
 impl SimulationKind {
     pub fn run(&self) -> Result<()> {
         match *self {
-            Self::G1(ref inner) => inner.run::<bc::G1>(),
-            Self::G2(ref inner) => inner.run::<bc::G2>(),
-            Self::G5(ref inner) => inner.run::<bc::G5>(),
-            Self::G6(ref inner) => inner.run::<bc::G6>(),
-            Self::G7(ref inner) => inner.run::<bc::G7>(),
-            Self::G8(ref inner) => inner.run::<bc::G8>(),
-            Self::GI(ref inner) => inner.run::<bc::GI>(),
-            Self::GS(ref inner) => inner.run::<bc::GS>(),
+            Self::G1(ref inner) => inner.run::<g1::P>(),
+            Self::G2(ref inner) => inner.run::<g2::P>(),
+            Self::G5(ref inner) => inner.run::<g5::P>(),
+            Self::G6(ref inner) => inner.run::<g6::P>(),
+            Self::G7(ref inner) => inner.run::<g7::P>(),
+            Self::G8(ref inner) => inner.run::<g8::P>(),
+            Self::GI(ref inner) => inner.run::<gi::P>(),
+            Self::GS(ref inner) => inner.run::<gs::P>(),
         }
     }
 }
