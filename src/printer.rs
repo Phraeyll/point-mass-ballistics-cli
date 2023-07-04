@@ -3,11 +3,12 @@ use point_mass_ballistics::{
     units::{foot_per_second, foot_pound, inch, moa, second, yard, Length},
 };
 
-pub fn print_table<I>(table: I, output_tolerance: Length, pretty: bool, precision: usize)
-where
-    I: IntoIterator,
-    <I as IntoIterator>::Item: Measurements,
-{
+pub fn print_table(
+    table: impl IntoIterator<Item = impl Measurements>,
+    output_tolerance: Length,
+    pretty: bool,
+    precision: usize,
+) {
     let (div, lpad, eol) = if pretty {
         (
             "+--------------+----------+---------------+-------------+------------+------------+----------------+--------------+----------+\n",
