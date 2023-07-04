@@ -306,7 +306,7 @@ impl InnerArgs {
     {
         let output_tolerance = self.table.table_tolerance;
         print_table(
-            self.table_gen(&simulation),
+            self.table_gen(simulation),
             output_tolerance,
             self.flags.pretty,
             self.flags.precision,
