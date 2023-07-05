@@ -9,7 +9,7 @@ pub fn print_table(
     pretty: bool,
     precision: usize,
 ) {
-    let (div, lpad, eol) = if pretty {
+    let (rs, fs, eol) = if pretty {
         (
             "+--------------+---------------+------------+-------------+----------------+------------+--------------+----------+\n",
             "| ",
@@ -20,16 +20,16 @@ pub fn print_table(
     };
     print!(
         "\
-        {div}\
-        {lpad}{:>12} \
-        {lpad}{:>13} \
-        {lpad}{:>10} \
-        {lpad}{:>11} \
-        {lpad}{:>10} \
-        {lpad}{:>14} \
-        {lpad}{:>12} \
-        {lpad}{:>8}{eol}\
-        {div}\
+        {rs}\
+        {fs}{:>12} \
+        {fs}{:>13} \
+        {fs}{:>10} \
+        {fs}{:>11} \
+        {fs}{:>10} \
+        {fs}{:>14} \
+        {fs}{:>12} \
+        {fs}{:>8}{eol}\
+        {rs}\
         ",
         "Distance(yd)",
         "Drop(in)",
@@ -39,22 +39,19 @@ pub fn print_table(
         "Velocity(ft/s)",
         "Energy(ftlb)",
         "Time(s)",
-        lpad = lpad,
-        eol = eol,
-        div = div,
     );
     for p in table.into_iter() {
         print!(
             "\
-            {lpad}{:>12.0} \
-            {lpad}{:>13.precision$} \
-            {lpad}{:>10.precision$} \
-            {lpad}{:>11.precision$} \
-            {lpad}{:>10.precision$} \
-            {lpad}{:>14.precision$} \
-            {lpad}{:>12.precision$} \
-            {lpad}{:>8.3}{eol}\
-            {div}\
+            {fs}{:>12.0} \
+            {fs}{:>13.precision$} \
+            {fs}{:>10.precision$} \
+            {fs}{:>11.precision$} \
+            {fs}{:>10.precision$} \
+            {fs}{:>14.precision$} \
+            {fs}{:>12.precision$} \
+            {fs}{:>8.3}{eol}\
+            {rs}\
             ",
             p.distance().get::<yard>(),
             p.elevation().get::<inch>(),
@@ -64,9 +61,6 @@ pub fn print_table(
             p.velocity().get::<foot_per_second>(),
             p.energy().get::<foot_pound>(),
             p.time().get::<second>(),
-            lpad = lpad,
-            eol = eol,
-            div = div,
         );
     }
 }
