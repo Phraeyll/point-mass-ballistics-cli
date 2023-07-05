@@ -5,8 +5,8 @@ use std::{error::Error, file, line, stringify, time::Instant};
 use clap::Parser;
 use indoc::indoc;
 use point_mass_ballistics::{
+    drag::{g1, g2, g5, g6, g7, g8, gi, gs, DragFunction},
     output::Measurements,
-    projectiles::{g1, g2, g5, g6, g7, g8, gi, gs, DragFunction},
     simulation::{Simulation, SimulationBuilder},
     units::{
         radian, Acceleration, Angle, Length, Mass, Pressure, ThermodynamicTemperature, Time,
