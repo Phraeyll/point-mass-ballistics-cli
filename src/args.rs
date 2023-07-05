@@ -1,12 +1,12 @@
 use crate::printer::print_table;
 
-use std::{error::Error, file, line, ops::DerefMut, stringify, time::Instant};
+use std::{error::Error, file, line, stringify, time::Instant};
 
 use clap::Parser;
 use indoc::indoc;
 use point_mass_ballistics::{
     output::Measurements,
-    projectiles::{g1, g2, g5, g6, g7, g8, gi, gs, Projectile, ProjectileImpl},
+    projectiles::{g1, g2, g5, g6, g7, g8, gi, gs, DragFunction},
     simulation::{Simulation, SimulationBuilder},
     units::{
         radian, Acceleration, Angle, Length, Mass, Pressure, ThermodynamicTemperature, Time,
@@ -15,7 +15,7 @@ use point_mass_ballistics::{
     Numeric,
 };
 
-pub type Result<T> = std::result::Result<T, Box<dyn Error>>;
+pub type Result<D> = std::result::Result<D, Box<dyn Error>>;
 
 #[derive(Debug, Parser)]
 #[command(
@@ -272,37 +272,37 @@ impl Args {
 impl SimulationKind {
     pub fn run(&self) -> Result<()> {
         match *self {
-            Self::G1(ref inner) => inner.run::<g1::P>(),
-            Self::G2(ref inner) => inner.run::<g2::P>(),
-            Self::G5(ref inner) => inner.run::<g5::P>(),
-            Self::G6(ref inner) => inner.run::<g6::P>(),
-            Self::G7(ref inner) => inner.run::<g7::P>(),
-            Self::G8(ref inner) => inner.run::<g8::P>(),
-            Self::GI(ref inner) => inner.run::<gi::P>(),
-            Self::GS(ref inner) => inner.run::<gs::P>(),
+            Self::G1(ref inner) => inner.run::<g1::Drag>(),
+            Self::G2(ref inner) => inner.run::<g2::Drag>(),
+            Self::G5(ref inner) => inner.run::<g5::Drag>(),
+            Self::G6(ref inner) => inner.run::<g6::Drag>(),
+            Self::G7(ref inner) => inner.run::<g7::Drag>(),
+            Self::G8(ref inner) => inner.run::<g8::Drag>(),
+            Self::GI(ref inner) => inner.run::<gi::Drag>(),
+            Self::GS(ref inner) => inner.run::<gs::Drag>(),
         }
     }
 }
 
 impl InnerArgs {
-    pub fn run<T>(&self) -> Result<()>
+    pub fn run<D>(&self) -> Result<()>
     where
-        T: Projectile + From<ProjectileImpl> + DerefMut<Target = ProjectileImpl>,
+        D: DragFunction,
     {
         let mut angles = (Angle::new::<radian>(0.0), Angle::new::<radian>(0.0));
         if !self.flags.flat {
-            let zero_builder = time!(self.shared_params::<T>()?);
+            let zero_builder = time!(self.shared_params::<D>()?);
             let zero_simulation = time!(self.zero_scenario(zero_builder)?);
             angles = time!(self.try_zero(zero_simulation)?);
         };
-        let firing_builder = time!(self.shared_params::<T>()?);
+        let firing_builder = time!(self.shared_params::<D>()?);
         let firing_simulation = time!(self.firing_scenario(firing_builder, angles.0, angles.1)?);
         time!(self.print(&firing_simulation));
         Ok(())
     }
-    pub fn print<T>(&self, simulation: &Simulation<T>)
+    pub fn print<D>(&self, simulation: &Simulation<D>)
     where
-        T: Projectile,
+        D: DragFunction,
     {
         let output_tolerance = self.table.table_tolerance;
         print_table(
@@ -312,12 +312,12 @@ impl InnerArgs {
             self.flags.precision,
         );
     }
-    pub fn table_gen<'s, T>(
+    pub fn table_gen<'s, D>(
         &self,
-        simulation: &'s Simulation<T>,
+        simulation: &'s Simulation<D>,
     ) -> impl IntoIterator<Item = impl Measurements + 's> + 's
     where
-        T: Projectile,
+        D: DragFunction,
     {
         let mut start = self.table.table_start;
         let end = self.table.table_end;
@@ -334,9 +334,9 @@ impl InnerArgs {
                 }
             })
     }
-    pub fn try_zero<T>(&self, mut simulation: Simulation<T>) -> Result<(Angle, Angle)>
+    pub fn try_zero<D>(&self, mut simulation: Simulation<D>) -> Result<(Angle, Angle)>
     where
-        T: Projectile,
+        D: DragFunction,
     {
         Ok(simulation.find_zero_angles(
             self.zeroing.zeroing_target.zeroing_target_distance,
@@ -345,9 +345,9 @@ impl InnerArgs {
             self.zeroing.zeroing_target.zeroing_target_tolerance,
         )?)
     }
-    pub fn shared_params<T>(&self) -> Result<SimulationBuilder<T>>
+    pub fn shared_params<D>(&self) -> Result<SimulationBuilder<D>>
     where
-        T: Projectile + From<ProjectileImpl> + DerefMut<Target = ProjectileImpl>,
+        D: DragFunction,
     {
         let mut builder = SimulationBuilder::new();
         builder = builder.set_time_step(self.time_step)?;
@@ -383,9 +383,9 @@ impl InnerArgs {
 
         Ok(builder)
     }
-    pub fn zero_scenario<T>(&self, mut builder: SimulationBuilder<T>) -> Result<Simulation<T>>
+    pub fn zero_scenario<D>(&self, mut builder: SimulationBuilder<D>) -> Result<Simulation<D>>
     where
-        T: Projectile,
+        D: DragFunction,
     {
         // Atmosphere
         if let Some(value) = self
@@ -425,14 +425,14 @@ impl InnerArgs {
         }
         Ok(builder.init())
     }
-    pub fn firing_scenario<T>(
+    pub fn firing_scenario<D>(
         &self,
-        mut builder: SimulationBuilder<T>,
+        mut builder: SimulationBuilder<D>,
         pitch: Angle,
         yaw: Angle,
-    ) -> Result<Simulation<T>>
+    ) -> Result<Simulation<D>>
     where
-        T: Projectile,
+        D: DragFunction,
     {
         // Adjust pitch/yaw with value from args, and provided deltas
         if let Some(value) = self.scope.scope_pitch {
