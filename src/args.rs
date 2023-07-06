@@ -8,10 +8,7 @@ use point_mass_ballistics::{
     drag::{g1, g2, g5, g6, g7, g8, gi, gs, DragFunction},
     output::Measurements,
     simulation::{Simulation, SimulationBuilder},
-    units::{
-        radian, Acceleration, Angle, Length, Mass, Pressure, ThermodynamicTemperature, Time,
-        Velocity,
-    },
+    units::{radian, Angle, Length, Mass, Pressure, ThermodynamicTemperature, Time, Velocity},
     Numeric,
 };
 
@@ -179,9 +176,6 @@ struct FiringShooter {
 
     #[arg(long = "shot-angle")]
     firing_shooter_angle: Option<Angle>,
-
-    #[arg(long = "gravity")]
-    firing_shooter_gravity: Option<Acceleration>,
 }
 #[derive(Debug, Parser)]
 struct Zeroing {
@@ -226,9 +220,6 @@ struct ZeroingShooter {
 
     #[arg(long = "zeroing-shot-angle")]
     zeroing_shooter_angle: Option<Angle>,
-
-    #[arg(long = "zeroing-gravity")]
-    zeroing_shooter_gravity: Option<Acceleration>,
 }
 #[derive(Debug, Parser)]
 struct ZeroingTarget {
@@ -420,9 +411,6 @@ impl InnerArgs {
         if let Some(value) = self.zeroing.zeroing_shooter.zeroing_shooter_bearing {
             builder = builder.set_bearing(value)?
         }
-        if let Some(value) = self.zeroing.zeroing_shooter.zeroing_shooter_gravity {
-            builder = builder.set_gravity(value)?
-        }
         Ok(builder.init())
     }
     pub fn firing_scenario<D>(
@@ -474,9 +462,6 @@ impl InnerArgs {
         }
         if let Some(value) = self.firing.firing_shooter.firing_shooter_bearing {
             builder = builder.set_bearing(value)?
-        }
-        if let Some(value) = self.firing.firing_shooter.firing_shooter_gravity {
-            builder = builder.set_gravity(value)?
         }
         Ok(builder.init())
     }
