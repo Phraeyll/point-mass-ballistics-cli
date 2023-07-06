@@ -2,7 +2,7 @@ use crate::printer::print_table;
 
 use std::{error::Error, file, line, stringify, time::Instant};
 
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use indoc::indoc;
 use point_mass_ballistics::{
     drag::{g1, g2, g5, g6, g7, g8, gi, gs, DragFunction},
@@ -36,8 +36,8 @@ pub struct Args {
     simulation: SimulationKind,
 }
 
-#[derive(Debug, Parser)]
-pub enum SimulationKind {
+#[derive(Debug, Subcommand)]
+enum SimulationKind {
     G1(InnerArgs),
     G2(InnerArgs),
     G5(InnerArgs),
@@ -48,10 +48,18 @@ pub enum SimulationKind {
     GS(InnerArgs),
 }
 
+#[derive(Debug, Subcommand)]
+enum ScenarioKind {
+    Zero(Zeroing),
+}
+
 #[derive(Debug, Parser)]
-pub struct InnerArgs {
+struct InnerArgs {
     #[arg(long = "time-step", default_value = "0.00005 s")]
     time_step: Time,
+
+    #[arg(long = "precision", default_value = "1")]
+    precision: usize,
 
     #[command(flatten)]
     flags: Flags,
@@ -66,16 +74,14 @@ pub struct InnerArgs {
     scope: Scope,
 
     #[command(flatten)]
-    firing: Firing,
+    conditions: Conditions,
 
-    #[command(flatten)]
-    zeroing: Zeroing,
+    #[command(subcommand)]
+    scenario: Option<ScenarioKind>,
 }
+
 #[derive(Debug, Parser)]
 struct Flags {
-    #[arg(long = "flat")]
-    flat: bool,
-
     #[arg(long = "disable-drag")]
     disable_drag: bool,
 
@@ -87,153 +93,123 @@ struct Flags {
 
     #[arg(long = "pretty")]
     pretty: bool,
-
-    #[arg(long = "precision", default_value = "1")]
-    precision: usize,
 }
+
 #[derive(Debug, Parser)]
 struct Table {
-    #[arg(long = "start", default_value = "0.0 yd")]
-    table_start: Length,
+    #[arg(long = "table-start", default_value = "0.0 yd")]
+    start: Length,
 
-    #[arg(long = "end", default_value = "1000.0 yd")]
-    table_end: Length,
+    #[arg(long = "table-end", default_value = "1000.0 yd")]
+    end: Length,
 
-    #[arg(long = "step", default_value = "100.0 yd")]
-    table_step: Length,
+    #[arg(long = "table-step", default_value = "100.0 yd")]
+    step: Length,
 
     #[arg(long = "table-tolerance", default_value = "0.005 in")]
-    table_tolerance: Length,
+    tolerance: Length,
 }
+
 #[derive(Debug, Parser)]
 struct ProjectileArg {
-    #[arg(long = "initial-velocity")]
-    projectile_velocity: Option<Velocity>,
+    #[arg(long = "velocity", default_value = "3000.0 ft/s")]
+    velocity: Velocity,
 
-    #[arg(long = "mass")]
-    projectile_mass: Option<Mass>,
+    #[arg(long = "mass", default_value = "220.0 gr")]
+    mass: Mass,
 
-    #[arg(long = "caliber")]
-    projectile_caliber: Option<Length>,
+    #[arg(long = "caliber", default_value = "0.308 in")]
+    caliber: Length,
 
-    #[arg(long = "bc")]
-    projectile_bc: Option<Numeric>,
+    #[arg(long = "bc", default_value = "0.5")]
+    bc: Numeric,
 }
+
 #[derive(Debug, Parser)]
 struct Scope {
-    #[arg(long = "scope-height")]
-    scope_height: Option<Length>,
+    #[arg(long = "scope-height", default_value = "1.5 in")]
+    height: Length,
 
-    #[arg(long = "scope-offset")]
-    scope_offset: Option<Length>,
+    #[arg(long = "scope-offset", default_value = "0.0 in")]
+    offset: Length,
 
-    #[arg(long = "scope-pitch")]
-    scope_pitch: Option<Angle>,
+    #[arg(long = "scope-pitch", default_value = "0.0 degrees")]
+    pitch: Angle,
 
-    #[arg(long = "scope-yaw")]
-    scope_yaw: Option<Angle>,
+    #[arg(long = "scope-yaw", default_value = "0.0 degrees")]
+    yaw: Angle,
 
-    #[arg(long = "scope-cant")]
-    scope_cant: Option<Angle>,
+    #[arg(long = "scope-cant", default_value = "0.0 degrees")]
+    cant: Angle,
 }
-#[derive(Debug, Parser)]
-struct Firing {
-    #[command(flatten)]
-    firing_atmosphere: FiringAtmosphere,
 
+#[derive(Clone, Copy, Debug, Parser)]
+struct Conditions {
     #[command(flatten)]
-    firing_wind: FiringWind,
+    atmosphere: Atmosphere,
 
     #[command(flatten)]
-    firing_shooter: FiringShooter,
+    wind: Wind,
+
+    #[command(flatten)]
+    shooter: Shooter,
 }
-#[derive(Debug, Parser)]
-struct FiringWind {
-    #[arg(long = "wind-speed")]
-    firing_wind_speed: Option<Velocity>,
 
-    #[arg(long = "wind-angle")]
-    firing_wind_angle: Option<Angle>,
+#[derive(Clone, Copy, Debug, Parser)]
+struct Wind {
+    #[arg(long = "wind-speed", default_value = "0.0 mi/h")]
+    speed: Velocity,
+
+    #[arg(long = "wind-direction", default_value = "0.0 degrees")]
+    direction: Angle,
 }
-#[derive(Debug, Parser)]
-struct FiringAtmosphere {
-    #[arg(long = "temperature")]
-    firing_atmosphere_temperature: Option<ThermodynamicTemperature>,
 
-    #[arg(long = "pressure")]
-    firing_atmosphere_pressure: Option<Pressure>,
+#[derive(Clone, Copy, Debug, Parser)]
+struct Atmosphere {
+    #[arg(long = "temperature", default_value = "59 degree Fahrenheit")]
+    temperature: ThermodynamicTemperature,
 
-    #[arg(long = "humidity")]
-    firing_atmosphere_humidity: Option<Numeric>,
+    #[arg(long = "pressure", default_value = "29.92 in Hg")]
+    pressure: Pressure,
+
+    #[arg(long = "humidity", default_value = "0.0")]
+    humidity: Numeric,
 }
-#[derive(Debug, Parser)]
-struct FiringShooter {
-    #[arg(long = "lattitude")]
-    firing_shooter_lattitude: Option<Angle>,
 
-    #[arg(long = "bearing")]
-    firing_shooter_bearing: Option<Angle>,
+#[derive(Clone, Copy, Debug, Parser)]
+struct Shooter {
+    #[arg(long = "lattitude", default_value = "0.0 degrees")]
+    lattitude: Angle,
 
-    #[arg(long = "shot-angle")]
-    firing_shooter_angle: Option<Angle>,
+    #[arg(long = "bearing", default_value = "0.0 degrees")]
+    bearing: Angle,
+
+    #[arg(long = "shot-angle", default_value = "0.0 degrees")]
+    incline: Angle,
 }
+
 #[derive(Debug, Parser)]
 struct Zeroing {
     #[command(flatten)]
-    zeroing_wind: ZeroingWind,
+    conditions: Conditions,
 
     #[command(flatten)]
-    zeroing_atmosphere: ZeroingAtmosphere,
-
-    #[command(flatten)]
-    zeroing_shooter: ZeroingShooter,
-
-    #[command(flatten)]
-    zeroing_target: ZeroingTarget,
+    target: Target,
 }
+
 #[derive(Debug, Parser)]
-struct ZeroingWind {
-    #[arg(long = "zeroing-wind-speed")]
-    zeroing_wind_speed: Option<Velocity>,
+struct Target {
+    #[arg(long = "target-distance", default_value = "100.0 yd")]
+    distance: Length,
 
-    #[arg(long = "zeroing-wind-angle")]
-    zeroing_wind_angle: Option<Angle>,
-}
-#[derive(Debug, Parser)]
-struct ZeroingAtmosphere {
-    #[arg(long = "zeroing-temperature")]
-    zeroing_atmosphere_temperature: Option<ThermodynamicTemperature>,
+    #[arg(long = "target-height", default_value = "0.0 in")]
+    height: Length,
 
-    #[arg(long = "zeroing-pressure")]
-    zeroing_atmosphere_pressure: Option<Pressure>,
+    #[arg(long = "target-offset", default_value = "0.0 in")]
+    offset: Length,
 
-    #[arg(long = "zeroing-humidity")]
-    zeroing_atmosphere_humidity: Option<Numeric>,
-}
-#[derive(Debug, Parser)]
-struct ZeroingShooter {
-    #[arg(long = "zeroing-lattitude")]
-    zeroing_shooter_lattitude: Option<Angle>,
-
-    #[arg(long = "zeroing-bearing")]
-    zeroing_shooter_bearing: Option<Angle>,
-
-    #[arg(long = "zeroing-shot-angle")]
-    zeroing_shooter_angle: Option<Angle>,
-}
-#[derive(Debug, Parser)]
-struct ZeroingTarget {
-    #[arg(long = "zeroing-target-distance", default_value = "200.0 yd")]
-    zeroing_target_distance: Length,
-
-    #[arg(long = "zeroing-target-height", default_value = "0.0 in")]
-    zeroing_target_height: Length,
-
-    #[arg(long = "zeroing-target-offset", default_value = "0.0 in")]
-    zeroing_target_offset: Length,
-
-    #[arg(long = "zeroing-target-tolerance", default_value = "0.001 in")]
-    zeroing_target_tolerance: Length,
+    #[arg(long = "target-tolerance", default_value = "0.001 in")]
+    tolerance: Length,
 }
 
 macro_rules! time {
@@ -281,38 +257,42 @@ impl InnerArgs {
         D: DragFunction,
     {
         let mut angles = (Angle::new::<radian>(0.0), Angle::new::<radian>(0.0));
-        if !self.flags.flat {
-            let zero_builder = time!(self.shared_params::<D>()?);
-            let zero_simulation = time!(self.zero_scenario(zero_builder)?);
-            angles = time!(self.try_zero(zero_simulation)?);
-        };
-        let firing_builder = time!(self.shared_params::<D>()?);
-        let firing_simulation = time!(self.firing_scenario(firing_builder, angles.0, angles.1)?);
-        time!(self.print(&firing_simulation));
+        if let Some(ScenarioKind::Zero(ref zero)) = self.scenario {
+            let simulation = time!(self.simulation::<D>(
+                &zero.conditions,
+                Angle::new::<radian>(0.0),
+                Angle::new::<radian>(0.0)
+            )?);
+            angles = time!(self.try_zero(simulation, &zero.target)?);
+        }
+        let simulation = time!(self.simulation::<D>(&self.conditions, angles.0, angles.1)?);
+        time!(self.print(&simulation));
         Ok(())
     }
+
     pub fn print<D>(&self, simulation: &Simulation<D>)
     where
         D: DragFunction,
     {
-        let output_tolerance = self.table.table_tolerance;
+        let output_tolerance = self.table.tolerance;
         print_table(
             self.table_gen(simulation),
             output_tolerance,
             self.flags.pretty,
-            self.flags.precision,
+            self.precision,
         );
     }
-    pub fn table_gen<'s, D>(
+
+    fn table_gen<'s, D>(
         &self,
         simulation: &'s Simulation<D>,
     ) -> impl IntoIterator<Item = impl Measurements + 's> + 's
     where
         D: DragFunction,
     {
-        let mut start = self.table.table_start;
-        let end = self.table.table_end;
-        let step = self.table.table_step;
+        let mut start = self.table.start;
+        let end = self.table.end;
+        let step = self.table.step;
         simulation
             .into_iter()
             .take_while(move |p| p.distance() <= end + step)
@@ -325,144 +305,63 @@ impl InnerArgs {
                 }
             })
     }
-    pub fn try_zero<D>(&self, mut simulation: Simulation<D>) -> Result<(Angle, Angle)>
+
+    fn try_zero<D>(&self, mut simulation: Simulation<D>, target: &Target) -> Result<(Angle, Angle)>
     where
         D: DragFunction,
     {
         Ok(simulation.find_zero_angles(
-            self.zeroing.zeroing_target.zeroing_target_distance,
-            self.zeroing.zeroing_target.zeroing_target_height,
-            self.zeroing.zeroing_target.zeroing_target_offset,
-            self.zeroing.zeroing_target.zeroing_target_tolerance,
+            target.distance,
+            target.height,
+            target.offset,
+            target.tolerance,
         )?)
     }
-    pub fn shared_params<D>(&self) -> Result<SimulationBuilder<D>>
-    where
-        D: DragFunction,
-    {
-        let mut builder = SimulationBuilder::new();
-        builder = builder.set_time_step(self.time_step)?;
 
-        builder = builder.use_coriolis(!self.flags.disable_coriolis);
-        builder = builder.use_drag(!self.flags.disable_drag);
-        builder = builder.use_gravity(!self.flags.disable_gravity);
-
-        // Projectile
-        if let Some(value) = self.projectile.projectile_bc {
-            builder = builder.set_bc(value)?
-        }
-        if let Some(value) = self.projectile.projectile_velocity {
-            builder = builder.set_velocity(value)?
-        }
-        if let Some(value) = self.projectile.projectile_mass {
-            builder = builder.set_mass(value)?
-        }
-        if let Some(value) = self.projectile.projectile_caliber {
-            builder = builder.set_caliber(value)?
-        }
-
-        // Scope
-        if let Some(value) = self.scope.scope_height {
-            builder = builder.set_scope_height(value)
-        }
-        if let Some(value) = self.scope.scope_offset {
-            builder = builder.set_scope_offset(value)
-        }
-        if let Some(value) = self.scope.scope_cant {
-            builder = builder.set_scope_roll(value)
-        }
-
-        Ok(builder)
-    }
-    pub fn zero_scenario<D>(&self, mut builder: SimulationBuilder<D>) -> Result<Simulation<D>>
-    where
-        D: DragFunction,
-    {
-        // Atmosphere
-        if let Some(value) = self
-            .zeroing
-            .zeroing_atmosphere
-            .zeroing_atmosphere_temperature
-        {
-            builder = builder.set_temperature(value)?
-        }
-        if let Some(value) = self.zeroing.zeroing_atmosphere.zeroing_atmosphere_pressure {
-            builder = builder.set_pressure(value)?
-        }
-        if let Some(value) = self.zeroing.zeroing_atmosphere.zeroing_atmosphere_humidity {
-            builder = builder.set_humidity(value)?
-        }
-
-        // Wind
-        if let Some(value) = self.zeroing.zeroing_wind.zeroing_wind_speed {
-            builder = builder.set_wind_speed(value)?
-        }
-        if let Some(value) = self.zeroing.zeroing_wind.zeroing_wind_angle {
-            builder = builder.set_wind_angle(value)?
-        }
-
-        // Shooter
-        if let Some(value) = self.zeroing.zeroing_shooter.zeroing_shooter_angle {
-            builder = builder.set_shot_angle(value)?
-        }
-        if let Some(value) = self.zeroing.zeroing_shooter.zeroing_shooter_lattitude {
-            builder = builder.set_lattitude(value)?
-        }
-        if let Some(value) = self.zeroing.zeroing_shooter.zeroing_shooter_bearing {
-            builder = builder.set_bearing(value)?
-        }
-        Ok(builder.init())
-    }
-    pub fn firing_scenario<D>(
+    fn simulation<D>(
         &self,
-        mut builder: SimulationBuilder<D>,
+        conditions: &Conditions,
         pitch: Angle,
         yaw: Angle,
     ) -> Result<Simulation<D>>
     where
         D: DragFunction,
     {
+        let mut builder = SimulationBuilder::new();
+
+        // Basic args
+        builder = builder.set_time_step(self.time_step)?;
+        builder = builder.use_coriolis(!self.flags.disable_coriolis);
+        builder = builder.use_drag(!self.flags.disable_drag);
+        builder = builder.use_gravity(!self.flags.disable_gravity);
+
+        // Projectile
+        builder = builder.set_bc(self.projectile.bc)?;
+        builder = builder.set_velocity(self.projectile.velocity)?;
+        builder = builder.set_mass(self.projectile.mass)?;
+        builder = builder.set_caliber(self.projectile.caliber)?;
+
+        // Scope
+        builder = builder.set_scope_height(self.scope.height);
+        builder = builder.set_scope_offset(self.scope.offset);
+        builder = builder.set_scope_roll(self.scope.cant);
         // Adjust pitch/yaw with value from args, and provided deltas
-        if let Some(value) = self.scope.scope_pitch {
-            builder = builder.set_scope_pitch(dbg!(value + pitch))
-        } else {
-            builder = builder.set_scope_pitch(pitch)
-        }
-        if let Some(value) = self.scope.scope_yaw {
-            builder = builder.set_scope_yaw(dbg!(value + yaw))
-        } else {
-            builder = builder.set_scope_yaw(yaw)
-        }
+        builder = builder.set_scope_pitch(self.scope.pitch + pitch);
+        builder = builder.set_scope_yaw(self.scope.yaw + yaw);
 
         // Atmosphere
-        if let Some(value) = self.firing.firing_atmosphere.firing_atmosphere_temperature {
-            builder = builder.set_temperature(value)?
-        }
-        if let Some(value) = self.firing.firing_atmosphere.firing_atmosphere_pressure {
-            builder = builder.set_pressure(value)?
-        }
-        if let Some(value) = self.firing.firing_atmosphere.firing_atmosphere_humidity {
-            builder = builder.set_humidity(value)?
-        }
+        builder = builder.set_temperature(conditions.atmosphere.temperature)?;
+        builder = builder.set_pressure(conditions.atmosphere.pressure)?;
+        builder = builder.set_humidity(conditions.atmosphere.humidity)?;
 
         // Wind
-        if let Some(value) = self.firing.firing_wind.firing_wind_speed {
-            builder = builder.set_wind_speed(value)?
-        }
-        if let Some(value) = self.firing.firing_wind.firing_wind_angle {
-            builder = builder.set_wind_angle(value)?
-        }
+        builder = builder.set_wind_speed(conditions.wind.speed)?;
+        builder = builder.set_wind_direction(conditions.wind.direction)?;
 
         // Shooter
-        if let Some(value) = self.firing.firing_shooter.firing_shooter_angle {
-            builder = builder.set_shot_angle(value)?
-        }
-        if let Some(value) = self.firing.firing_shooter.firing_shooter_lattitude {
-            builder = builder.set_lattitude(value)?
-        }
-        if let Some(value) = self.firing.firing_shooter.firing_shooter_bearing {
-            builder = builder.set_bearing(value)?
-        }
+        builder = builder.set_incline(conditions.shooter.incline)?;
+        builder = builder.set_lattitude(conditions.shooter.lattitude)?;
+        builder = builder.set_bearing(conditions.shooter.bearing)?;
         Ok(builder.init())
     }
 }
