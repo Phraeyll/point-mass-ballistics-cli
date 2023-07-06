@@ -54,6 +54,27 @@ enum ScenarioKind {
 }
 
 #[derive(Debug, Parser)]
+struct Zeroing {
+    #[command(flatten)]
+    conditions: Conditions,
+
+    #[command(flatten)]
+    target: Target,
+}
+
+#[derive(Clone, Copy, Debug, Parser)]
+struct Conditions {
+    #[command(flatten)]
+    atmosphere: Atmosphere,
+
+    #[command(flatten)]
+    wind: Wind,
+
+    #[command(flatten)]
+    shooter: Shooter,
+}
+
+#[derive(Debug, Parser)]
 struct InnerArgs {
     #[arg(long = "time-step", default_value = "0.00005 s")]
     time_step: Time,
@@ -144,18 +165,6 @@ struct Scope {
 }
 
 #[derive(Clone, Copy, Debug, Parser)]
-struct Conditions {
-    #[command(flatten)]
-    atmosphere: Atmosphere,
-
-    #[command(flatten)]
-    wind: Wind,
-
-    #[command(flatten)]
-    shooter: Shooter,
-}
-
-#[derive(Clone, Copy, Debug, Parser)]
 struct Wind {
     #[arg(long = "wind-speed", default_value = "0.0 mi/h")]
     speed: Velocity,
@@ -186,15 +195,6 @@ struct Shooter {
 
     #[arg(long = "shot-angle", default_value = "0.0 degrees")]
     incline: Angle,
-}
-
-#[derive(Debug, Parser)]
-struct Zeroing {
-    #[command(flatten)]
-    conditions: Conditions,
-
-    #[command(flatten)]
-    target: Target,
 }
 
 #[derive(Debug, Parser)]
