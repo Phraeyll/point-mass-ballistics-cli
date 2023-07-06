@@ -62,7 +62,7 @@ struct Zeroing {
     target: Target,
 }
 
-#[derive(Clone, Copy, Debug, Parser)]
+#[derive(Debug, Parser)]
 struct Conditions {
     #[command(flatten)]
     atmosphere: Atmosphere,
@@ -164,7 +164,7 @@ struct Scope {
     cant: Angle,
 }
 
-#[derive(Clone, Copy, Debug, Parser)]
+#[derive(Debug, Parser)]
 struct Wind {
     #[arg(long = "wind-speed", default_value = "0.0 mi/h")]
     speed: Velocity,
@@ -173,7 +173,7 @@ struct Wind {
     direction: Angle,
 }
 
-#[derive(Clone, Copy, Debug, Parser)]
+#[derive(Debug, Parser)]
 struct Atmosphere {
     #[arg(long = "temperature", default_value = "59 degree Fahrenheit")]
     temperature: ThermodynamicTemperature,
@@ -185,7 +185,7 @@ struct Atmosphere {
     humidity: Numeric,
 }
 
-#[derive(Clone, Copy, Debug, Parser)]
+#[derive(Debug, Parser)]
 struct Shooter {
     #[arg(long = "lattitude", default_value = "0.0 degrees")]
     lattitude: Angle,
@@ -257,13 +257,13 @@ impl InnerArgs {
         D: DragFunction,
     {
         let mut angles = (Angle::new::<radian>(0.0), Angle::new::<radian>(0.0));
-        if let Some(ScenarioKind::Zero(ref zero)) = self.scenario {
+        if let Some(ScenarioKind::Zero(ref zeroing)) = self.scenario {
             let simulation = time!(self.simulation::<D>(
-                &zero.conditions,
+                &zeroing.conditions,
                 Angle::new::<radian>(0.0),
                 Angle::new::<radian>(0.0)
             )?);
-            angles = time!(self.try_zero(simulation, &zero.target)?);
+            angles = time!(self.try_zero(simulation, &zeroing.target)?);
         }
         let simulation = time!(self.simulation::<D>(&self.conditions, angles.0, angles.1)?);
         time!(self.print(&simulation));
