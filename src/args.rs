@@ -8,7 +8,9 @@ use point_mass_ballistics::{
     drag::{g1, g2, g5, g6, g7, g8, gi, gs, DragFunction},
     output::Measurements,
     simulation::{Simulation, SimulationBuilder},
-    units::{radian, Angle, Length, Mass, Pressure, ThermodynamicTemperature, Time, Velocity},
+    units::{
+        radian, Angle, ConstZero, Length, Mass, Pressure, ThermodynamicTemperature, Time, Velocity,
+    },
     Numeric,
 };
 
@@ -258,11 +260,8 @@ impl InnerArgs {
     {
         let mut angles = (Angle::new::<radian>(0.0), Angle::new::<radian>(0.0));
         if let Some(ScenarioKind::Zero(ref zeroing)) = self.scenario {
-            let simulation = time!(self.simulation::<D>(
-                &zeroing.conditions,
-                Angle::new::<radian>(0.0),
-                Angle::new::<radian>(0.0)
-            )?);
+            let simulation =
+                time!(self.simulation::<D>(&zeroing.conditions, Angle::ZERO, Angle::ZERO)?);
             angles = time!(self.try_zero(simulation, &zeroing.target)?);
         }
         let simulation = time!(self.simulation::<D>(&self.conditions, angles.0, angles.1)?);
