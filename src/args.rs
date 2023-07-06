@@ -9,7 +9,7 @@ use point_mass_ballistics::{
     output::Measurements,
     simulation::{Simulation, SimulationBuilder},
     units::{
-        radian, Angle, ConstZero, Length, Mass, Pressure, ThermodynamicTemperature, Time, Velocity,
+        radian, Angle, Length, Mass, Pressure, ThermodynamicTemperature, Time, Velocity,
     },
     Numeric,
 };
@@ -260,11 +260,10 @@ impl InnerArgs {
     {
         let mut angles = (Angle::new::<radian>(0.0), Angle::new::<radian>(0.0));
         if let Some(ScenarioKind::Zero(ref zeroing)) = self.scenario {
-            let simulation =
-                time!(self.simulation::<D>(&zeroing.conditions, Angle::ZERO, Angle::ZERO)?);
+            let simulation = time!(self.simulation::<D>(&zeroing.conditions, None)?);
             angles = time!(self.try_zero(simulation, &zeroing.target)?);
         }
-        let simulation = time!(self.simulation::<D>(&self.conditions, angles.0, angles.1)?);
+        let simulation = time!(self.simulation::<D>(&self.conditions, Some(angles))?);
         time!(self.print(&simulation));
         Ok(())
     }
@@ -310,12 +309,14 @@ impl InnerArgs {
     fn simulation<D>(
         &self,
         conditions: &Conditions,
-        pitch: Angle,
-        yaw: Angle,
+        angles: Option<(Angle, Angle)>,
     ) -> Result<Simulation<D>>
     where
         D: DragFunction,
     {
+        let (pitch, yaw) = angles.map_or(Default::default(), |(pitch, yaw)| {
+            (pitch + self.scope.pitch, yaw + self.scope.yaw)
+        });
         Ok(SimulationBuilder::new()
             .set_time_step(self.time_step)?
             .use_coriolis(!self.flags.disable_coriolis)
@@ -331,8 +332,8 @@ impl InnerArgs {
             .set_scope_offset(self.scope.offset)
             .set_scope_roll(self.scope.cant)
             // Adjust pitch/yaw with value from args, and provided deltas
-            .set_scope_pitch(self.scope.pitch + pitch)
-            .set_scope_yaw(self.scope.yaw + yaw)
+            .set_scope_pitch(pitch)
+            .set_scope_yaw(yaw)
             // Atmosphere
             .set_temperature(conditions.atmosphere.temperature)?
             .set_pressure(conditions.atmosphere.pressure)?
