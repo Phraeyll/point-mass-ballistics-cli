@@ -316,41 +316,34 @@ impl InnerArgs {
     where
         D: DragFunction,
     {
-        let mut builder = SimulationBuilder::new();
-
-        // Basic args
-        builder = builder.set_time_step(self.time_step)?;
-        builder = builder.use_coriolis(!self.flags.disable_coriolis);
-        builder = builder.use_drag(!self.flags.disable_drag);
-        builder = builder.use_gravity(!self.flags.disable_gravity);
-
-        // Projectile
-        builder = builder.set_bc(self.projectile.bc)?;
-        builder = builder.set_velocity(self.projectile.velocity)?;
-        builder = builder.set_mass(self.projectile.mass)?;
-        builder = builder.set_caliber(self.projectile.caliber)?;
-
-        // Scope
-        builder = builder.set_scope_height(self.scope.height);
-        builder = builder.set_scope_offset(self.scope.offset);
-        builder = builder.set_scope_roll(self.scope.cant);
-        // Adjust pitch/yaw with value from args, and provided deltas
-        builder = builder.set_scope_pitch(self.scope.pitch + pitch);
-        builder = builder.set_scope_yaw(self.scope.yaw + yaw);
-
-        // Atmosphere
-        builder = builder.set_temperature(conditions.atmosphere.temperature)?;
-        builder = builder.set_pressure(conditions.atmosphere.pressure)?;
-        builder = builder.set_humidity(conditions.atmosphere.humidity)?;
-
-        // Wind
-        builder = builder.set_wind_speed(conditions.wind.speed)?;
-        builder = builder.set_wind_direction(conditions.wind.direction)?;
-
-        // Shooter
-        builder = builder.set_incline(conditions.shooter.incline)?;
-        builder = builder.set_lattitude(conditions.shooter.lattitude)?;
-        builder = builder.set_bearing(conditions.shooter.bearing)?;
-        Ok(builder.init())
+        Ok(SimulationBuilder::new()
+            .set_time_step(self.time_step)?
+            .use_coriolis(!self.flags.disable_coriolis)
+            .use_drag(!self.flags.disable_drag)
+            .use_gravity(!self.flags.disable_gravity)
+            // Projectile
+            .set_bc(self.projectile.bc)?
+            .set_velocity(self.projectile.velocity)?
+            .set_mass(self.projectile.mass)?
+            .set_caliber(self.projectile.caliber)?
+            // Scope
+            .set_scope_height(self.scope.height)
+            .set_scope_offset(self.scope.offset)
+            .set_scope_roll(self.scope.cant)
+            // Adjust pitch/yaw with value from args, and provided deltas
+            .set_scope_pitch(self.scope.pitch + pitch)
+            .set_scope_yaw(self.scope.yaw + yaw)
+            // Atmosphere
+            .set_temperature(conditions.atmosphere.temperature)?
+            .set_pressure(conditions.atmosphere.pressure)?
+            .set_humidity(conditions.atmosphere.humidity)?
+            // Wind
+            .set_wind_speed(conditions.wind.speed)?
+            .set_wind_direction(conditions.wind.direction)?
+            // Shooter
+            .set_incline(conditions.shooter.incline)?
+            .set_lattitude(conditions.shooter.lattitude)?
+            .set_bearing(conditions.shooter.bearing)?
+            .init())
     }
 }
