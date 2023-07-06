@@ -274,26 +274,10 @@ impl InnerArgs {
     where
         D: DragFunction,
     {
-        let output_tolerance = self.table.tolerance;
-        print_table(
-            self.table_gen(simulation),
-            output_tolerance,
-            self.flags.pretty,
-            self.precision,
-        );
-    }
-
-    fn table_gen<'s, D>(
-        &self,
-        simulation: &'s Simulation<D>,
-    ) -> impl IntoIterator<Item = impl Measurements + 's> + 's
-    where
-        D: DragFunction,
-    {
         let mut start = self.table.start;
         let end = self.table.end;
         let step = self.table.step;
-        simulation
+        let iter = simulation
             .into_iter()
             .take_while(move |p| p.distance() <= end + step)
             .filter(move |p| {
@@ -303,7 +287,13 @@ impl InnerArgs {
                 } else {
                     false
                 }
-            })
+            });
+        print_table(
+            iter,
+            self.table.tolerance,
+            self.flags.pretty,
+            self.precision,
+        );
     }
 
     fn try_zero<D>(&self, mut simulation: Simulation<D>, target: &Target) -> Result<(Angle, Angle)>
