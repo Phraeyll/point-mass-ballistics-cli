@@ -1,6 +1,9 @@
 use point_mass_ballistics::{
     output::Measurements,
-    units::{foot_per_second, foot_pound, inch, moa, second, yard, Length},
+    units::{
+        angle::minute, energy::foot_pound, length::inch, length::yard, time::second,
+        velocity::foot_per_second, Length,
+    },
 };
 
 pub fn print_table(
@@ -58,9 +61,9 @@ pub fn print_table(
             ",
             p.distance().get::<yard>(),
             p.elevation().get::<inch>(),
-            p.vertical_angle(output_tolerance).get::<moa>(),
+            p.vertical_angle(output_tolerance).get::<minute>(),
             p.windage().get::<inch>(),
-            p.horizontal_angle(output_tolerance).get::<moa>(),
+            p.horizontal_angle(output_tolerance).get::<minute>(),
             p.velocity().get::<foot_per_second>(),
             p.mach().value,
             p.energy().get::<foot_pound>(),

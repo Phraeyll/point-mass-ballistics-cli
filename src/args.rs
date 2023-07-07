@@ -8,7 +8,9 @@ use point_mass_ballistics::{
     drag::{g1, g2, g5, g6, g7, g8, gi, gs, DragFunction},
     output::Measurements,
     simulation::{Simulation, SimulationBuilder},
-    units::{radian, Angle, Length, Mass, Pressure, ThermodynamicTemperature, Time, Velocity},
+    units::{
+        angle::radian, Angle, Length, Mass, Pressure, ThermodynamicTemperature, Time, Velocity,
+    },
     Numeric,
 };
 
