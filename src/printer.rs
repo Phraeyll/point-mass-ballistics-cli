@@ -62,7 +62,7 @@ pub fn print_table(
             p.windage().get::<inch>(),
             p.horizontal_angle(output_tolerance).get::<moa>(),
             p.velocity().get::<foot_per_second>(),
-            p.mach(),
+            p.mach().value,
             p.energy().get::<foot_pound>(),
             p.time().get::<second>(),
         );
