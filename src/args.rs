@@ -8,9 +8,7 @@ use point_mass_ballistics::{
     drag::{g1, g2, g5, g6, g7, g8, gi, gs, DragFunction},
     output::Measurements,
     simulation::{Simulation, SimulationBuilder},
-    units::{
-        radian, Angle, Length, Mass, Pressure, ThermodynamicTemperature, Time, Velocity,
-    },
+    units::{radian, Angle, Length, Mass, Pressure, ThermodynamicTemperature, Time, Velocity},
     Numeric,
 };
 
@@ -91,7 +89,7 @@ struct InnerArgs {
     table: Table,
 
     #[command(flatten)]
-    projectile: ProjectileArg,
+    projectile: Projectile,
 
     #[command(flatten)]
     scope: Scope,
@@ -134,7 +132,7 @@ struct Table {
 }
 
 #[derive(Debug, Parser)]
-struct ProjectileArg {
+struct Projectile {
     #[arg(long = "velocity", default_value = "3000.0 ft/s")]
     velocity: Velocity,
 
