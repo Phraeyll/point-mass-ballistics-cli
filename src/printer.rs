@@ -1,6 +1,6 @@
 use point_mass_ballistics::{
     output::Measurements,
-    units::{foot_per_second, foot_pound, inch, moa, ratio, second, yard, Length},
+    units::{foot_per_second, foot_pound, inch, moa, second, yard, Length},
 };
 
 pub fn print_table(
@@ -62,7 +62,7 @@ pub fn print_table(
             p.windage().get::<inch>(),
             p.horizontal_angle(output_tolerance).get::<moa>(),
             p.velocity().get::<foot_per_second>(),
-            p.mach().get::<ratio::ratio>(),
+            p.mach(),
             p.energy().get::<foot_pound>(),
             p.time().get::<second>(),
         );
