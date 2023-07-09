@@ -1,6 +1,4 @@
-use self::args::Args;
-
-use args::Result;
+use crate::args::{Args, Result};
 
 use clap::Parser;
 
