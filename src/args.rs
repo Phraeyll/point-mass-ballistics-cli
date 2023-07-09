@@ -50,29 +50,6 @@ enum SimulationKind {
     GS(InnerArgs),
 }
 
-#[derive(Debug, Subcommand)]
-enum ScenarioKind {
-    Zero {
-        #[command(flatten)]
-        conditions: Conditions,
-
-        #[command(flatten)]
-        target: Target,
-    },
-}
-
-#[derive(Debug, Parser)]
-struct Conditions {
-    #[command(flatten)]
-    atmosphere: Atmosphere,
-
-    #[command(flatten)]
-    wind: Wind,
-
-    #[command(flatten)]
-    shooter: Shooter,
-}
-
 #[derive(Debug, Parser)]
 struct InnerArgs {
     #[arg(long = "time-step", default_value = "0.00005 s")]
@@ -98,6 +75,17 @@ struct InnerArgs {
 
     #[command(subcommand)]
     scenario: Option<ScenarioKind>,
+}
+
+#[derive(Debug, Subcommand)]
+enum ScenarioKind {
+    Zero {
+        #[command(flatten)]
+        conditions: Conditions,
+
+        #[command(flatten)]
+        target: Target,
+    },
 }
 
 #[derive(Debug, Parser)]
@@ -164,6 +152,18 @@ struct Scope {
 }
 
 #[derive(Debug, Parser)]
+struct Conditions {
+    #[command(flatten)]
+    atmosphere: Atmosphere,
+
+    #[command(flatten)]
+    wind: Wind,
+
+    #[command(flatten)]
+    shooter: Shooter,
+}
+
+#[derive(Debug, Parser)]
 struct Wind {
     #[arg(long = "wind-speed", default_value = "0.0 mi/h")]
     speed: Velocity,
@@ -192,7 +192,7 @@ struct Shooter {
     #[arg(long = "bearing", default_value = "0.0 degrees")]
     bearing: Angle,
 
-    #[arg(long = "shot-angle", default_value = "0.0 degrees")]
+    #[arg(long = "incline", default_value = "0.0 degrees")]
     incline: Angle,
 }
 
