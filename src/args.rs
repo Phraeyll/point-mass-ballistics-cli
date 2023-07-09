@@ -52,16 +52,13 @@ enum SimulationKind {
 
 #[derive(Debug, Subcommand)]
 enum ScenarioKind {
-    Zero(Zeroing),
-}
+    Zero {
+        #[command(flatten)]
+        conditions: Conditions,
 
-#[derive(Debug, Parser)]
-struct Zeroing {
-    #[command(flatten)]
-    conditions: Conditions,
-
-    #[command(flatten)]
-    target: Target,
+        #[command(flatten)]
+        target: Target,
+    },
 }
 
 #[derive(Debug, Parser)]
@@ -259,9 +256,13 @@ impl InnerArgs {
         D: DragFunction,
     {
         let mut angles = (Angle::new::<radian>(0.0), Angle::new::<radian>(0.0));
-        if let Some(ScenarioKind::Zero(ref zeroing)) = self.scenario {
-            let simulation = time!(self.simulation::<D>(&zeroing.conditions, None)?);
-            angles = time!(self.try_zero(simulation, &zeroing.target)?);
+        if let Some(ScenarioKind::Zero {
+            ref conditions,
+            ref target,
+        }) = self.scenario
+        {
+            let simulation = time!(self.simulation::<D>(conditions, None)?);
+            angles = time!(self.try_zero(simulation, target)?);
         }
         let simulation = time!(self.simulation::<D>(&self.conditions, Some(angles))?);
         time!(self.print(&simulation));
@@ -314,10 +315,12 @@ impl InnerArgs {
     where
         D: DragFunction,
     {
+        // pitch/yaw with value from args, and provided deltas if post zeroing
         let (pitch, yaw) = angles.map_or(Default::default(), |(pitch, yaw)| {
             (pitch + self.scope.pitch, yaw + self.scope.yaw)
         });
         Ok(SimulationBuilder::new()
+            // Flags
             .set_time_step(self.time_step)?
             .use_coriolis(!self.flags.disable_coriolis)
             .use_drag(!self.flags.disable_drag)
@@ -331,7 +334,6 @@ impl InnerArgs {
             .set_scope_height(self.scope.height)
             .set_scope_offset(self.scope.offset)
             .set_scope_roll(self.scope.cant)
-            // Adjust pitch/yaw with value from args, and provided deltas
             .set_scope_pitch(pitch)
             .set_scope_yaw(yaw)
             // Atmosphere
