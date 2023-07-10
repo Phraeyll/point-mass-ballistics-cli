@@ -81,7 +81,7 @@ struct InnerArgs {
 enum ScenarioKind {
     Zero {
         #[command(flatten)]
-        conditions: Conditions,
+        conditions: Option<Conditions>,
 
         #[command(flatten)]
         target: Target,
@@ -261,6 +261,7 @@ impl InnerArgs {
             ref target,
         }) = self.scenario
         {
+            let conditions = conditions.as_ref().unwrap_or(&self.conditions);
             let simulation = time!(self.simulation::<D>(conditions, None)?);
             angles = time!(self.try_zero(simulation, target)?);
         }
