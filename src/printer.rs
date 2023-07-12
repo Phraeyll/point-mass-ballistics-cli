@@ -48,13 +48,13 @@ pub fn print_table(
     for p in table.into_iter() {
         print!(
             "\
-            {fs}{:>12.0} \
+            {fs}{:>12.precision$} \
             {fs}{:>13.precision$} \
             {fs}{:>10.precision$} \
             {fs}{:>11.precision$} \
             {fs}{:>10.precision$} \
             {fs}{:>14.precision$} \
-            {fs}{:>10.3} \
+            {fs}{:>10.precision$} \
             {fs}{:>12.precision$} \
             {fs}{:>8.3}{eol}\
             {rs}\

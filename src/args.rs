@@ -274,15 +274,15 @@ impl InnerArgs {
     where
         D: DragFunction,
     {
-        let mut start = self.table.start;
+        let mut next = self.table.start;
         let end = self.table.end;
         let step = self.table.step;
         let iter = simulation
             .into_iter()
-            .take_while(move |p| p.distance() <= end + step)
-            .filter(move |p| {
-                if p.distance() >= start {
-                    start += step;
+            .take_while(|p| p.distance() <= end + step)
+            .filter(|p| {
+                if p.distance() >= next {
+                    next += step;
                     true
                 } else {
                     false
