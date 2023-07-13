@@ -16,6 +16,24 @@ use point_mass_ballistics::{
 
 pub type Result<D> = std::result::Result<D, Box<dyn Error>>;
 
+macro_rules! time {
+    ($expr:expr) => {{
+        let time = Instant::now();
+        match $expr {
+            tmp => {
+                eprintln!(
+                    "[{}:{}] {} = {:#?}",
+                    file!(),
+                    line!(),
+                    stringify!($expr),
+                    time.elapsed()
+                );
+                tmp
+            }
+        }
+    }};
+}
+
 #[derive(Debug, Parser)]
 #[command(
     author,
@@ -209,24 +227,6 @@ struct Target {
 
     #[arg(long = "target-tolerance", default_value = "0.001 in")]
     tolerance: Length,
-}
-
-macro_rules! time {
-    ($expr:expr) => {{
-        let time = Instant::now();
-        match $expr {
-            tmp => {
-                eprintln!(
-                    "[{}:{}] {} = {:#?}",
-                    file!(),
-                    line!(),
-                    stringify!($expr),
-                    time.elapsed()
-                );
-                tmp
-            }
-        }
-    }};
 }
 
 impl Args {
