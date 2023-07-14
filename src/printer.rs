@@ -7,7 +7,7 @@ use point_mass_ballistics::{
 };
 
 pub fn print_table(
-    table: impl IntoIterator<Item = impl Measurements>,
+    iter: impl IntoIterator<Item = impl Measurements>,
     output_tolerance: Length,
     pretty: bool,
     precision: usize,
@@ -47,7 +47,7 @@ pub fn print_table(
         "Acceleration(ft/s^2)",
         "Time(s)",
     );
-    for p in table.into_iter() {
+    for p in iter {
         print!(
             "\
             {fs}{:>12.precision$} \
