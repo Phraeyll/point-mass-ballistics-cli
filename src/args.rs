@@ -134,9 +134,6 @@ struct Table {
 
     #[arg(long = "table-step", default_value = "100.0 yd")]
     step: Length,
-
-    #[arg(long = "table-tolerance", default_value = "0.005 in")]
-    tolerance: Length,
 }
 
 #[derive(Debug, Parser)]
@@ -293,12 +290,7 @@ impl InnerArgs {
                     false
                 }
             });
-        print_table(
-            iter,
-            self.table.tolerance,
-            self.flags.pretty,
-            self.precision,
-        );
+        print_table(iter, self.flags.pretty, self.precision);
     }
 
     fn try_zero<D>(&self, mut simulation: Simulation<D>, target: &Target) -> Result<(Angle, Angle)>

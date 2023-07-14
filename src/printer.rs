@@ -2,13 +2,12 @@ use point_mass_ballistics::{
     output::Measurements,
     units::{
         acceleration::foot_per_second_squared, angle::minute, energy::foot_pound, length::inch,
-        length::yard, time::second, velocity::foot_per_second, Length,
+        length::yard, time::second, velocity::foot_per_second,
     },
 };
 
 pub fn print_table(
     iter: impl IntoIterator<Item = impl Measurements>,
-    output_tolerance: Length,
     pretty: bool,
     precision: usize,
 ) {
@@ -50,9 +49,9 @@ pub fn print_table(
     for p in iter {
         let distance = p.distance().get::<yard>();
         let elevation = p.elevation().get::<inch>();
-        let elevation_moa = p.vertical_angle(output_tolerance).get::<minute>();
+        let elevation_moa = p.vertical_angle().get::<minute>();
         let windage = p.windage().get::<inch>();
-        let windage_moa = p.horizontal_angle(output_tolerance).get::<minute>();
+        let windage_moa = p.horizontal_angle().get::<minute>();
         let velocity = p.velocity().get::<foot_per_second>();
         let mach = p.mach().value;
         let energy = p.energy().get::<foot_pound>();
