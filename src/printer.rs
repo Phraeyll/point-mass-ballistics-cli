@@ -1,8 +1,8 @@
 use point_mass_ballistics::{
     output::Measurements,
     units::{
-        angle::minute, energy::foot_pound, length::inch, length::yard, time::second,
-        velocity::foot_per_second, Length,
+        acceleration::foot_per_second_squared, angle::minute, energy::foot_pound, length::inch,
+        length::yard, time::second, velocity::foot_per_second, Length,
     },
 };
 
@@ -14,7 +14,7 @@ pub fn print_table(
 ) {
     let (rs, fs, eol) = if pretty {
         (
-            "+--------------+---------------+------------+-------------+------------+----------------+------------+--------------+----------+\n",
+            "+--------------+---------------+------------+-------------+------------+----------------+------------+--------------+----------------------+----------+\n",
             "| ",
             " |\n",
         )
@@ -32,6 +32,7 @@ pub fn print_table(
         {fs}{:>14} \
         {fs}{:>10} \
         {fs}{:>12} \
+        {fs}{:>20} \
         {fs}{:>8}{eol}\
         {rs}\
         ",
@@ -43,6 +44,7 @@ pub fn print_table(
         "Velocity(ft/s)",
         "Mach",
         "Energy(ftlb)",
+        "Acceleration(ft/s^2)",
         "Time(s)",
     );
     for p in table.into_iter() {
@@ -56,6 +58,7 @@ pub fn print_table(
             {fs}{:>14.precision$} \
             {fs}{:>10.precision$} \
             {fs}{:>12.precision$} \
+            {fs}{:>20.precision$} \
             {fs}{:>8.3}{eol}\
             {rs}\
             ",
@@ -67,6 +70,7 @@ pub fn print_table(
             p.velocity().get::<foot_per_second>(),
             p.mach().value,
             p.energy().get::<foot_pound>(),
+            p.acceleration().get::<foot_per_second_squared>(),
             p.time().get::<second>(),
         );
     }
