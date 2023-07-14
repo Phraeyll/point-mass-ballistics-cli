@@ -76,6 +76,9 @@ struct InnerArgs {
     #[arg(long = "precision", default_value = "1")]
     precision: usize,
 
+    #[arg(long = "simulations", default_value = "1")]
+    simulations: usize,
+
     #[command(flatten)]
     flags: Flags,
 
@@ -266,7 +269,9 @@ impl InnerArgs {
             angles = time!(self.try_zero(simulation, target)?);
         }
         let simulation = time!(self.simulation::<D>(&self.conditions, Some(angles))?);
-        time!(self.print(&simulation));
+        for _ in 0..self.simulations {
+            time!(self.print(&simulation));
+        }
         Ok(())
     }
 
