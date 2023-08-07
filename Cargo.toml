@@ -9,10 +9,10 @@ name = "cli"
 path = "src/main.rs"
 
 [dependencies]
-indoc = "2.0.2"
+indoc = "2.0.3"
 
 [dependencies.clap]
-version = "4.3.11"
+version = "4.3.19"
 features = ["derive"]
 
 [dependencies.point-mass-ballistics]
