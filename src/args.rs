@@ -263,9 +263,10 @@ impl InnerArgs {
         Ok(())
     }
 
-    pub fn print<D, W: Write>(&self, writer: &mut W, simulation: &Simulation<D>)
+    pub fn print<D, W>(&self, writer: &mut W, simulation: &Simulation<D>)
     where
         D: DragFunction,
+        W: Write,
     {
         let mut next = self.table.start;
         let end = self.table.end;
