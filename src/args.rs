@@ -3,7 +3,7 @@ use crate::formatter::write_table;
 use std::{
     error::Error,
     file,
-    io::{stdout, BufWriter},
+    io::{stdout, BufWriter, Write},
     line, stringify,
     time::Instant,
 };
@@ -256,13 +256,14 @@ impl InnerArgs {
             angles = time!(self.try_zero(simulation, target)?);
         }
         let simulation = time!(self.simulation::<D>(&self.conditions, Some(angles))?);
+        let mut writer = BufWriter::new(stdout().lock());
         for _ in 0..self.simulations {
-            time!(self.print(&simulation));
+            time!(self.print(&mut writer, &simulation));
         }
         Ok(())
     }
 
-    pub fn print<D>(&self, simulation: &Simulation<D>)
+    pub fn print<D, W: Write>(&self, writer: &mut W, simulation: &Simulation<D>)
     where
         D: DragFunction,
     {
@@ -280,8 +281,7 @@ impl InnerArgs {
                     false
                 }
             });
-        let mut writer = BufWriter::new(stdout().lock());
-        write_table(&mut writer, iter, self.flags.pretty, self.precision);
+        write_table(writer, iter, self.flags.pretty, self.precision);
     }
 
     fn try_zero<D>(&self, mut simulation: Simulation<D>, target: &Target) -> Result<(Angle, Angle)>
