@@ -1,4 +1,4 @@
-use std::io::{BufWriter, Write};
+use std::io::Write;
 
 use point_mass_ballistics::{
     output::Measurements,
@@ -9,7 +9,7 @@ use point_mass_ballistics::{
 };
 
 pub fn write_table<W: Write>(
-    writer: &mut BufWriter<W>,
+    writer: &mut W,
     iter: impl IntoIterator<Item = impl Measurements>,
     pretty: bool,
     precision: usize,
