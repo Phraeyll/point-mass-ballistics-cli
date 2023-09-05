@@ -35,7 +35,7 @@ pub fn write_table<W>(
     let energy = "Energy(ftlb)";
     let acceleration = "Acceleration(ft/s^2)";
     let time = "Time(s)";
-    writeln!(
+    write!(
         writer,
         "\
         {rs}\
@@ -64,7 +64,7 @@ pub fn write_table<W>(
         let energy = p.energy().get::<foot_pound>();
         let acceleration = p.acceleration().get::<foot_per_second_squared>();
         let time = p.time().get::<second>();
-        writeln!(
+        write!(
             writer,
             "\
             {fs}{distance:>12.precision$} \
