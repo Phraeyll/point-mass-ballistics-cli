@@ -82,5 +82,5 @@ pub fn write_table<W>(
         )
         .unwrap();
     }
-    let _ = writer.flush();
+    writer.flush().unwrap();
 }
