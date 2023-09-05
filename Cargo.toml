@@ -2,14 +2,21 @@
 name = "point-mass-ballistics-cli"
 version = "0.0.1"
 authors = ["Phraeyll <Phraeyll@users.noreply.github.com>"]
+description = """
+Produces range table for ballistic projectile using point mass model.
+Currently, this accounts for drag, gravity, and Coriolis/Eotvos forces.
+This does not currently factor in gyroscopic drift, nor aerodynamic jump.
+Drag tables obtained from JBM Ballistics, and methodologies are mostly from
+Robert L. McCoy's "Modern Exterior Ballistics" ISBN 978-0-7643-3825-0
+
+The eventual goal of this program is to support modified point mass trajectories
+as well, for factoring in gyroscopic drift and aerodynamic jump (4-DOF models)
+"""
 edition = "2021"
 
 [[bin]]
 name = "cli"
 path = "src/main.rs"
-
-[dependencies]
-indoc = "2.0.3"
 
 [dependencies.clap]
 version = "4.4.2"

@@ -3,7 +3,6 @@ use crate::printer::print_table;
 use std::{error::Error, file, line, stringify, time::Instant};
 
 use clap::{Parser, Subcommand};
-use indoc::indoc;
 use point_mass_ballistics::{
     drag::{g1, g2, g5, g6, g7, g8, gi, gs, DragFunction},
     output::Measurements,
@@ -35,22 +34,7 @@ macro_rules! time {
 }
 
 #[derive(Debug, Parser)]
-#[command(
-    author,
-    version,
-    name = "Ballistic Solver",
-    about = indoc!{r#"
-        Produces range table from vector based simulation of Newtons Equations
-        using standard, unmodified, point mass model of ballistics.
-        Currently, this accounts for drag, gravity, and Coriolis/Eotvos forces.
-        This does not currently factor in gyroscopic drift, nor aerodynamic jump.
-        Drag tables obtained from JBM Ballistics, and methodologies are mostly from
-        Robert L. McCoy's "Modern Exterior Ballistics" ISBN 978-0-7643-3825-0
-
-        The eventual goal of this program is to support modified point mass trajectories
-        as well, for factoring in gyroscopic drift and aerodynamic jump (4-DOF models)
-    "#}
-)]
+#[command(author, version, about, name = "Ballistic Solver")]
 pub struct Args {
     #[command(subcommand)]
     simulation: SimulationKind,
