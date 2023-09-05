@@ -1,6 +1,12 @@
-use crate::printer::print_table;
+use crate::formatter::write_table;
 
-use std::{error::Error, file, line, stringify, time::Instant};
+use std::{
+    error::Error,
+    file,
+    io::{stdout, BufWriter},
+    line, stringify,
+    time::Instant,
+};
 
 use clap::{Parser, Subcommand};
 use point_mass_ballistics::{
@@ -274,7 +280,8 @@ impl InnerArgs {
                     false
                 }
             });
-        print_table(iter, self.flags.pretty, self.precision);
+        let mut writer = BufWriter::new(stdout().lock());
+        write_table(&mut writer, iter, self.flags.pretty, self.precision);
     }
 
     fn try_zero<D>(&self, mut simulation: Simulation<D>, target: &Target) -> Result<(Angle, Angle)>

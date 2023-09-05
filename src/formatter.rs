@@ -1,3 +1,5 @@
+use std::io::{BufWriter, Write};
+
 use point_mass_ballistics::{
     output::Measurements,
     units::{
@@ -6,7 +8,8 @@ use point_mass_ballistics::{
     },
 };
 
-pub fn print_table(
+pub fn write_table<W: Write>(
+    writer: &mut BufWriter<W>,
     iter: impl IntoIterator<Item = impl Measurements>,
     pretty: bool,
     precision: usize,
@@ -30,7 +33,8 @@ pub fn print_table(
     let energy = "Energy(ftlb)";
     let acceleration = "Acceleration(ft/s^2)";
     let time = "Time(s)";
-    print!(
+    writeln!(
+        writer,
         "\
         {rs}\
         {fs}{distance:>12} \
@@ -45,7 +49,8 @@ pub fn print_table(
         {fs}{time:>8}{eol}\
         {rs}\
         "
-    );
+    )
+    .unwrap();
     for p in iter {
         let distance = p.distance().get::<yard>();
         let elevation = p.elevation().get::<inch>();
@@ -57,7 +62,8 @@ pub fn print_table(
         let energy = p.energy().get::<foot_pound>();
         let acceleration = p.acceleration().get::<foot_per_second_squared>();
         let time = p.time().get::<second>();
-        print!(
+        writeln!(
+            writer,
             "\
             {fs}{distance:>12.precision$} \
             {fs}{elevation:>13.precision$} \
@@ -71,6 +77,7 @@ pub fn print_table(
             {fs}{time:>8.3}{eol}\
             {rs}\
             "
-        );
+        )
+        .unwrap();
     }
 }
