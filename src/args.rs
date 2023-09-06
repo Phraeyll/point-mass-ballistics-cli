@@ -28,7 +28,7 @@ macro_rules! time {
                     std::file!(),
                     std::line!(),
                     std::stringify!($expr),
-                    time.elapsed()
+                    time.elapsed(),
                 );
                 tmp
             }
