@@ -2,10 +2,7 @@ use crate::formatter::write_table;
 
 use std::{
     error::Error,
-    file,
     io::{stdout, BufWriter, Write},
-    line, stringify,
-    time::Instant,
 };
 
 use clap::{Parser, Subcommand};
@@ -23,14 +20,14 @@ pub type Result<D> = std::result::Result<D, Box<dyn Error>>;
 
 macro_rules! time {
     ($expr:expr) => {{
-        let time = Instant::now();
+        let time = std::time::Instant::now();
         match $expr {
             tmp => {
                 eprintln!(
                     "[{}:{}] {} = {:#?}",
-                    file!(),
-                    line!(),
-                    stringify!($expr),
+                    std::file!(),
+                    std::line!(),
+                    std::stringify!($expr),
                     time.elapsed()
                 );
                 tmp
