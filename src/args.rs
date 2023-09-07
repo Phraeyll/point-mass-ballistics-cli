@@ -10,9 +10,7 @@ use point_mass_ballistics::{
     drag::{g1, g2, g5, g6, g7, g8, gi, gs, DragFunction},
     output::Measurements,
     simulation::{Simulation, SimulationBuilder},
-    units::{
-        angle::radian, Angle, Length, Mass, Pressure, ThermodynamicTemperature, Time, Velocity,
-    },
+    units::{Angle, Length, Mass, Pressure, ThermodynamicTemperature, Time, Velocity},
     Numeric,
 };
 
@@ -40,23 +38,38 @@ macro_rules! time {
 #[command(author, version, about, name = "Ballistic Solver")]
 pub struct Args {
     #[command(subcommand)]
-    simulation: SimulationKind,
+    model: Model,
 }
 
 #[derive(Debug, Subcommand)]
-enum SimulationKind {
-    G1(InnerArgs),
-    G2(InnerArgs),
-    G5(InnerArgs),
-    G6(InnerArgs),
-    G7(InnerArgs),
-    G8(InnerArgs),
-    GI(InnerArgs),
-    GS(InnerArgs),
+enum Model {
+    #[command(about = "drag model")]
+    G1(ModelArgs),
+
+    #[command(about = "drag model")]
+    G2(ModelArgs),
+
+    #[command(about = "drag model")]
+    G5(ModelArgs),
+
+    #[command(about = "drag model")]
+    G6(ModelArgs),
+
+    #[command(about = "drag model")]
+    G7(ModelArgs),
+
+    #[command(about = "drag model")]
+    G8(ModelArgs),
+
+    #[command(about = "drag model")]
+    GI(ModelArgs),
+
+    #[command(about = "drag model")]
+    GS(ModelArgs),
 }
 
 #[derive(Debug, Parser)]
-struct InnerArgs {
+struct ModelArgs {
     #[arg(long = "time-step", default_value = "0.00005 s")]
     time_step: Time,
 
@@ -82,11 +95,11 @@ struct InnerArgs {
     conditions: Conditions,
 
     #[command(subcommand)]
-    scenario: Option<ScenarioKind>,
+    scenario: Option<Scenario>,
 }
 
 #[derive(Debug, Subcommand)]
-enum ScenarioKind {
+enum Scenario {
     Zero {
         #[command(flatten)]
         conditions: Option<Conditions>,
@@ -218,11 +231,11 @@ struct Target {
 
 impl Args {
     pub fn run(&self) -> Result<()> {
-        self.simulation.run()
+        self.model.run()
     }
 }
 
-impl SimulationKind {
+impl Model {
     pub fn run(&self) -> Result<()> {
         match *self {
             Self::G1(ref inner) => inner.run::<g1::Drag>(),
@@ -237,22 +250,24 @@ impl SimulationKind {
     }
 }
 
-impl InnerArgs {
+impl ModelArgs {
     pub fn run<D>(&self) -> Result<()>
     where
         D: DragFunction,
     {
-        let mut angles = (Angle::new::<radian>(0.0), Angle::new::<radian>(0.0));
-        if let Some(ScenarioKind::Zero {
-            ref conditions,
-            ref target,
-        }) = self.scenario
-        {
-            let conditions = conditions.as_ref().unwrap_or(&self.conditions);
-            let simulation = time!(self.simulation::<D>(conditions, None)?);
-            angles = time!(self.try_zero(simulation, target)?);
-        }
-        let simulation = time!(self.simulation::<D>(&self.conditions, Some(angles))?);
+        let angles = match self.scenario {
+            Some(Scenario::Zero {
+                ref conditions,
+                ref target,
+            }) => {
+                let conditions = conditions.as_ref().unwrap_or(&self.conditions);
+                let simulation = time!(self.simulation::<D>(conditions, None)?);
+                Some(time!(self.try_zero(simulation, target)?))
+            }
+            None => None,
+        };
+
+        let simulation = time!(self.simulation::<D>(&self.conditions, angles)?);
         let mut writer = BufWriter::new(stdout().lock());
         for _ in 0..self.simulations {
             time!(self.print(&mut writer, &simulation));
