@@ -261,7 +261,7 @@ impl ModelArgs {
                 ref target,
             }) => {
                 let conditions = conditions.as_ref().unwrap_or(&self.conditions);
-                let mut simulation = time!(self.simulation::<D>(conditions, None)?);
+                let mut simulation = time!(self.simulation::<D>(conditions, Default::default())?);
                 simulation.find_zero_angles(
                     target.distance,
                     target.height,
@@ -275,7 +275,7 @@ impl ModelArgs {
             (pitch, yaw) => (pitch + self.scope.pitch, yaw + self.scope.yaw),
         };
 
-        let simulation = time!(self.simulation::<D>(&self.conditions, Some(angles))?);
+        let simulation = time!(self.simulation::<D>(&self.conditions, angles)?);
         let mut writer = BufWriter::new(stdout().lock());
         for _ in 0..self.simulations {
             let mut next = self.table.start;
@@ -305,13 +305,12 @@ impl ModelArgs {
     fn simulation<D>(
         &self,
         conditions: &Conditions,
-        angles: Option<(Angle, Angle)>,
+        angles: (Angle, Angle),
     ) -> Result<Simulation<D>>
     where
         D: DragFunction,
     {
-        // pitch/yaw with value from args, and provided deltas if post zeroing
-        let (pitch, yaw) = angles.unwrap_or_default();
+        let (pitch, yaw) = angles;
         Ok(SimulationBuilder::new()
             // Flags
             .set_time_step(self.time_step)?
