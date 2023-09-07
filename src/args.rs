@@ -264,7 +264,7 @@ impl ModelArgs {
                 let simulation = time!(self.simulation::<D>(conditions, None)?);
                 Some(time!(self.try_zero(simulation, target)?))
             }
-            None => None,
+            None => Some(Default::default()),
         };
 
         let simulation = time!(self.simulation::<D>(&self.conditions, angles)?);
