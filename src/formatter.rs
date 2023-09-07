@@ -1,3 +1,5 @@
+use crate::args::Result;
+
 use std::io::Write;
 
 use point_mass_ballistics::{
@@ -13,7 +15,7 @@ pub fn write_table(
     iter: impl IntoIterator<Item = impl Measurements>,
     pretty: bool,
     precision: usize,
-) {
+) -> Result<()> {
     let (rs, fs, eol) = if pretty {
         (
             "+--------------+---------------+------------+-------------+------------+----------------+------------+--------------+----------------------+----------+\n",
@@ -49,8 +51,7 @@ pub fn write_table(
         {fs}{time:>8}{eol}\
         {rs}\
         "
-    )
-    .unwrap();
+    )?;
     for p in iter {
         let distance = p.distance().get::<yard>();
         let elevation = p.elevation().get::<inch>();
@@ -77,8 +78,7 @@ pub fn write_table(
             {fs}{time:>8.3}{eol}\
             {rs}\
             "
-        )
-        .unwrap();
+        )?;
     }
-    writer.flush().unwrap();
+    Ok(writer.flush()?)
 }

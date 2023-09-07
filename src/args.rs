@@ -295,7 +295,7 @@ impl ModelArgs {
                 iter,
                 self.flags.pretty,
                 self.precision,
-            ));
+            )?);
         }
         Ok(())
     }
