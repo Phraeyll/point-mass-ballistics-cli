@@ -2,7 +2,7 @@ use crate::formatter::write_table;
 
 use std::{
     error::Error,
-    io::{stdout, BufWriter, Write},
+    io::{stdout, BufWriter},
 };
 
 use clap::{Parser, Subcommand};
@@ -261,8 +261,13 @@ impl ModelArgs {
                 ref target,
             }) => {
                 let conditions = conditions.as_ref().unwrap_or(&self.conditions);
-                let simulation = time!(self.simulation::<D>(conditions, None)?);
-                time!(self.try_zero(simulation, target)?)
+                let mut simulation = time!(self.simulation::<D>(conditions, None)?);
+                simulation.find_zero_angles(
+                    target.distance,
+                    target.height,
+                    target.offset,
+                    target.tolerance,
+                )?
             }
             None => Default::default(),
         });
@@ -270,43 +275,28 @@ impl ModelArgs {
         let simulation = time!(self.simulation::<D>(&self.conditions, angles)?);
         let mut writer = BufWriter::new(stdout().lock());
         for _ in 0..self.simulations {
-            time!(self.print(&mut writer, &simulation));
+            let mut next = self.table.start;
+            let end = self.table.end;
+            let step = self.table.step;
+            let iter = simulation
+                .into_iter()
+                .take_while(|p| p.distance() <= end + step)
+                .filter(|p| {
+                    if p.distance() >= next {
+                        next += step;
+                        true
+                    } else {
+                        false
+                    }
+                });
+            time!(write_table(
+                &mut writer,
+                iter,
+                self.flags.pretty,
+                self.precision
+            ));
         }
         Ok(())
-    }
-
-    pub fn print<D, W>(&self, writer: &mut W, simulation: &Simulation<D>)
-    where
-        D: DragFunction,
-        W: Write,
-    {
-        let mut next = self.table.start;
-        let end = self.table.end;
-        let step = self.table.step;
-        let iter = simulation
-            .into_iter()
-            .take_while(|p| p.distance() <= end + step)
-            .filter(|p| {
-                if p.distance() >= next {
-                    next += step;
-                    true
-                } else {
-                    false
-                }
-            });
-        write_table(writer, iter, self.flags.pretty, self.precision);
-    }
-
-    fn try_zero<D>(&self, mut simulation: Simulation<D>, target: &Target) -> Result<(Angle, Angle)>
-    where
-        D: DragFunction,
-    {
-        Ok(simulation.find_zero_angles(
-            target.distance,
-            target.height,
-            target.offset,
-            target.tolerance,
-        )?)
     }
 
     fn simulation<D>(
