@@ -294,7 +294,7 @@ impl ModelArgs {
                 &mut writer,
                 iter,
                 self.flags.pretty,
-                self.precision
+                self.precision,
             ));
         }
         Ok(())
