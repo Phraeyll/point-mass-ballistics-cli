@@ -175,19 +175,7 @@ struct Conditions {
     atmosphere: Atmosphere,
 
     #[command(flatten)]
-    wind: Wind,
-
-    #[command(flatten)]
     shooter: Shooter,
-}
-
-#[derive(Debug, Parser)]
-struct Wind {
-    #[arg(long = "wind-speed", default_value = "0.0 mi/h")]
-    speed: Velocity,
-
-    #[arg(long = "wind-direction", default_value = "0.0 degrees")]
-    direction: Angle,
 }
 
 #[derive(Debug, Parser)]
@@ -200,6 +188,18 @@ struct Atmosphere {
 
     #[arg(long = "humidity", default_value = "0.0")]
     humidity: Numeric,
+
+    #[command(flatten)]
+    wind: Wind,
+}
+
+#[derive(Debug, Parser)]
+struct Wind {
+    #[arg(long = "wind-speed", default_value = "0.0 mi/h")]
+    speed: Velocity,
+
+    #[arg(long = "wind-direction", default_value = "0.0 degrees")]
+    direction: Angle,
 }
 
 #[derive(Debug, Parser)]
@@ -331,8 +331,8 @@ impl ModelArgs {
             .set_pressure(conditions.atmosphere.pressure)?
             .set_humidity(conditions.atmosphere.humidity)?
             // Wind
-            .set_wind_speed(conditions.wind.speed)?
-            .set_wind_direction(conditions.wind.direction)?
+            .set_wind_speed(conditions.atmosphere.wind.speed)?
+            .set_wind_direction(conditions.atmosphere.wind.direction)?
             // Shooter
             .set_incline(conditions.shooter.incline)?
             .set_lattitude(conditions.shooter.lattitude)?
