@@ -255,7 +255,7 @@ impl ModelArgs {
     where
         D: DragFunction,
     {
-        let angles = Some(match self.scenario {
+        let angles = match self.scenario {
             Some(Scenario::Zero {
                 ref conditions,
                 ref target,
@@ -270,9 +270,12 @@ impl ModelArgs {
                 )?
             }
             None => Default::default(),
-        });
+        };
+        let angles = match angles {
+            (pitch, yaw) => (pitch + self.scope.pitch, yaw + self.scope.yaw),
+        };
 
-        let simulation = time!(self.simulation::<D>(&self.conditions, angles)?);
+        let simulation = time!(self.simulation::<D>(&self.conditions, Some(angles))?);
         let mut writer = BufWriter::new(stdout().lock());
         for _ in 0..self.simulations {
             let mut next = self.table.start;
@@ -308,9 +311,7 @@ impl ModelArgs {
         D: DragFunction,
     {
         // pitch/yaw with value from args, and provided deltas if post zeroing
-        let (pitch, yaw) = angles.map_or(Default::default(), |(pitch, yaw)| {
-            (pitch + self.scope.pitch, yaw + self.scope.yaw)
-        });
+        let (pitch, yaw) = angles.unwrap_or_default();
         Ok(SimulationBuilder::new()
             // Flags
             .set_time_step(self.time_step)?
