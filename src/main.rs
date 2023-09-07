@@ -7,6 +7,5 @@ mod formatter;
 
 fn main() -> Result<()> {
     let cmd = Args::parse();
-    cmd.run()?;
-    Ok(())
+    cmd.run()
 }
