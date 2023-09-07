@@ -255,17 +255,17 @@ impl ModelArgs {
     where
         D: DragFunction,
     {
-        let angles = match self.scenario {
+        let angles = Some(match self.scenario {
             Some(Scenario::Zero {
                 ref conditions,
                 ref target,
             }) => {
                 let conditions = conditions.as_ref().unwrap_or(&self.conditions);
                 let simulation = time!(self.simulation::<D>(conditions, None)?);
-                Some(time!(self.try_zero(simulation, target)?))
+                time!(self.try_zero(simulation, target)?)
             }
-            None => Some(Default::default()),
-        };
+            None => Default::default(),
+        });
 
         let simulation = time!(self.simulation::<D>(&self.conditions, angles)?);
         let mut writer = BufWriter::new(stdout().lock());
