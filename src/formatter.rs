@@ -8,14 +8,12 @@ use point_mass_ballistics::{
     },
 };
 
-pub fn write_table<W>(
-    writer: &mut W,
+pub fn write_table(
+    writer: &mut impl Write,
     iter: impl IntoIterator<Item = impl Measurements>,
     pretty: bool,
     precision: usize,
-) where
-    W: Write,
-{
+) {
     let (rs, fs, eol) = if pretty {
         (
             "+--------------+---------------+------------+-------------+------------+----------------+------------+--------------+----------------------+----------+\n",
