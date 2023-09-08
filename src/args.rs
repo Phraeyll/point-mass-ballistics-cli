@@ -310,8 +310,8 @@ impl ModelArgs {
     {
         let (pitch, yaw) = angles;
         Ok(SimulationBuilder::new()
-            // Flags
             .set_time_step(self.time_step)?
+            // Flags
             .use_coriolis(!self.flags.disable_coriolis)
             .use_drag(!self.flags.disable_drag)
             .use_gravity(!self.flags.disable_gravity)
