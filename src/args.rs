@@ -171,16 +171,7 @@ struct Scope {
 
 #[derive(Debug, Parser)]
 struct Conditions {
-    #[command(flatten)]
-    atmosphere: Atmosphere,
-
-    #[command(flatten)]
-    shooter: Shooter,
-}
-
-#[derive(Debug, Parser)]
-struct Atmosphere {
-    #[arg(long = "temperature", default_value = "59 degree Fahrenheit")]
+    #[arg(long = "temperature", default_value = "59.0 degree Fahrenheit")]
     temperature: ThermodynamicTemperature,
 
     #[arg(long = "pressure", default_value = "29.92 in Hg")]
@@ -189,21 +180,12 @@ struct Atmosphere {
     #[arg(long = "humidity", default_value = "0.0")]
     humidity: Numeric,
 
-    #[command(flatten)]
-    wind: Wind,
-}
-
-#[derive(Debug, Parser)]
-struct Wind {
     #[arg(long = "wind-speed", default_value = "0.0 mi/h")]
-    speed: Velocity,
+    wind_speed: Velocity,
 
     #[arg(long = "wind-direction", default_value = "0.0 degrees")]
-    direction: Angle,
-}
+    wind_direction: Angle,
 
-#[derive(Debug, Parser)]
-struct Shooter {
     #[arg(long = "lattitude", default_value = "0.0 degrees")]
     lattitude: Angle,
 
@@ -327,16 +309,16 @@ impl ModelArgs {
             .set_scope_pitch(pitch)
             .set_scope_yaw(yaw)
             // Atmosphere
-            .set_temperature(conditions.atmosphere.temperature)?
-            .set_pressure(conditions.atmosphere.pressure)?
-            .set_humidity(conditions.atmosphere.humidity)?
+            .set_temperature(conditions.temperature)?
+            .set_pressure(conditions.pressure)?
+            .set_humidity(conditions.humidity)?
             // Wind
-            .set_wind_speed(conditions.atmosphere.wind.speed)?
-            .set_wind_direction(conditions.atmosphere.wind.direction)?
+            .set_wind_speed(conditions.wind_speed)?
+            .set_wind_direction(conditions.wind_direction)?
             // Shooter
-            .set_incline(conditions.shooter.incline)?
-            .set_lattitude(conditions.shooter.lattitude)?
-            .set_bearing(conditions.shooter.bearing)?
+            .set_incline(conditions.incline)?
+            .set_lattitude(conditions.lattitude)?
+            .set_bearing(conditions.bearing)?
             .init())
     }
 }
