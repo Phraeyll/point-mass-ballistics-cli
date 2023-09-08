@@ -1,4 +1,4 @@
-use crate::args::{Args, Result};
+use crate::args::{Cmd, Result};
 
 use clap::Parser;
 
@@ -6,6 +6,5 @@ mod args;
 mod formatter;
 
 fn main() -> Result<()> {
-    let cmd = Args::parse();
-    cmd.run()
+    Cmd::parse().run()
 }

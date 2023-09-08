@@ -36,7 +36,7 @@ macro_rules! time {
 
 #[derive(Debug, Parser)]
 #[command(author, version, about, name = "Ballistic Solver")]
-pub struct Args {
+pub struct Cmd {
     #[command(subcommand)]
     model: Model,
 }
@@ -44,32 +44,32 @@ pub struct Args {
 #[derive(Debug, Subcommand)]
 enum Model {
     #[command(about = "drag model")]
-    G1(ModelArgs),
+    G1(Args),
 
     #[command(about = "drag model")]
-    G2(ModelArgs),
+    G2(Args),
 
     #[command(about = "drag model")]
-    G5(ModelArgs),
+    G5(Args),
 
     #[command(about = "drag model")]
-    G6(ModelArgs),
+    G6(Args),
 
     #[command(about = "drag model")]
-    G7(ModelArgs),
+    G7(Args),
 
     #[command(about = "drag model")]
-    G8(ModelArgs),
+    G8(Args),
 
     #[command(about = "drag model")]
-    GI(ModelArgs),
+    GI(Args),
 
     #[command(about = "drag model")]
-    GS(ModelArgs),
+    GS(Args),
 }
 
 #[derive(Debug, Parser)]
-struct ModelArgs {
+struct Args {
     #[arg(long = "time-step", default_value = "0.00005 s")]
     time_step: Time,
 
@@ -211,7 +211,7 @@ struct Target {
     tolerance: Length,
 }
 
-impl Args {
+impl Cmd {
     pub fn run(&self) -> Result<()> {
         self.model.run()
     }
@@ -220,19 +220,19 @@ impl Args {
 impl Model {
     pub fn run(&self) -> Result<()> {
         match *self {
-            Self::G1(ref inner) => inner.run::<g1::Drag>(),
-            Self::G2(ref inner) => inner.run::<g2::Drag>(),
-            Self::G5(ref inner) => inner.run::<g5::Drag>(),
-            Self::G6(ref inner) => inner.run::<g6::Drag>(),
-            Self::G7(ref inner) => inner.run::<g7::Drag>(),
-            Self::G8(ref inner) => inner.run::<g8::Drag>(),
-            Self::GI(ref inner) => inner.run::<gi::Drag>(),
-            Self::GS(ref inner) => inner.run::<gs::Drag>(),
+            Self::G1(ref args) => args.run::<g1::Drag>(),
+            Self::G2(ref args) => args.run::<g2::Drag>(),
+            Self::G5(ref args) => args.run::<g5::Drag>(),
+            Self::G6(ref args) => args.run::<g6::Drag>(),
+            Self::G7(ref args) => args.run::<g7::Drag>(),
+            Self::G8(ref args) => args.run::<g8::Drag>(),
+            Self::GI(ref args) => args.run::<gi::Drag>(),
+            Self::GS(ref args) => args.run::<gs::Drag>(),
         }
     }
 }
 
-impl ModelArgs {
+impl Args {
     pub fn run<D>(&self) -> Result<()>
     where
         D: DragFunction,
