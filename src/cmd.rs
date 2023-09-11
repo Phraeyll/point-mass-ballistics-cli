@@ -2,6 +2,7 @@ use crate::formatter::write_table;
 
 use std::{
     error::Error,
+    fmt::Debug,
     io::{stdout, BufWriter},
 };
 
@@ -235,7 +236,7 @@ impl Model {
 impl Args {
     pub fn run<D>(&self) -> Result<()>
     where
-        D: DragFunction,
+        D: DragFunction + Debug,
     {
         let angles = match self.scenario {
             Some(Scenario::Zero {
