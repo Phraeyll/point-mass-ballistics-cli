@@ -245,12 +245,12 @@ impl Args {
             }) => {
                 let conditions = conditions.as_ref().unwrap_or(&self.conditions);
                 let mut simulation = time!(self.simulation::<D>(conditions, Default::default())?);
-                let (pitch, yaw) = simulation.find_zero_angles(
+                let (pitch, yaw) = time!(simulation.find_zero_angles(
                     target.distance,
                     target.height,
                     target.offset,
                     target.tolerance,
-                )?;
+                ))?;
                 (pitch + self.scope.pitch, yaw + self.scope.yaw)
             }
             None => (self.scope.pitch, self.scope.yaw),
