@@ -214,21 +214,15 @@ struct Target {
 
 impl Cmd {
     pub fn run(&self) -> Result<()> {
-        self.model.run()
-    }
-}
-
-impl Model {
-    pub fn run(&self) -> Result<()> {
-        match *self {
-            Self::G1(ref args) => args.run::<g1::Drag>(),
-            Self::G2(ref args) => args.run::<g2::Drag>(),
-            Self::G5(ref args) => args.run::<g5::Drag>(),
-            Self::G6(ref args) => args.run::<g6::Drag>(),
-            Self::G7(ref args) => args.run::<g7::Drag>(),
-            Self::G8(ref args) => args.run::<g8::Drag>(),
-            Self::GI(ref args) => args.run::<gi::Drag>(),
-            Self::GS(ref args) => args.run::<gs::Drag>(),
+        match self.model {
+            Model::G1(ref args) => args.run::<g1::Drag>(),
+            Model::G2(ref args) => args.run::<g2::Drag>(),
+            Model::G5(ref args) => args.run::<g5::Drag>(),
+            Model::G6(ref args) => args.run::<g6::Drag>(),
+            Model::G7(ref args) => args.run::<g7::Drag>(),
+            Model::G8(ref args) => args.run::<g8::Drag>(),
+            Model::GI(ref args) => args.run::<gi::Drag>(),
+            Model::GS(ref args) => args.run::<gs::Drag>(),
         }
     }
 }
