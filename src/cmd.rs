@@ -258,13 +258,15 @@ impl Args {
             let step = self.table.step;
             let iter = simulation
                 .into_iter()
-                .take_while(|p| p.distance() <= end + step)
-                .filter(|p| {
-                    if p.distance() >= next {
+                .zip(simulation.into_iter().skip(1))
+                .take_while(|(_, b)| b.distance() <= end + step)
+                .filter_map(|(a, b)| {
+                    if b.distance() >= next {
+                        let mid = a.lerp(&b, next);
                         next += step;
-                        true
+                        Some(mid)
                     } else {
-                        false
+                        None
                     }
                 });
             time!(write_table(

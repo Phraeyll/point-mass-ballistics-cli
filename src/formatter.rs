@@ -5,8 +5,12 @@ use std::io::Write;
 use point_mass_ballistics::{
     output::Measurements,
     units::{
-        acceleration::foot_per_second_squared, angle::minute, energy::foot_pound, length::inch,
-        length::yard, time::second, velocity::foot_per_second,
+        acceleration::foot_per_second_squared,
+        angle::minute,
+        energy::foot_pound,
+        length::{inch, yard},
+        time::second,
+        velocity::foot_per_second,
     },
 };
 
