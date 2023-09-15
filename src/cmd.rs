@@ -256,18 +256,20 @@ impl Args {
             let mut next = self.table.start;
             let end = self.table.end;
             let step = self.table.step;
-            let iter = simulation
-                .into_iter()
-                .zip(simulation.into_iter().skip(1))
-                .take_while(|(_, b)| b.distance() <= end + step)
-                .filter_map(|(a, b)| {
-                    if b.distance() >= next {
-                        let mid = a.lerp(&b, next);
+            let mut iter = simulation.into_iter();
+            let mut prev = iter.next().unwrap();
+            let iter = iter
+                .take_while(|p| p.distance() <= end + step)
+                .filter_map(|p| {
+                    let mid = if p.distance() >= next {
+                        let mid = prev.lerp(&p, next);
                         next += step;
                         Some(mid)
                     } else {
                         None
-                    }
+                    };
+                    prev = p;
+                    mid
                 });
             time!(write_table(
                 &mut writer,
