@@ -284,12 +284,11 @@ impl Args {
     fn simulation<D>(
         &self,
         conditions: &Conditions,
-        angles: (Angle, Angle),
+        (pitch, yaw): (Angle, Angle),
     ) -> Result<Simulation<D>>
     where
         D: DragFunction,
     {
-        let (pitch, yaw) = angles;
         Ok(SimulationBuilder::new()
             .set_time_step(self.time_step)?
             // Flags
