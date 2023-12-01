@@ -22,7 +22,7 @@ pub fn write_table(
 ) -> Result<()> {
     let (rs, fs, eol) = if pretty {
         (
-            "+--------------+---------------+------------+-------------+------------+----------------+------------+--------------+----------------------+----------+\n",
+            "+--------------+---------------+------------+-------------+------------+----------------+------+--------------+-------------+---------+\n",
             "| ",
             " |\n",
         )
@@ -37,7 +37,7 @@ pub fn write_table(
     let velocity = "Velocity(ft/s)";
     let mach = "Mach";
     let energy = "Energy(ftlb)";
-    let acceleration = "Acceleration(ft/s^2)";
+    let acceleration = "Acc(ft/s^2)";
     let time = "Time(s)";
     write!(
         writer,
@@ -49,10 +49,10 @@ pub fn write_table(
         {fs}{windage:>11} \
         {fs}{windage_moa:>10} \
         {fs}{velocity:>14} \
-        {fs}{mach:>10} \
+        {fs}{mach:>4} \
         {fs}{energy:>12} \
-        {fs}{acceleration:>20} \
-        {fs}{time:>8}{eol}\
+        {fs}{acceleration:>11} \
+        {fs}{time:>7}{eol}\
         {rs}\
         "
     )?;
@@ -76,10 +76,10 @@ pub fn write_table(
             {fs}{windage:>11.precision$} \
             {fs}{windage_moa:>10.precision$} \
             {fs}{velocity:>14.precision$} \
-            {fs}{mach:>10.precision$} \
+            {fs}{mach:>4.precision$} \
             {fs}{energy:>12.precision$} \
-            {fs}{acceleration:>20.precision$} \
-            {fs}{time:>8.3}{eol}\
+            {fs}{acceleration:>11.precision$} \
+            {fs}{time:>7.3}{eol}\
             {rs}\
             "
         )?;
