@@ -187,8 +187,8 @@ struct Conditions {
     #[arg(long = "wind-direction", default_value = "0.0 degrees")]
     wind_direction: Angle,
 
-    #[arg(long = "lattitude", default_value = "0.0 degrees")]
-    lattitude: Angle,
+    #[arg(long = "latitude", default_value = "0.0 degrees")]
+    latitude: Angle,
 
     #[arg(long = "bearing", default_value = "0.0 degrees")]
     bearing: Angle,
@@ -315,7 +315,7 @@ impl Args {
             .set_wind_direction(conditions.wind_direction)?
             // Shooter
             .set_incline(conditions.incline)?
-            .set_lattitude(conditions.lattitude)?
+            .set_latitude(conditions.latitude)?
             .set_bearing(conditions.bearing)?
             .init())
     }
