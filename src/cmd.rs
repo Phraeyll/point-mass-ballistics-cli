@@ -8,7 +8,7 @@ use std::{
 
 use clap::{Parser, Subcommand};
 use point_mass_ballistics::{
-    drag::{g1, g2, g5, g6, g7, g8, gi, gs, DragFunction},
+    drag::{g1, g2, g5, g6, g7, g8, gi, gs, DragFunction, DragInit},
     output::Measurements,
     simulation::{Simulation, SimulationBuilder},
     units::{Angle, Length, Mass, Pressure, ThermodynamicTemperature, Time, Velocity},
@@ -123,6 +123,9 @@ struct Flags {
 
     #[arg(long = "pretty")]
     pretty: bool,
+
+    #[arg(long = "debug")]
+    debug: bool,
 }
 
 #[derive(Debug, Parser)]
@@ -230,7 +233,7 @@ impl Cmd {
 impl Args {
     pub fn run<D>(&self) -> Result<()>
     where
-        D: DragFunction + Debug,
+        D: DragFunction + DragInit + Debug,
     {
         let angles = match self.scenario {
             Some(Scenario::Zero {
@@ -251,6 +254,10 @@ impl Args {
         };
 
         let simulation = time!(self.simulation::<D>(&self.conditions, angles)?);
+        if self.flags.debug {
+            dbg!(&simulation);
+        }
+
         let mut writer = BufWriter::new(stdout().lock());
         for _ in 0..self.simulations {
             let mut next = self.table.start;
@@ -287,7 +294,7 @@ impl Args {
         (pitch, yaw): (Angle, Angle),
     ) -> Result<Simulation<D>>
     where
-        D: DragFunction,
+        D: DragFunction + DragInit,
     {
         Ok(SimulationBuilder::new()
             .set_time_step(self.time_step)?
