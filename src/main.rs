@@ -1,8 +1,9 @@
-use crate::cmd::{Cmd, Result};
+use crate::{cmd::Cmd, error::Result};
 
 use clap::Parser;
 
 mod cmd;
+mod error;
 mod formatter;
 
 fn main() -> Result<()> {

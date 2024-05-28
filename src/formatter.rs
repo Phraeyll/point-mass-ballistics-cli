@@ -1,4 +1,4 @@
-use crate::cmd::Result;
+use crate::error::Result;
 
 use std::io::Write;
 

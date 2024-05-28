@@ -1,7 +1,6 @@
-use crate::formatter::write_table;
+use crate::{error::Result, formatter::write_table};
 
 use std::{
-    error::Error,
     fmt::Debug,
     io::{stdout, BufWriter},
 };
@@ -14,8 +13,6 @@ use point_mass_ballistics::{
     units::{Angle, Length, Mass, Pressure, ThermodynamicTemperature, Time, Velocity},
     Numeric,
 };
-
-pub type Result<D> = std::result::Result<D, Box<dyn Error>>;
 
 macro_rules! time {
     ($expr:expr) => {{
