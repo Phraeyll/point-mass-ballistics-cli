@@ -20,7 +20,7 @@ macro_rules! time {
         match $expr {
             tmp => {
                 eprintln!(
-                    "[{}:{}] {} = {:#?}",
+                    "[{}:{}] {} => {:#?}",
                     std::file!(),
                     std::line!(),
                     std::stringify!($expr),
