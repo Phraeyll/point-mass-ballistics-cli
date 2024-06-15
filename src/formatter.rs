@@ -16,7 +16,7 @@ use point_mass_ballistics::{
 
 pub fn write_table(
     writer: &mut impl Write,
-    iter: impl IntoIterator<Item = impl Measurements>,
+    iter: impl IntoIterator<Item: Measurements>,
     pretty: bool,
     precision: usize,
 ) -> Result<()> {
