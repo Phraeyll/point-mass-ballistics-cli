@@ -19,7 +19,7 @@ name = "cli"
 path = "src/main.rs"
 
 [dependencies.clap]
-version = "4.5.20"
+version = "4.5.22"
 features = ["derive"]
 
 [dependencies.point-mass-ballistics]
