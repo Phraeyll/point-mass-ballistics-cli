@@ -2,16 +2,16 @@ use crate::{error::Result, formatter::write_table};
 
 use std::{
     fmt::Debug,
-    io::{stdout, BufWriter},
+    io::{BufWriter, stdout},
 };
 
 use clap::{Parser, Subcommand};
 use point_mass_ballistics::{
-    drag::{g1, g2, g5, g6, g7, g8, gi, gs, DragFunction, DragInit},
+    Numeric,
+    drag::{DragFunction, DragInit, g1, g2, g5, g6, g7, g8, gi, gs},
     output::Measurements,
     simulation::{Simulation, SimulationBuilder},
     units::{Angle, Length, Mass, Pressure, ThermodynamicTemperature, Time, Velocity},
-    Numeric,
 };
 
 macro_rules! time {
