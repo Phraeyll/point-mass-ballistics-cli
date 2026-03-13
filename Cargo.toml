@@ -18,10 +18,12 @@ as well, for factoring in gyroscopic drift and aerodynamic jump (4-DOF models)
 name = "cli"
 path = "src/main.rs"
 
-[dependencies.clap]
-version = "4.5.54"
-features = ["derive"]
-
-[dependencies.point-mass-ballistics]
-git = "https://github.com/Phraeyll/point-mass-ballistics"
-branch = "master"
+[dependencies]
+clap = {
+    version = "4.5.54",
+    features = ["derive"],
+}
+point-mass-ballistics = {
+    git = "https://github.com/Phraeyll/point-mass-ballistics",
+    branch = "master",
+}
