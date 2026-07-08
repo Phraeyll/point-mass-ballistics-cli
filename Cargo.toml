@@ -20,10 +20,10 @@ path = "src/main.rs"
 
 [dependencies]
 clap = {
-    version = "4.5.54",
-    features = ["derive"],
-}
+
+    version = "4.6.1",
+    features = ["derive"]}
 point-mass-ballistics = {
+
     git = "https://github.com/Phraeyll/point-mass-ballistics",
-    branch = "master",
-}
+    branch = "master"}
